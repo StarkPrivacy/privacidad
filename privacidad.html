@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacidad — Privacidad.me</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { void: '#05070a', panel: '#0b0f14', neon: '#0a84ff', steel: '#8b9bb4', mist: '#c5d0e0' },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>body{background:#05070a}</style>
+</head>
+<body class="font-sans text-mist antialiased min-h-screen">
+  <nav class="border-b border-white/5 bg-void/80 backdrop-blur-xl">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-neon/10 border border-neon/30 flex items-center justify-center">
+          <svg class="w-4 h-4 text-neon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="font-semibold text-white">privacidad<span class="text-neon">.me</span></span>
+      </a>
+      <a href="index.html" class="text-sm text-steel hover:text-white transition">Volver</a>
+    </div>
+  </nav>
+  <main class="max-w-3xl mx-auto px-6 py-16">
+    <h1 class="text-3xl font-bold text-white mb-8">Política de privacidad</h1>
+    <div class="space-y-6 text-steel leading-relaxed text-sm">
+      <p><strong class="text-white">Datos que recopilamos:</strong> únicamente la información que proporcionas de forma voluntaria (nombre de usuario y correo electrónico) para el funcionamiento de tu cuenta.</p>
+      <p><strong class="text-white">Datos que no recopilamos:</strong> no almacenamos direcciones IP, no utilizamos cookies de seguimiento ni tecnologías de rastreo publicitario.</p>
+      <p><strong class="text-white">Cookies:</strong> solo se pueden usar cookies técnicas estrictamente necesarias para preferencias del sitio, sin impacto en tu privacidad.</p>
+      <p><strong class="text-white">Venta de datos:</strong> nunca. No compartimos información personal con terceros bajo ninguna circunstancia con fines comerciales.</p>
+      <p><strong class="text-white">Contacto:</strong> para cualquier consulta sobre privacidad puedes escribir a través de la página de contacto.</p>
+      <p class="text-xs text-steel/60 pt-4">Documento de vista previa estética. Se alineará con la política real del servicio.</p>
+    </div>
+  </main>
+</body>
+</html>

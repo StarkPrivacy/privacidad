@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacto — Privacidad.me</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { void: '#05070a', panel: '#0b0f14', neon: '#0a84ff', steel: '#8b9bb4', mist: '#c5d0e0' },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>body{background:#05070a}</style>
+</head>
+<body class="font-sans text-mist antialiased min-h-screen">
+  <nav class="border-b border-white/5 bg-void/80 backdrop-blur-xl">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-neon/10 border border-neon/30 flex items-center justify-center">
+          <svg class="w-4 h-4 text-neon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="font-semibold text-white">privacidad<span class="text-neon">.me</span></span>
+      </a>
+      <a href="index.html" class="text-sm text-steel hover:text-white transition">Volver</a>
+    </div>
+  </nav>
+  <main class="max-w-3xl mx-auto px-6 py-16">
+    <h1 class="text-3xl font-bold text-white mb-4">Contacto</h1>
+    <p class="text-steel mb-10 text-sm">Comunicación segura. Preferimos canales cifrados.</p>
+
+    <div class="space-y-6">
+      <div class="p-6 rounded-2xl bg-panel border border-white/10">
+        <h2 class="text-white font-semibold mb-2">Correo</h2>
+        <p class="text-steel text-sm mb-3">Utilizamos ProtonMail para cifrado de extremo a extremo.</p>
+        <a href="mailto:contacto@privacidad.me" class="text-neon hover:underline text-sm">contacto@privacidad.me</a>
+      </div>
+      <div class="p-6 rounded-2xl bg-panel border border-white/10">
+        <h2 class="text-white font-semibold mb-2">PGP</h2>
+        <p class="text-steel text-sm mb-3">Para máxima privacidad puedes cifrar tus mensajes con nuestra clave pública.</p>
+        <p class="text-xs text-steel/70 font-mono">Clave pública disponible bajo petición.</p>
+      </div>
+      <div class="p-6 rounded-2xl bg-panel border border-white/10">
+        <h2 class="text-white font-semibold mb-2">Comunidad</h2>
+        <div class="flex flex-wrap gap-4 text-sm">
+          <a href="https://t.me/StarkPrivacy" target="_blank" rel="noopener" class="text-neon hover:underline">Telegram</a>
+          <a href="https://x.com/StarkPrivacy" target="_blank" rel="noopener" class="text-neon hover:underline">X / Twitter</a>
+          <a href="https://boringprivacy.io" target="_blank" rel="noopener" class="text-neon hover:underline">Boring Privacy</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
