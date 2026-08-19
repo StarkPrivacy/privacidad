@@ -10,35 +10,31 @@ Open source · Basado en [LinkStack](https://github.com/LinkStackOrg/LinkStack) 
 - [privtr.ee](https://privtr.ee)
 - [privtree.com](https://privtree.com)
 
-## Estado actual
-
-Renovación completa de la interfaz en curso.
-
-### Landing page (v1)
+## Landing page actual
 
 - Diseño cyberpunk sutil (azules y negros)
-- Enfoque en privacidad real (sin rastreo, sin cookies de seguimiento, sin venta de datos)
-- Responsive, moderno y atractivo
-- Mantiene el espíritu open source
+- Sección de características
+- **Tabla comparativa** privtr.ee vs otras alternativas
+- **Sección Precios**: gratuito + donaciones en BTC / XMR / USDT (TRON)
+- Responsive y open source
 
 Archivo principal: [`index.html`](./index.html)
 
+> **Importante**: Las direcciones de donación en la landing son *placeholders*. Sustitúyelas por las direcciones reales antes de poner en producción.
+
 ## Próximos pasos
 
-1. Integrar esta landing como tema / frontend de la instancia LinkStack existente
-2. Renovar la interfaz completa de perfiles y panel de administración
-3. Migración / integración sin pérdida de usuarios registrados
-4. Documentación y contribución open source
+1. Activar GitHub Pages para previsualizar en vivo (Settings → Pages → main / root)
+2. Reemplazar direcciones de cripto reales
+3. Integrar esta landing como tema/frontend de la instancia LinkStack existente
+4. Renovar interfaz de perfiles y panel de administración
+5. Migración sin pérdida de usuarios registrados
 
 ## Filosofía
 
 > Solo lo esencial: sin rastreo, sin cookies, sin almacenar tu IP, ni venderte.
 
-Alineado con la academia **Boring Privacy**.
-
-## Licencia
-
-El código de esta renovación se mantiene en el espíritu open source de LinkStack (AGPL-3.0).
+Proyecto sin ánimo de lucro, mantenido por apoyo de la comunidad.
 
 ---
 
