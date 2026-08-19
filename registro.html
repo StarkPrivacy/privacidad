@@ -1,1 +1,76 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrarse — Privacidad.me</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            void: '#05070a', panel: '#0b0f14', neon: '#0a84ff',
+            'neon-glow': '#3b9eff', steel: '#8b9bb4', mist: '#c5d0e0'
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>body{background:#05070a}.glow-blue{box-shadow:0 0 20px rgba(10,132,255,.25)}</style>
+</head>
+<body class="font-sans text-mist antialiased min-h-screen flex flex-col">
+  <nav class="border-b border-white/5 bg-void/80 backdrop-blur-xl">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-neon/10 border border-neon/30 flex items-center justify-center">
+          <svg class="w-4 h-4 text-neon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="font-semibold text-white">privacidad<span class="text-neon">.me</span></span>
+      </a>
+      <a href="acceso.html" class="text-sm text-steel hover:text-white transition">Iniciar sesión</a>
+    </div>
+  </nav>
+
+  <main class="flex-1 flex items-center justify-center px-6 py-16">
+    <div class="w-full max-w-md">
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold text-white mb-2">Crear cuenta</h1>
+        <p class="text-steel text-sm">Regístrate para reclamar tu página de enlaces.</p>
+      </div>
+
+      <div class="p-6 rounded-2xl bg-panel border border-white/10">
+        <form class="space-y-5" onsubmit="event.preventDefault(); alert('Esta página es una vista previa estética. El registro real sigue en la instancia actual de privacidad.me');">
+          <div>
+            <label class="block text-xs text-steel mb-1.5">Nombre de usuario</label>
+            <div class="flex items-center bg-void rounded-xl border border-white/10 overflow-hidden focus-within:border-neon/40 transition">
+              <span class="px-3 text-sm text-steel border-r border-white/10">privacidad.me/</span>
+              <input type="text" name="username" placeholder="tu-nombre" required class="flex-1 bg-transparent text-white px-3 py-3 text-sm focus:outline-none placeholder-steel/40">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs text-steel mb-1.5">Correo electrónico</label>
+            <input type="email" name="email" placeholder="tu@email.com" required class="w-full bg-void rounded-xl border border-white/10 px-4 py-3 text-sm text-white focus:outline-none focus:border-neon/40 placeholder-steel/40">
+          </div>
+          <div>
+            <label class="block text-xs text-steel mb-1.5">Contraseña</label>
+            <input type="password" name="password" placeholder="••••••••" required class="w-full bg-void rounded-xl border border-white/10 px-4 py-3 text-sm text-white focus:outline-none focus:border-neon/40 placeholder-steel/40">
+          </div>
+          <button type="submit" class="w-full py-3 rounded-xl bg-neon text-void font-semibold hover:bg-neon-glow transition glow-blue">
+            Registrarse
+          </button>
+        </form>
+        <p class="mt-6 text-center text-sm text-steel">
+          ¿Ya tienes cuenta? <a href="acceso.html" class="text-neon hover:underline">Inicia sesión</a>
+        </p>
+      </div>
+
+      <p class="mt-6 text-center text-xs text-steel/60">
+        Al registrarte aceptas los <a href="terminos.html" class="underline hover:text-steel">Términos</a> y la <a href="privacidad.html" class="underline hover:text-steel">Política de privacidad</a>.
+      </p>
+    </div>
+  </main>
+</body>
+</html>
