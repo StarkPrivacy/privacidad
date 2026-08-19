@@ -5,20 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panel de control — Privacidad.me</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff','neon-glow':'#3b9eff',steel:'#8b9bb4',mist:'#c5d0e0'},fontFamily:{sans:['Inter','system-ui','sans-serif']}}}}</script>
+<script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'},fontFamily:{sans:['Inter','system-ui','sans-serif']}}}}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>body{background:#05070a}.glow-blue{box-shadow:0 0 20px rgba(10,132,255,.2)}.sidebar-link.active{background:rgba(10,132,255,.12);color:#0a84ff;border-color:rgba(10,132,255,.35)}.stat-card{background:linear-gradient(145deg,#0b0f14,#080b10)}</style>
+<style>body{background:#05070a}.sidebar-link.active{background:rgba(10,132,255,.12);color:#0a84ff;border-color:rgba(10,132,255,.35)}.stat-card{background:linear-gradient(145deg,#0b0f14,#080b10)}.drag-handle{cursor:grab}</style>
 </head>
 <body class="font-sans text-mist antialiased min-h-screen flex">
-<aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-panel border-r border-white/5 -translate-x-full lg:translate-x-0 transition-transform duration-200 flex flex-col">
+<aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-panel border-r border-white/5 -translate-x-full lg:translate-x-0 transition-transform flex flex-col">
 <div class="h-16 flex items-center gap-3 px-5 border-b border-white/5 shrink-0">
 <div class="w-8 h-8 rounded-lg bg-neon/10 border border-neon/30 flex items-center justify-center"><svg class="w-4 h-4 text-neon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
 <span class="font-semibold text-white">privacidad<span class="text-neon">.me</span></span>
 </div>
 <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto text-sm">
 <button onclick="show('enlaces')" class="sidebar-link active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="enlaces">📎 Enlaces</button>
+<button onclick="show('marcas')" class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="marcas">🏷️ Marcas</button>
 <button onclick="show('apariencia')" class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="apariencia">🎨 Apariencia</button>
 <button onclick="show('perfil')" class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="perfil">👤 Perfil</button>
+<button onclick="show('og')" class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="og">🔗 Vista previa social</button>
 <button onclick="show('visitas')" class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="visitas">📊 Visitas</button>
 <button onclick="show('bloques')" class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="bloques">🧱 Bloques</button>
 <button onclick="show('qr')" class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="qr">📱 QR Code</button>
@@ -43,34 +45,67 @@
 </div>
 <div class="flex items-center gap-3">
 <a href="https://privtr.ee/stark" target="_blank" class="hidden sm:inline text-sm text-steel hover:text-white">Ver página →</a>
-<button onclick="save()" class="px-4 py-2 rounded-xl bg-neon text-void text-sm font-semibold glow-blue">Guardar</button>
+<button onclick="save()" class="px-4 py-2 rounded-xl bg-neon text-void text-sm font-semibold">Guardar</button>
 </div>
 </header>
 <main class="flex-1 p-4 sm:p-6 max-w-4xl mx-auto w-full space-y-6">
 <section id="s-enlaces" class="space-y-4">
-<div class="flex justify-between items-center"><p class="text-sm text-steel">Gestiona y reordena tus enlaces</p><button onclick="addLink()" class="px-4 py-2 rounded-xl border border-neon/30 text-neon text-sm hover:bg-neon/10">+ Añadir</button></div>
+<div class="flex justify-between items-center flex-wrap gap-2">
+<p class="text-sm text-steel">Arrastra para reordenar · Pin para destacar</p>
+<button onclick="addLink()" class="px-4 py-2 rounded-xl border border-neon/30 text-neon text-sm hover:bg-neon/10">+ Añadir</button>
+</div>
 <div id="links" class="space-y-3"></div>
 </section>
-<section id="s-apariencia" class="hidden space-y-8">
-<div><h3 class="text-white font-medium mb-3">Tema de fondo</h3>
+<section id="s-marcas" class="hidden space-y-4">
+<p class="text-sm text-steel">Marcas predefinidas (estilo LinkStack). Elige una para añadir el botón con favicon.</p>
+<input type="search" placeholder="Buscar marca..." class="w-full bg-panel border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white">
+<div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+<button class="p-3 rounded-xl bg-panel border border-white/10 text-xs text-mist hover:border-neon/40">Telegram</button>
+<button class="p-3 rounded-xl bg-panel border border-white/10 text-xs text-mist hover:border-neon/40">X / Twitter</button>
+<button class="p-3 rounded-xl bg-panel border border-white/10 text-xs text-mist hover:border-neon/40">GitHub</button>
+<button class="p-3 rounded-xl bg-panel border border-white/10 text-xs text-mist hover:border-neon/40">YouTube</button>
+<button class="p-3 rounded-xl bg-panel border border-white/10 text-xs text-mist hover:border-neon/40">Instagram</button>
+<button class="p-3 rounded-xl bg-panel border border-white/10 text-xs text-mist hover:border-neon/40">LinkedIn</button>
+<button class="p-3 rounded-xl bg-panel border border-white/10 text-xs text-mist hover:border-neon/40">Discord</button>
+<button class="p-3 rounded-xl bg-panel border border-white/10 text-xs text-mist hover:border-neon/40">Mastodon</button>
+<button class="p-3 rounded-xl bg-panel border border-white/10 text-xs text-mist hover:border-neon/40">Matrix</button>
+<button class="p-3 rounded-xl bg-panel border border-white/10 text-xs text-mist hover:border-neon/40">Signal</button>
+<button class="p-3 rounded-xl bg-panel border border-white/10 text-xs text-mist hover:border-neon/40">Email</button>
+<button class="p-3 rounded-xl bg-panel border border-white/10 text-xs text-mist hover:border-neon/40">Personalizado</button>
+</div>
+</section>
+<section id="s-apariencia" class="hidden space-y-6">
+<div><h3 class="text-white font-medium mb-3">Tema</h3>
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-<button onclick="selTheme(this)" class="p-3 rounded-xl border-2 border-neon bg-void text-center"><div class="h-10 rounded-lg bg-[#05070a] mb-2 border border-white/10"></div><span class="text-xs text-steel">Oscuro</span></button>
-<button onclick="selTheme(this)" class="p-3 rounded-xl border border-white/10 bg-panel text-center"><div class="h-10 rounded-lg bg-gradient-to-br from-[#0a1628] to-[#05070a] mb-2"></div><span class="text-xs text-steel">Azul</span></button>
-<button onclick="selTheme(this)" class="p-3 rounded-xl border border-white/10 bg-panel text-center"><div class="h-10 rounded-lg bg-gradient-to-br from-[#1a0a28] to-[#05070a] mb-2"></div><span class="text-xs text-steel">Violeta</span></button>
-<button onclick="selTheme(this)" class="p-3 rounded-xl border border-white/10 bg-panel text-center"><div class="h-10 rounded-lg bg-gradient-to-br from-[#0a281a] to-[#05070a] mb-2"></div><span class="text-xs text-steel">Verde</span></button>
+<button class="p-3 rounded-xl border-2 border-neon bg-void text-center"><div class="h-10 rounded-lg bg-[#05070a] mb-2 border border-white/10"></div><span class="text-xs text-steel">Oscuro</span></button>
+<button class="p-3 rounded-xl border border-white/10 bg-panel text-center"><div class="h-10 rounded-lg bg-gradient-to-br from-[#0a1628] to-[#05070a] mb-2"></div><span class="text-xs text-steel">Azul</span></button>
+<button class="p-3 rounded-xl border border-white/10 bg-panel text-center"><div class="h-10 rounded-lg bg-gradient-to-br from-[#1a0a28] to-[#05070a] mb-2"></div><span class="text-xs text-steel">Violeta</span></button>
+<button class="p-3 rounded-xl border border-white/10 bg-panel text-center"><div class="h-10 rounded-lg bg-gradient-to-br from-[#0a281a] to-[#05070a] mb-2"></div><span class="text-xs text-steel">Verde</span></button>
 </div></div>
-<div><h3 class="text-white font-medium mb-3">Imagen de fondo</h3>
-<div class="p-4 rounded-xl bg-panel border border-white/10 border-dashed text-center text-sm text-steel">Arrastra o <button class="text-neon underline">elige archivo</button></div></div>
-<div><h3 class="text-white font-medium mb-3">Estilo de botones</h3>
-<div class="grid grid-cols-3 gap-3"><button class="p-3 rounded-xl border-2 border-neon bg-panel text-sm">Redondeado</button><button class="p-3 rounded-xl border border-white/10 bg-panel text-sm">Cuadrado</button><button class="p-3 rounded-xl border border-white/10 bg-panel text-sm">Píldora</button></div></div>
+<div><h3 class="text-white font-medium mb-3">Imagen de fondo / Favicon / Logo</h3>
+<div class="flex flex-wrap gap-3 text-sm"><button class="text-neon">Fondo</button><button class="text-neon">Favicon</button><button class="text-neon">Logo</button></div></div>
 </section>
 <section id="s-perfil" class="hidden space-y-6">
 <div class="flex flex-col sm:flex-row gap-6 items-start">
-<div class="relative group"><img src="https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg" class="w-24 h-24 rounded-full object-cover border-2 border-neon/30"></div>
+<img src="https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg" class="w-24 h-24 rounded-full object-cover border-2 border-neon/30">
 <div class="flex-1 space-y-4 w-full">
-<div><label class="block text-xs text-steel mb-1">Nombre</label><input value="Stark" class="w-full bg-panel border border-white/10 rounded-xl px-4 py-3 text-sm text-white"></div>
-<div><label class="block text-xs text-steel mb-1">Biografía</label><textarea rows="3" class="w-full bg-panel border border-white/10 rounded-xl px-4 py-3 text-sm text-white">Sin privacidad tu libertad es solo una ilusión</textarea></div>
+<input value="Stark" class="w-full bg-panel border border-white/10 rounded-xl px-4 py-3 text-sm text-white">
+<textarea rows="3" class="w-full bg-panel border border-white/10 rounded-xl px-4 py-3 text-sm text-white">Sin privacidad tu libertad es solo una ilusión</textarea>
+<label class="flex items-center gap-2 text-sm"><input type="checkbox" checked> Badge verificado</label>
 </div>
+</div>
+</section>
+<section id="s-og" class="hidden space-y-6">
+<p class="text-sm text-steel">Vista previa al compartir (Open Graph).</p>
+<div class="p-4 rounded-xl bg-panel border border-white/5 max-w-md">
+<div class="h-28 rounded-lg bg-void border border-white/10 mb-3 flex items-center justify-center text-xs text-steel">Imagen OG</div>
+<div class="text-sm text-white font-medium">Stark — privtr.ee</div>
+<div class="text-xs text-steel mt-1">Sin privacidad tu libertad es solo una ilusión</div>
+</div>
+<div class="space-y-3">
+<input value="Stark" class="w-full bg-void border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white" placeholder="Título OG">
+<input value="Sin privacidad tu libertad es solo una ilusión" class="w-full bg-void border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white" placeholder="Descripción OG">
+<button class="text-sm text-neon">Subir imagen de vista previa</button>
 </div>
 </section>
 <section id="s-visitas" class="hidden space-y-6">
@@ -85,78 +120,65 @@
 <div class="grid sm:grid-cols-2 gap-3">
 <button class="p-4 rounded-xl bg-panel border border-white/10 text-left"><div class="font-medium text-white">Título</div></button>
 <button class="p-4 rounded-xl bg-panel border border-white/10 text-left"><div class="font-medium text-white">Espaciador</div></button>
-<button class="p-4 rounded-xl bg-panel border border-white/10 text-left"><div class="font-medium text-white">Texto</div></button>
+<button class="p-4 rounded-xl bg-panel border border-white/10 text-left"><div class="font-medium text-white">Texto HTML</div></button>
 <button class="p-4 rounded-xl bg-panel border border-white/10 text-left"><div class="font-medium text-white">Email</div></button>
 <button class="p-4 rounded-xl bg-panel border border-white/10 text-left"><div class="font-medium text-white">Teléfono</div></button>
 <button class="p-4 rounded-xl bg-panel border border-white/10 text-left"><div class="font-medium text-white">vCard</div></button>
 </div>
 </section>
 <section id="s-qr" class="hidden space-y-6">
-<p class="text-sm text-steel">Genera y personaliza el código QR de tu página pública.</p>
 <div class="grid sm:grid-cols-2 gap-6">
 <div class="p-6 rounded-2xl bg-panel border border-white/5 flex flex-col items-center">
-<div class="w-52 h-52 rounded-2xl bg-white flex items-center justify-center mb-4"><div class="text-void text-center text-xs font-mono"><div class="text-lg mb-1">▣ QR</div>privtr.ee/stark</div></div>
-<p class="text-xs text-steel text-center">Vista previa</p>
+<div class="w-48 h-48 rounded-2xl bg-white flex items-center justify-center text-void text-xs font-mono text-center">QR<br>privtr.ee/stark</div>
 </div>
-<div class="space-y-5">
-<div><label class="block text-xs text-steel mb-1.5">Dominio del QR</label>
-<select class="w-full bg-void border border-white/10 rounded-xl px-4 py-3 text-sm text-white"><option>privacidad.me/stark</option><option selected>privtr.ee/stark</option><option>privtree.com/stark</option></select></div>
-<div><label class="block text-xs text-steel mb-1.5">Tamaño</label>
-<div class="flex gap-2"><button class="px-3 py-2 rounded-lg border border-white/10 text-xs">256 px</button><button class="px-3 py-2 rounded-lg border-2 border-neon text-xs">512 px</button><button class="px-3 py-2 rounded-lg border border-white/10 text-xs">1024 px</button></div></div>
-<div><label class="block text-xs text-steel mb-1.5">Color</label>
-<div class="flex gap-2"><button class="w-8 h-8 rounded-full bg-black border-2 border-white"></button><button class="w-8 h-8 rounded-full bg-[#0a84ff]"></button></div></div>
-<div class="flex flex-col gap-2 pt-2">
+<div class="space-y-4">
+<select class="w-full bg-void border border-white/10 rounded-xl px-4 py-3 text-sm text-white"><option selected>privtr.ee/stark</option><option>privacidad.me/stark</option></select>
 <button class="w-full px-4 py-2.5 rounded-xl bg-neon text-void text-sm font-semibold">Descargar PNG</button>
 <button class="w-full px-4 py-2.5 rounded-xl border border-white/10 text-sm">Descargar SVG</button>
-<button onclick="copyUrl('https://privtr.ee/stark')" class="w-full px-4 py-2.5 rounded-xl border border-white/10 text-sm">Copiar enlace</button>
-</div>
 </div>
 </div>
 </section>
-<section id="s-social" class="hidden space-y-6">
-<p class="text-sm text-steel">Iconos de redes sociales en tu página.</p>
+<section id="s-social" class="hidden space-y-4">
 <div class="grid sm:grid-cols-2 gap-3">
 <div class="flex items-center gap-3 p-3 rounded-xl bg-panel border border-white/5"><span>𝕏</span><input value="https://x.com/StarkPrivacy" class="flex-1 bg-transparent text-sm text-white"></div>
 <div class="flex items-center gap-3 p-3 rounded-xl bg-panel border border-white/5"><span>✈</span><input value="https://t.me/StarkPrivacy" class="flex-1 bg-transparent text-sm text-white"></div>
-<div class="flex items-center gap-3 p-3 rounded-xl bg-panel border border-white/5"><span>▶</span><input placeholder="YouTube" class="flex-1 bg-transparent text-sm text-white"></div>
-<div class="flex items-center gap-3 p-3 rounded-xl bg-panel border border-white/5"><span>📷</span><input placeholder="Instagram" class="flex-1 bg-transparent text-sm text-white"></div>
 </div>
 </section>
-<section id="s-dominios" class="hidden space-y-6">
-<div class="p-5 rounded-2xl bg-panel border border-white/5">
-<h3 class="text-white font-medium mb-2">Tus enlaces públicos</h3>
-<p class="text-sm text-steel mb-5">Accesible desde cualquiera de estos tres dominios.</p>
-<div class="space-y-3">
-<div class="flex items-center gap-3 p-3 rounded-xl bg-void border border-white/10"><span class="flex-1 text-sm font-mono text-mist">privacidad.me/stark</span><button onclick="copyUrl('https://privacidad.me/stark')" class="px-3 py-1.5 rounded-lg bg-neon/10 text-neon text-xs">Copiar</button></div>
-<div class="flex items-center gap-3 p-3 rounded-xl bg-void border border-white/10"><span class="flex-1 text-sm font-mono text-mist">privtr.ee/stark</span><button onclick="copyUrl('https://privtr.ee/stark')" class="px-3 py-1.5 rounded-lg bg-neon/10 text-neon text-xs">Copiar</button></div>
-<div class="flex items-center gap-3 p-3 rounded-xl bg-void border border-white/10"><span class="flex-1 text-sm font-mono text-mist">privtree.com/stark</span><button onclick="copyUrl('https://privtree.com/stark')" class="px-3 py-1.5 rounded-lg bg-neon/10 text-neon text-xs">Copiar</button></div>
-</div>
+<section id="s-dominios" class="hidden space-y-4">
+<p class="text-sm text-steel">Accesible desde cualquiera de los 3 dominios.</p>
+<div class="space-y-2">
+<div class="flex items-center gap-3 p-3 rounded-xl bg-panel border border-white/5"><span class="flex-1 font-mono text-sm text-mist">privacidad.me/stark</span><button onclick="copyUrl('https://privacidad.me/stark')" class="text-xs text-neon">Copiar</button></div>
+<div class="flex items-center gap-3 p-3 rounded-xl bg-panel border border-white/5"><span class="flex-1 font-mono text-sm text-mist">privtr.ee/stark</span><button onclick="copyUrl('https://privtr.ee/stark')" class="text-xs text-neon">Copiar</button></div>
+<div class="flex items-center gap-3 p-3 rounded-xl bg-panel border border-white/5"><span class="flex-1 font-mono text-sm text-mist">privtree.com/stark</span><button onclick="copyUrl('https://privtree.com/stark')" class="text-xs text-neon">Copiar</button></div>
 </div>
 </section>
 <section id="s-ajustes" class="hidden space-y-6">
-<div class="p-5 rounded-2xl bg-panel border border-white/5 space-y-4">
+<div class="p-5 rounded-2xl bg-panel border border-white/5 space-y-3">
 <h3 class="text-white font-medium">Cuenta</h3>
 <input type="email" value="stark@example.com" class="w-full bg-void border border-white/10 rounded-xl px-4 py-3 text-sm text-white">
 <button class="text-sm text-neon">Cambiar contraseña</button>
 </div>
-<div class="p-5 rounded-2xl bg-panel border border-red-500/25 space-y-3">
-<h3 class="text-red-400 font-medium">Zona de peligro</h3>
-<button onclick="if(confirm('¿Seguro?')) alert('Preparado.')" class="px-4 py-2 rounded-xl border border-red-500/50 text-red-400 text-sm">Eliminar mi cuenta</button>
+<div class="p-5 rounded-2xl bg-panel border border-white/5 space-y-2">
+<h3 class="text-white font-medium">Importar / Exportar</h3>
+<div class="flex gap-2"><button class="px-3 py-2 rounded-xl border border-white/10 text-sm">Exportar</button><button class="px-3 py-2 rounded-xl border border-white/10 text-sm">Importar</button></div>
+</div>
+<div class="p-5 rounded-2xl bg-panel border border-red-500/25 space-y-2">
+<button onclick="if(confirm('¿Seguro?'))alert('OK')" class="px-4 py-2 rounded-xl border border-red-500/50 text-red-400 text-sm">Eliminar mi cuenta</button>
 </div>
 </section>
 </main>
 </div>
 <script>
-let links=[{id:1,title:'Academia Boring Privacy',url:'https://boringprivacy.io'},{id:2,title:'Canal de Telegram',url:'https://t.me/StarkPrivacy'},{id:3,title:'X / Twitter',url:'https://x.com/StarkPrivacy'}];
+let links=[{id:1,title:'Academia Boring Privacy',url:'https://boringprivacy.io',pin:true},{id:2,title:'Canal de Telegram',url:'https://t.me/StarkPrivacy',pin:false},{id:3,title:'X / Twitter',url:'https://x.com/StarkPrivacy',pin:false}];
 let nid=4;
-const titles={enlaces:'Enlaces',apariencia:'Apariencia',perfil:'Perfil',visitas:'Visitas',bloques:'Bloques',qr:'QR Code',social:'Redes sociales',dominios:'Dominios',ajustes:'Ajustes'};
-function render(){document.getElementById('links').innerHTML=links.map(l=>`<div class="flex items-center gap-3 p-4 rounded-2xl bg-panel border border-white/5"><div class="flex-1 min-w-0 space-y-1.5"><input value="${l.title}" onchange="upd(${l.id},'title',this.value)" class="w-full bg-transparent text-sm font-medium text-white"><input value="${l.url}" onchange="upd(${l.id},'url',this.value)" class="w-full bg-transparent text-xs text-steel"></div><button onclick="del(${l.id})" class="text-steel hover:text-red-400 p-2">✕</button></div>`).join('')}
-function addLink(){links.push({id:nid++,title:'Nuevo enlace',url:''});render()}
+const titles={enlaces:'Enlaces',marcas:'Marcas',apariencia:'Apariencia',perfil:'Perfil',og:'Vista previa social',visitas:'Visitas',bloques:'Bloques',qr:'QR Code',social:'Redes sociales',dominios:'Dominios',ajustes:'Ajustes'};
+function render(){document.getElementById('links').innerHTML=links.map(l=>`<div class="flex items-center gap-2 p-4 rounded-2xl bg-panel border border-white/5 ${l.pin?'border-neon/30':''}"><span class="drag-handle text-steel px-1">⠿</span><button onclick="togglePin(${l.id})" class="text-sm ${l.pin?'text-neon':'text-steel'}">📌</button><div class="flex-1 min-w-0 space-y-1"><input value="${l.title}" onchange="upd(${l.id},'title',this.value)" class="w-full bg-transparent text-sm font-medium text-white"><input value="${l.url}" onchange="upd(${l.id},'url',this.value)" class="w-full bg-transparent text-xs text-steel"></div><button onclick="del(${l.id})" class="text-steel hover:text-red-400 p-2">✕</button></div>`).join('')}
+function addLink(){links.push({id:nid++,title:'Nuevo enlace',url:'',pin:false});render()}
 function upd(id,f,v){const l=links.find(x=>x.id===id);if(l)l[f]=v}
 function del(id){if(confirm('¿Eliminar?')){links=links.filter(x=>x.id!==id);render()}}
+function togglePin(id){const l=links.find(x=>x.id===id);if(l){l.pin=!l.pin;links.sort((a,b)=>(b.pin?1:0)-(a.pin?1:0));render()}}
 function show(n){document.querySelectorAll('[id^=s-]').forEach(e=>e.classList.add('hidden'));document.getElementById('s-'+n).classList.remove('hidden');document.querySelectorAll('.sidebar-link').forEach(e=>e.classList.remove('active'));document.querySelector('[data-s="'+n+'"]').classList.add('active');document.getElementById('title').textContent=titles[n];document.getElementById('sidebar').classList.add('-translate-x-full');document.getElementById('overlay').classList.add('hidden')}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('-translate-x-full');document.getElementById('overlay').classList.toggle('hidden')}
-function selTheme(btn){document.querySelectorAll('#s-apariencia button').forEach(b=>{b.classList.remove('border-2','border-neon');b.classList.add('border','border-white/10')});btn.classList.remove('border','border-white/10');btn.classList.add('border-2','border-neon')}
 function copyUrl(u){navigator.clipboard.writeText(u);alert('Copiado: '+u)}
 function save(){const b=event.target;b.textContent='Guardado ✓';setTimeout(()=>b.textContent='Guardar',1200)}
 render();
