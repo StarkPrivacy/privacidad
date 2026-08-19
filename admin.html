@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administración — Privacidad.me</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'},fontFamily:{sans:['Inter','system-ui','sans-serif']}}}}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{background:#05070a}.sidebar-link.active{background:rgba(10,132,255,.12);color:#0a84ff;border-color:rgba(10,132,255,.35)}.stat-card{background:linear-gradient(145deg,#0b0f14,#080b10)}</style>
+</head>
+<body class="font-sans text-mist antialiased min-h-screen flex">
+<aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-panel border-r border-white/5 -translate-x-full lg:translate-x-0 transition-transform flex flex-col">
+<div class="h-16 flex items-center gap-3 px-5 border-b border-white/5">
+<div class="w-8 h-8 rounded-lg bg-neon/10 border border-neon/30 flex items-center justify-center"><svg class="w-4 h-4 text-neon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+<div><div class="font-semibold text-white text-sm">Admin</div><div class="text-[10px] text-neon">privacidad.me</div></div>
+</div>
+<nav class="flex-1 p-3 space-y-0.5 overflow-y-auto text-sm">
+<button onclick="show('dashboard')" class="sidebar-link active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="dashboard">📊 Dashboard</button>
+<button onclick="show('usuarios')" class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="usuarios">👥 Usuarios</button>
+<button onclick="show('paginas')" class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="paginas">🔗 Páginas</button>
+<button onclick="show('config')" class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="config">⚙️ Configuración</button>
+<button onclick="show('temas')" class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="temas">🎨 Temas</button>
+<button onclick="show('seguridad')" class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="seguridad">🛡️ Seguridad</button>
+<button onclick="show('backup')" class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-white/5" data-s="backup">💾 Backup</button>
+</nav>
+<div class="p-4 border-t border-white/5"><a href="panel.html" class="text-xs text-steel hover:text-white">← Panel de usuario</a></div>
+</aside>
+<div id="overlay" class="fixed inset-0 bg-black/60 z-30 hidden lg:hidden" onclick="toggleSidebar()"></div>
+<div class="flex-1 lg:ml-64 min-h-screen flex flex-col">
+<header class="h-16 border-b border-white/5 bg-void/80 backdrop-blur-xl flex items-center justify-between px-4 sm:px-6 sticky top-0 z-20">
+<div class="flex items-center gap-3"><button onclick="toggleSidebar()" class="lg:hidden p-2 text-steel">☰</button><h1 id="title" class="text-lg font-semibold text-white">Dashboard</h1></div>
+<span class="text-xs text-steel px-2 py-1 rounded-full border border-white/10">Admin global</span>
+</header>
+<main class="flex-1 p-4 sm:p-6 max-w-5xl mx-auto w-full space-y-6">
+<section id="s-dashboard" class="space-y-6">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+<div class="stat-card p-4 rounded-2xl border border-white/5 text-center"><div class="text-2xl font-bold text-white">847</div><div class="text-xs text-steel mt-1">Usuarios</div></div>
+<div class="stat-card p-4 rounded-2xl border border-white/5 text-center"><div class="text-2xl font-bold text-white">1.203</div><div class="text-xs text-steel mt-1">Páginas</div></div>
+<div class="stat-card p-4 rounded-2xl border border-white/5 text-center"><div class="text-2xl font-bold text-white">28.4k</div><div class="text-xs text-steel mt-1">Visitas (mes)</div></div>
+<div class="stat-card p-4 rounded-2xl border border-white/5 text-center"><div class="text-2xl font-bold text-white">12</div><div class="text-xs text-steel mt-1">Hoy nuevos</div></div>
+</div>
+<div class="p-5 rounded-2xl bg-panel border border-white/5"><h3 class="text-white font-medium mb-3">Actividad reciente</h3>
+<div class="space-y-2 text-sm">
+<div class="flex justify-between"><span class="text-mist">Nuevo usuario: @alice</span><span class="text-steel text-xs">hace 12 min</span></div>
+<div class="flex justify-between"><span class="text-mist">Página actualizada: @stark</span><span class="text-steel text-xs">hace 1 h</span></div>
+<div class="flex justify-between"><span class="text-mist">Usuario verificado: @bob</span><span class="text-steel text-xs">hace 3 h</span></div>
+</div></div>
+</section>
+<section id="s-usuarios" class="hidden space-y-4">
+<div class="flex flex-col sm:flex-row justify-between gap-3">
+<input type="search" placeholder="Buscar usuario..." class="flex-1 bg-panel border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white">
+<button class="px-4 py-2 rounded-xl border border-neon/30 text-neon text-sm">+ Crear usuario</button>
+</div>
+<div class="overflow-x-auto rounded-2xl border border-white/10">
+<table class="w-full text-left text-sm">
+<thead><tr class="bg-panel border-b border-white/10">
+<th class="px-4 py-3 text-steel">Usuario</th><th class="px-4 py-3 text-steel">Email</th><th class="px-4 py-3 text-steel">Estado</th><th class="px-4 py-3 text-steel">Rol</th><th class="px-4 py-3 text-steel">Acciones</th>
+</tr></thead>
+<tbody class="divide-y divide-white/5">
+<tr class="bg-void/40"><td class="px-4 py-3"><div class="flex items-center gap-2"><img src="https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg" class="w-7 h-7 rounded-full"><span class="text-white">stark</span></div></td><td class="px-4 py-3 text-steel">stark@example.com</td><td class="px-4 py-3"><span class="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">Activo</span></td><td class="px-4 py-3 text-neon text-xs">Admin</td><td class="px-4 py-3"><button class="text-xs text-steel hover:text-white mr-2">Editar</button></td></tr>
+<tr><td class="px-4 py-3"><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-neon/20 flex items-center justify-center text-xs text-neon">A</div><span class="text-white">alice</span></div></td><td class="px-4 py-3 text-steel">alice@mail.com</td><td class="px-4 py-3"><span class="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">Activo</span></td><td class="px-4 py-3 text-steel text-xs">Usuario</td><td class="px-4 py-3"><button class="text-xs text-steel hover:text-white mr-2">Editar</button><button class="text-xs text-steel hover:text-red-400">Ban</button></td></tr>
+<tr class="bg-void/40"><td class="px-4 py-3"><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-neon/20 flex items-center justify-center text-xs text-neon">B</div><span class="text-white">bob</span></div></td><td class="px-4 py-3 text-steel">bob@mail.com</td><td class="px-4 py-3"><span class="text-xs px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400">Pendiente</span></td><td class="px-4 py-3 text-steel text-xs">Usuario</td><td class="px-4 py-3"><button class="text-xs text-neon">Verificar</button></td></tr>
+<tr><td class="px-4 py-3"><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-red-500/20 flex items-center justify-center text-xs text-red-400">C</div><span class="text-white">charlie</span></div></td><td class="px-4 py-3 text-steel">charlie@mail.com</td><td class="px-4 py-3"><span class="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-400">Baneado</span></td><td class="px-4 py-3 text-steel text-xs">Usuario</td><td class="px-4 py-3"><button class="text-xs text-green-400">Desban</button></td></tr>
+</tbody>
+</table>
+</div>
+<p class="text-xs text-steel/60">Datos de demostración. Se conectará al backend.</p>
+</section>
+<section id="s-paginas" class="hidden space-y-4">
+<p class="text-sm text-steel">Todas las páginas de la instancia.</p>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-4 rounded-xl bg-panel border border-white/5"><div><div class="text-white text-sm font-medium">privtr.ee/stark</div><div class="text-xs text-steel">3 enlaces · 1.284 visitas</div></div><div class="flex gap-2"><a href="#" class="text-xs text-neon">Ver</a><button class="text-xs text-steel hover:text-red-400">Eliminar</button></div></div>
+<div class="flex items-center justify-between p-4 rounded-xl bg-panel border border-white/5"><div><div class="text-white text-sm font-medium">privacidad.me/alice</div><div class="text-xs text-steel">5 enlaces · 412 visitas</div></div><div class="flex gap-2"><a href="#" class="text-xs text-neon">Ver</a><button class="text-xs text-steel hover:text-red-400">Eliminar</button></div></div>
+</div>
+</section>
+<section id="s-config" class="hidden space-y-6">
+<div class="p-5 rounded-2xl bg-panel border border-white/5 space-y-4">
+<h3 class="text-white font-medium">Registro</h3>
+<label class="flex items-center gap-3 text-sm"><input type="checkbox" checked> Permitir registro</label>
+<label class="flex items-center gap-3 text-sm"><input type="checkbox"> Verificar email obligatorio</label>
+<label class="flex items-center gap-3 text-sm"><input type="checkbox"> Verificación manual por admin</label>
+</div>
+<div class="p-5 rounded-2xl bg-panel border border-white/5 space-y-3">
+<h3 class="text-white font-medium">Dominios activos</h3>
+<div class="text-sm space-y-1"><div class="flex justify-between"><span>privacidad.me</span><span class="text-green-400 text-xs">Activo</span></div><div class="flex justify-between"><span>privtr.ee</span><span class="text-green-400 text-xs">Activo</span></div><div class="flex justify-between"><span>privtree.com</span><span class="text-green-400 text-xs">Activo</span></div></div>
+</div>
+</section>
+<section id="s-temas" class="hidden space-y-4">
+<p class="text-sm text-steel">Temas para los usuarios.</p>
+<div class="grid sm:grid-cols-3 gap-4">
+<div class="p-4 rounded-xl bg-panel border border-neon/30"><div class="h-16 rounded-lg bg-[#05070a] mb-2"></div><div class="text-sm text-white">Oscuro</div></div>
+<div class="p-4 rounded-xl bg-panel border border-white/10"><div class="h-16 rounded-lg bg-gradient-to-br from-[#0a1628] to-[#05070a] mb-2"></div><div class="text-sm text-white">Azul</div></div>
+<div class="p-4 rounded-xl bg-panel border border-white/10"><div class="h-16 rounded-lg bg-gradient-to-br from-[#1a0a28] to-[#05070a] mb-2"></div><div class="text-sm text-white">Violeta</div></div>
+</div>
+<button class="px-4 py-2 rounded-xl border border-white/10 text-sm">Subir tema (.zip)</button>
+</section>
+<section id="s-seguridad" class="hidden space-y-4">
+<div class="p-5 rounded-2xl bg-panel border border-white/5 space-y-3">
+<h3 class="text-white font-medium">Monitor de seguridad</h3>
+<div class="text-xs text-steel space-y-1"><div>192.168.1.x — 3 intentos fallidos</div><div>10.0.0.x — bloqueada temporalmente</div></div>
+</div>
+</section>
+<section id="s-backup" class="hidden space-y-4">
+<div class="p-5 rounded-2xl bg-panel border border-white/5 space-y-4">
+<h3 class="text-white font-medium">Copias de seguridad</h3>
+<div class="flex gap-3"><button class="px-4 py-2 rounded-xl bg-neon text-void text-sm font-semibold">Crear backup</button><button class="px-4 py-2 rounded-xl border border-white/10 text-sm">Restaurar</button></div>
+<div class="text-xs text-steel">Último backup: 18 ago 2026 · 2.4 MB</div>
+</div>
+</section>
+</main>
+</div>
+<script>
+const titles={dashboard:'Dashboard',usuarios:'Usuarios',paginas:'Páginas',config:'Configuración',temas:'Temas',seguridad:'Seguridad',backup:'Backup'};
+function show(n){document.querySelectorAll('[id^=s-]').forEach(e=>e.classList.add('hidden'));document.getElementById('s-'+n).classList.remove('hidden');document.querySelectorAll('.sidebar-link').forEach(e=>e.classList.remove('active'));document.querySelector('[data-s="'+n+'"]').classList.add('active');document.getElementById('title').textContent=titles[n];document.getElementById('sidebar').classList.add('-translate-x-full');document.getElementById('overlay').classList.add('hidden')}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('-translate-x-full');document.getElementById('overlay').classList.toggle('hidden')}
+</script>
+</body>
+</html>
