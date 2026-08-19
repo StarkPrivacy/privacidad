@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfil — Privacidad.me</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{background:#05070a;font-family:Inter,system-ui,sans-serif;min-height:100vh}
+.social-btn{transition:transform .15s,border-color .15s}
+.social-btn:hover{transform:scale(1.08);border-color:rgba(10,132,255,.5)}
+.link-btn{transition:border-color .15s,background .15s,transform .15s}
+.link-btn:hover{border-color:rgba(10,132,255,.45);background:rgba(10,132,255,.06);transform:scale(1.01)}
+</style>
+</head>
+<body class="text-mist antialiased">
+<div class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+  <div id="page" class="w-full max-w-md text-center"><p class="text-steel text-sm">Cargando…</p></div>
+  <p class="mt-10 text-[10px] text-steel/40"><a href="index.html" class="hover:text-steel">privacidad.me</a></p>
+</div>
+<script>
+const SOCIALS=[{id:'x',icon:'𝕏'},{id:'telegram',icon:'✈'},{id:'github',icon:'⌥'},{id:'youtube',icon:'▶'},{id:'instagram',icon:'◎'},{id:'linkedin',icon:'in'},{id:'matrix',icon:'⬡'},{id:'email',icon:'✉'}];
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function shapeClass(s){if(s==='pill')return 'rounded-full';if(s==='square')return 'rounded-md';return 'rounded-xl'}
+function load(){
+  const u=new URLSearchParams(location.search).get('u')||'stark';
+  let data=null;
+  try{data=JSON.parse(localStorage.getItem('priv_page_'+u))}catch(e){}
+  if(!data){try{const d=JSON.parse(localStorage.getItem('priv_page'));if(d&&d.username===u)data=d}catch(e){}}
+  if(!data){data={name:'Stark',username:u,bio:'Sin privacidad tu libertad es solo una ilusión',avatar:'https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg',shape:'rounded',social:{x:'https://x.com/StarkPrivacy',telegram:'https://t.me/StarkPrivacy'},links:[{title:'Academia Boring Privacy',url:'https://boringprivacy.io'},{title:'Canal de Telegram',url:'https://t.me/StarkPrivacy'},{title:'X / Twitter',url:'https://x.com/StarkPrivacy'}]}}
+  document.title=data.name+' — privtr.ee';
+  const sc=shapeClass(data.shape);
+  const active=SOCIALS.filter(s=>data.social&&data.social[s.id]&&String(data.social[s.id]).trim());
+  const socialHtml=active.length?`<div class="flex flex-wrap justify-center gap-2.5 mb-6">${active.map(s=>`<a href="${esc(data.social[s.id])}" target="_blank" rel="noopener" class="social-btn w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-sm text-mist">${s.icon}</a>`).join('')}</div>`:'';
+  const linksHtml=(data.links||[]).filter(l=>l.title||l.url).map(l=>`<a href="${esc(l.url||'#')}" target="_blank" rel="noopener" class="link-btn block w-full py-3.5 px-4 ${sc} bg-panel border border-white/10 text-sm text-mist font-medium mb-3">${esc(l.title)||'Enlace'}</a>`).join('');
+  document.getElementById('page').innerHTML=`<img src="${esc(data.avatar)}" alt="" class="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-2 border-neon/40 shadow-[0_0_24px_rgba(10,132,255,0.2)]" onerror="this.style.display='none'"><h1 class="text-xl font-semibold text-white mb-2">${esc(data.name)}</h1><p class="text-sm text-steel mb-6 leading-relaxed max-w-sm mx-auto">${esc(data.bio)}</p>${socialHtml}<div>${linksHtml||'<p class="text-xs text-steel">Sin enlaces</p>'}</div><p class="mt-8 text-[11px] text-steel/40">privtr.ee/${esc(data.username)}</p>`;
+}
+load();
+</script>
+</body>
+</html>
