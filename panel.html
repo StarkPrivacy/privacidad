@@ -12,8 +12,8 @@
 body{background:#05070a;font-family:Inter,system-ui,sans-serif}
 .tab.active{color:#0a84ff;border-bottom:2px solid #0a84ff}
 .phone{background:linear-gradient(160deg,#1c2333,#080b10);box-shadow:0 0 0 1.5px #3a4558,0 20px 40px -10px rgba(0,0,0,.7)}
-.social-btn{transition:transform .15s,border-color .15s}
-.social-btn:hover{transform:scale(1.08);border-color:rgba(10,132,255,.5)}
+.social-btn{transition:transform .15s}
+.social-btn:hover{transform:scale(1.08)}
 .link-btn{transition:transform .15s,opacity .15s}
 .link-btn:hover{transform:scale(1.02);opacity:.95}
 .drag-over{border-color:rgba(10,132,255,.5)!important;background:rgba(10,132,255,.08)}
@@ -40,12 +40,19 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
       <button class="tab px-3 py-2.5 whitespace-nowrap text-steel" data-tab="estilo" onclick="tab(this)">Estilo</button>
       <button class="tab px-3 py-2.5 whitespace-nowrap text-steel" data-tab="mas" onclick="tab(this)">Más</button>
     </div>
+
     <div id="t-perfil" class="space-y-4">
       <div class="flex items-center gap-4">
         <div id="av-wrap" class="w-16 h-16 rounded-full bg-panel border-2 border-neon/40 overflow-hidden flex items-center justify-center text-steel shrink-0"></div>
-        <div class="flex-1 min-w-0">
-          <label class="text-xs text-steel">URL del avatar</label>
-          <input id="avatar" class="mt-1 w-full bg-panel border border-white/10 rounded-lg px-3 py-2 text-white text-xs" placeholder="https://..." oninput="onField()">
+        <div class="flex-1 min-w-0 space-y-1">
+          <label class="text-xs text-steel">Avatar</label>
+          <div class="flex gap-2 flex-wrap">
+            <label class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon cursor-pointer">Subir imagen
+              <input type="file" accept="image/*" class="hidden" onchange="onAvatarFile(event)">
+            </label>
+            <button type="button" onclick="clearAvatar()" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-steel">Quitar</button>
+          </div>
+          <p class="text-[10px] text-steel/60">Estado: <span id="avatar-hint">Ninguna</span> · se comprime al guardar</p>
         </div>
       </div>
       <div><label class="text-xs text-steel">Nombre visible</label>
@@ -62,13 +69,15 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
         <span class="text-steel">Badge verificado ✓</span>
       </label>
     </div>
+
     <div id="t-redes" class="hidden space-y-3">
       <p class="text-xs text-steel">Debajo del perfil y <strong class="text-mist">encima de los enlaces</strong>.</p>
       <div id="social-list" class="space-y-2 max-h-[60vh] overflow-y-auto pr-1"></div>
     </div>
+
     <div id="t-enlaces" class="hidden space-y-3">
       <div class="flex justify-between items-center flex-wrap gap-2">
-        <p class="text-xs text-steel">Color e icono por botón · arrastra ⠿</p>
+        <p class="text-xs text-steel">Marca · color · arrastra ⠿</p>
         <div class="flex gap-1.5 flex-wrap">
           <button onclick="addLink('link')" class="text-xs text-neon border border-neon/30 px-2.5 py-1.5 rounded-lg">+ Enlace</button>
           <button onclick="addLink('heading')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg">Título</button>
@@ -76,11 +85,24 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
           <button onclick="addLink('spacer')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg">Espacio</button>
           <button onclick="addLink('email')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg">Email</button>
           <button onclick="addLink('phone')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg">Tel.</button>
+          <button onclick="addLink('vcard')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg">vCard</button>
         </div>
       </div>
       <div id="link-list" class="space-y-2"></div>
     </div>
+
     <div id="t-estilo" class="hidden space-y-5">
+      <div>
+        <label class="text-xs text-steel mb-2 block">Imagen de fondo</label>
+        <div class="flex gap-2 flex-wrap items-center">
+          <label class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon cursor-pointer">Subir imagen
+            <input type="file" accept="image/*" class="hidden" onchange="onBgFile(event)">
+          </label>
+          <button type="button" onclick="clearBg()" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-steel">Quitar</button>
+          <span class="text-[10px] text-steel/60" id="bg-hint">Ninguna</span>
+        </div>
+        <p class="text-[10px] text-steel/50 mt-1">Se redimensiona y comprime en el navegador (demo localStorage).</p>
+      </div>
       <p class="text-xs text-steel">Estilo global para botones sin color propio.</p>
       <div><label class="text-xs text-steel mb-2 block">Forma</label>
         <div class="flex gap-2 text-xs flex-wrap">
@@ -102,18 +124,17 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
           <button type="button" onclick="setOpt('btnSize','lg')" class="chip size-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="lg">L</button>
         </div></div>
       <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" id="btnGlow" onchange="state.btnGlow=this.checked;refresh();scheduleSave()"><span class="text-steel">Glow</span></label>
-      <div><label class="text-xs text-steel">Imagen de fondo (URL)</label>
-        <input id="bgImage" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="https://..." oninput="state.bgImage=this.value.trim();refresh();scheduleSave()"></div>
       <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" id="sameTab" onchange="state.sameTab=this.checked;refresh();scheduleSave()"><span class="text-steel">Misma pestaña</span></label>
       <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" id="autosave" checked><span class="text-steel">Auto-guardar</span></label>
     </div>
+
     <div id="t-mas" class="hidden space-y-4">
       <div class="p-3 rounded-xl border border-neon/25 bg-neon/5 text-xs text-mist leading-relaxed">
-        <strong class="text-neon">Recomendación:</strong> exporta tu perfil en JSON de vez en cuando.
+        <strong class="text-neon">Recomendación:</strong> exporta tu perfil en JSON de vez en cuando. Las imágenes subidas también van en ese archivo.
       </div>
       <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
         <h3 class="text-sm text-white font-medium">Demo perfil real</h3>
-        <p class="text-[11px] text-steel">Recrea <span class="text-mist">privtr.ee/@stark</span> (colores, redes, headings, email, afiliados) editable desde el panel.</p>
+        <p class="text-[11px] text-steel">Recrea privtr.ee/@stark editable desde el panel (incluye bloque vCard de ejemplo).</p>
         <button type="button" onclick="loadStarkDemo()" class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon">Cargar demo @stark</button>
       </div>
       <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-3">
