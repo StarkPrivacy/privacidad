@@ -1,3 +1,6 @@
+/**
+ * Privacidad.me — identity + links (localStorage demo)
+ */
 const PrivStore = (() => {
   const SOCIAL_DEFS = [
     { id: 'youtube', label: 'YouTube', icon: 'fa-brands fa-youtube', placeholder: 'https://youtube.com/...' },
@@ -7,6 +10,7 @@ const PrivStore = (() => {
     { id: 'discord', label: 'Discord', icon: 'fa-brands fa-discord', placeholder: 'https://discord.gg/...' },
     { id: 'github', label: 'GitHub', icon: 'fa-brands fa-github', placeholder: 'https://github.com/...' },
     { id: 'linkedin', label: 'LinkedIn', icon: 'fa-brands fa-linkedin', placeholder: 'https://linkedin.com/in/...' },
+    { id: 'mastodon', label: 'Mastodon', icon: 'fa-brands fa-mastodon', placeholder: 'https://mastodon.social/...' },
     { id: 'email', label: 'Email', icon: 'fa-solid fa-envelope', placeholder: 'mailto:...' },
   ];
   const DOMAINS = ['privacidad.me', 'privtr.ee', 'privtree.com'];
@@ -27,10 +31,24 @@ const PrivStore = (() => {
     { id: 'podcast', label: 'Podcast', icon: 'fa-solid fa-podcast', color: 'black' },
     { id: 'youtube', label: 'YouTube', icon: 'fa-brands fa-youtube', color: 'red' },
     { id: 'telegram', label: 'Telegram', icon: 'fa-brands fa-telegram', color: 'sky' },
+    { id: 'shop', label: 'Tienda', icon: 'fa-solid fa-cart-shopping', color: 'green' },
+    { id: 'pgp', label: 'PGP', icon: 'fa-solid fa-key', color: 'outline' },
   ];
-  function emptySocial() { const o = {}; SOCIAL_DEFS.forEach(s => { o[s.id] = ''; }); return o; }
+
+  function emptySocial() {
+    const o = {}; SOCIAL_DEFS.forEach(s => { o[s.id] = ''; }); return o;
+  }
   function emptyContact() {
-    return { enabled: false, title: '', note: '', email: '', phone: '', web: '', org: '', showQr: true };
+    return {
+      enabled: false,
+      title: '',
+      note: '',
+      email: '',
+      phone: '',
+      web: '',
+      org: '',
+      showQr: true,
+    };
   }
   function defaultPage(username) {
     return {
@@ -54,10 +72,14 @@ const PrivStore = (() => {
     p.social.x = 'https://x.com/StarkPrivacy';
     p.social.instagram = 'https://instagram.com/StarkPrivacy';
     p.contact = {
-      enabled: true, title: 'Fundador · Boring Privacy',
+      enabled: true,
+      title: 'Fundador · Boring Privacy',
       note: 'Privacidad, seguridad y soberanía digital',
-      email: 'stark@boringprivacy.io', phone: '', web: 'https://boringprivacy.io',
-      org: 'Boring Privacy', showQr: true,
+      email: 'stark@boringprivacy.io',
+      phone: '',
+      web: 'https://boringprivacy.io',
+      org: 'Boring Privacy',
+      showQr: true,
     };
     p.links = [
       { id: 1, type: 'link', title: 'Academia Boring Privacy', url: 'https://boringprivacy.io', color: 'blue', icon: 'fa-solid fa-globe', brand: 'website' },
@@ -73,8 +95,13 @@ const PrivStore = (() => {
   }
   function load(username) {
     const u = sanitizeUsername(username);
-    if (u) { try { const raw = localStorage.getItem('priv_page_' + u); if (raw) return normalize(JSON.parse(raw)); } catch (e) {} }
-    try { const raw = localStorage.getItem('priv_page'); if (raw) { const d = normalize(JSON.parse(raw)); if (!u || d.username === u) return d; } } catch (e) {}
+    if (u) {
+      try { const raw = localStorage.getItem('priv_page_' + u); if (raw) return normalize(JSON.parse(raw)); } catch (e) {}
+    }
+    try {
+      const raw = localStorage.getItem('priv_page');
+      if (raw) { const d = normalize(JSON.parse(raw)); if (!u || d.username === u) return d; }
+    } catch (e) {}
     return null;
   }
   function normalize(d) {
@@ -85,30 +112,45 @@ const PrivStore = (() => {
       social: { ...emptySocial(), ...(d.social || {}) },
       contact: { ...emptyContact(), ...(d.contact || {}) },
       links: Array.isArray(d.links) ? d.links.map((l, i) => ({
-        id: l.id != null ? l.id : i + 1, title: l.title || '', url: l.url || '', type: l.type || 'link',
+        id: l.id != null ? l.id : i + 1,
+        title: l.title || '', url: l.url || '', type: l.type || 'link',
         color: l.color || '', icon: l.icon || '', brand: l.brand || '',
       })) : [],
       btnStyle: d.btnStyle || 'outline', btnSize: d.btnSize || 'md',
-      btnGlow: !!d.btnGlow, verified: !!d.verified, sameTab: !!d.sameTab, bgImage: d.bgImage || '',
+      btnGlow: !!d.btnGlow, verified: !!d.verified, sameTab: !!d.sameTab,
+      bgImage: d.bgImage || '',
     };
   }
   function save(page) {
     const d = normalize({ ...page, updatedAt: Date.now() });
     d.username = sanitizeUsername(d.username);
-    try { localStorage.setItem('priv_page', JSON.stringify(d)); localStorage.setItem('priv_page_' + d.username, JSON.stringify(d)); }
-    catch (e) { throw e; }
+    try {
+      localStorage.setItem('priv_page', JSON.stringify(d));
+      localStorage.setItem('priv_page_' + d.username, JSON.stringify(d));
+    } catch (e) { throw e; }
     return d;
   }
-  function shapeClass(shape) { if (shape === 'pill') return 'rounded-full'; if (shape === 'square') return 'rounded-md'; return 'rounded-xl'; }
-  function sizeClass(size) { if (size === 'sm') return 'py-2 px-3 text-xs'; if (size === 'lg') return 'py-4 px-5 text-base'; return 'py-3.5 px-4 text-sm'; }
+  function shapeClass(shape) {
+    if (shape === 'pill') return 'rounded-full';
+    if (shape === 'square') return 'rounded-md';
+    return 'rounded-xl';
+  }
+  function sizeClass(size) {
+    if (size === 'sm') return 'py-2 px-3 text-xs';
+    if (size === 'lg') return 'py-4 px-5 text-base';
+    return 'py-3.5 px-4 text-sm';
+  }
   function colorStyle(colorId, d, compact) {
     const preset = PRESET_COLORS.find(c => c.id === colorId);
-    const sc = shapeClass(d.shape); const sz = compact ? 'py-2.5 px-3 text-xs' : sizeClass(d.btnSize);
+    const sc = shapeClass(d.shape);
+    const sz = compact ? 'py-2.5 px-3 text-xs' : sizeClass(d.btnSize);
     const glow = d.btnGlow ? 'box-shadow:0 0 16px rgba(10,132,255,0.25);' : '';
     if (preset) {
       const border = preset.border ? 'border:1px solid ' + preset.border + ';' : 'border:none;';
-      return { className: 'link-btn flex items-center justify-center gap-2 w-full ' + sz + ' ' + sc + ' font-medium mb-2.5',
-        style: 'background:' + preset.bg + ';color:' + preset.fg + ';' + border + glow };
+      return {
+        className: 'link-btn flex items-center justify-center gap-2 w-full ' + sz + ' ' + sc + ' font-medium mb-2.5',
+        style: 'background:' + preset.bg + ';color:' + preset.fg + ';' + border + glow,
+      };
     }
     let fill = 'background:#0b0f14;color:#c5d0e0;border:1px solid rgba(255,255,255,0.1);';
     if (d.btnStyle === 'solid') fill = 'background:#0a84ff;color:#05070a;border:none;';
@@ -116,20 +158,27 @@ const PrivStore = (() => {
     if (d.btnStyle === 'ghost') fill = 'background:transparent;color:#c5d0e0;border:1px solid rgba(255,255,255,0.2);';
     return { className: 'link-btn flex items-center justify-center gap-2 w-full ' + sz + ' ' + sc + ' font-medium mb-2.5', style: fill + glow };
   }
-  function esc(s) { return String(s || '').replace(/&/g, '&').replace(/</g, '<').replace(/"/g, '"'); }
+  function esc(s) {
+    return String(s || '').replace(/&/g, '&').replace(/</g, '<').replace(/"/g, '"');
+  }
   function contactToVcard(page) {
     const c = page.contact || emptyContact();
-    const lines = ['BEGIN:VCARD', 'VERSION:3.0', 'FN:' + (page.name || ''), 'N:;' + (page.name || '') + ';;;'];
+    const lines = ['BEGIN:VCARD', 'VERSION:3.0',
+      'FN:' + (page.name || ''),
+      'N:;' + (page.name || '') + ';;;'];
     if (c.org) lines.push('ORG:' + c.org);
     if (c.title) lines.push('TITLE:' + c.title);
     if (c.email) lines.push('EMAIL;TYPE=INTERNET:' + c.email);
     if (c.phone) lines.push('TEL;TYPE=CELL:' + c.phone);
     if (c.web) lines.push('URL:' + c.web);
     if (c.note) lines.push('NOTE:' + c.note);
+    if (page.username) lines.push('UID:privacidad.me:' + page.username);
     lines.push('END:VCARD');
     return lines.join('\r\n');
   }
-  function vcardHref(page) { return 'data:text/vcard;charset=utf-8,' + encodeURIComponent(contactToVcard(page)); }
+  function vcardHref(page) {
+    return 'data:text/vcard;charset=utf-8,' + encodeURIComponent(contactToVcard(page));
+  }
   function readImageFile(file, maxSide, maxBytes) {
     maxSide = maxSide || 1600; maxBytes = maxBytes || 450000;
     return new Promise(function (resolve, reject) {
@@ -158,21 +207,32 @@ const PrivStore = (() => {
       reader.readAsDataURL(file);
     });
   }
+
   function renderContactCard(d, compact) {
     const c = d.contact || emptyContact();
     if (!c.enabled) return '';
     const rows = [];
-    if (c.email) rows.push('<a href="mailto:' + esc(c.email) + '" class="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-white/5 border border-white/10 text-left hover:border-neon/40"><i class="fa-solid fa-envelope text-neon w-5 text-center"></i><span class="text-sm text-mist truncate">' + esc(c.email) + '</span></a>');
-    if (c.phone) rows.push('<a href="tel:' + esc(c.phone) + '" class="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-white/5 border border-white/10 text-left hover:border-neon/40"><i class="fa-solid fa-phone text-neon w-5 text-center"></i><span class="text-sm text-mist">' + esc(c.phone) + '</span></a>');
-    if (c.web) rows.push('<a href="' + esc(c.web) + '" target="_blank" rel="noopener" class="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-white/5 border border-white/10 text-left hover:border-neon/40"><i class="fa-solid fa-link text-neon w-5 text-center"></i><span class="text-sm text-mist truncate">' + esc(String(c.web).replace(/^https?:\/\//, '')) + '</span></a>');
-    const saveBtn = '<a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="mt-3 flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-neon text-void font-semibold text-sm"><i class="fa-solid fa-address-card"></i> Guardar contacto</a>';
-    return '<div class="mt-5 mb-2 rounded-2xl border border-white/10 bg-panel/80 p-4 text-left">' +
-      '<div class="text-[10px] uppercase tracking-wider text-neon/80 mb-2">Identidad</div>' +
-      (c.title ? '<p class="text-sm text-white font-medium mb-1">' + esc(c.title) + '</p>' : '') +
-      (c.org ? '<p class="text-xs text-steel mb-2">' + esc(c.org) + '</p>' : '') +
-      (c.note ? '<p class="text-xs text-steel/80 mb-3">' + esc(c.note) + '</p>' : '') +
-      '<div class="space-y-2">' + rows.join('') + '</div>' + (compact ? '' : saveBtn) + '</div>';
+    if (c.email) rows.push('<a href="mailto:' + esc(c.email) + '" class="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 hover:bg-neon/5 transition group"><i class="fa-solid fa-envelope text-neon/80 w-5 text-center group-hover:text-neon"></i><span class="text-sm text-mist truncate">' + esc(c.email) + '</span></a>');
+    if (c.phone) rows.push('<a href="tel:' + esc(c.phone) + '" class="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 hover:bg-neon/5 transition group"><i class="fa-solid fa-phone text-neon/80 w-5 text-center group-hover:text-neon"></i><span class="text-sm text-mist">' + esc(c.phone) + '</span></a>');
+    if (c.web) rows.push('<a href="' + esc(c.web) + '" target="_blank" rel="noopener" class="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 hover:bg-neon/5 transition group"><i class="fa-solid fa-globe text-neon/80 w-5 text-center group-hover:text-neon"></i><span class="text-sm text-mist truncate">' + esc(c.web.replace(/^https?:\/\//, '')) + '</span></a>');
+    const hasMeta = c.title || c.org || c.note;
+    const saveBtn = '<a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="mt-3.5 flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-neon text-void font-semibold text-sm hover:opacity-95 transition" style="box-shadow:0 0 18px rgba(10,132,255,0.22)"><i class="fa-solid fa-download"></i> Guardar en agenda</a>';
+    return '<div class="mt-5 mb-1 rounded-2xl border border-neon/20 bg-gradient-to-b from-[#0d1219] to-[#0a0e14] p-4 text-left relative overflow-hidden ' + (compact ? 'text-xs' : '') + '">' +
+      '<div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neon/40 to-transparent"></div>' +
+      '<div class="flex items-center justify-between mb-2.5">' +
+        '<div class="text-[10px] uppercase tracking-[0.14em] text-neon/70 font-medium">Identidad</div>' +
+        '<i class="fa-solid fa-fingerprint text-neon/25 text-xs"></i>' +
+      '</div>' +
+      (hasMeta ? '<div class="mb-3">' +
+        (c.title ? '<p class="text-sm text-white font-semibold leading-snug">' + esc(c.title) + '</p>' : '') +
+        (c.org ? '<p class="text-xs text-steel mt-0.5">' + esc(c.org) + '</p>' : '') +
+        (c.note ? '<p class="text-xs text-steel/70 mt-2 leading-relaxed italic border-l-2 border-neon/30 pl-2.5">' + esc(c.note) + '</p>' : '') +
+      '</div>' : '') +
+      (rows.length ? '<div class="space-y-1.5">' + rows.join('') + '</div>' : '') +
+      (compact ? '' : saveBtn) +
+      '</div>';
   }
+
   function renderProfile(page, container, opts) {
     opts = opts || {};
     const d = normalize(page);
@@ -182,42 +242,54 @@ const PrivStore = (() => {
     const socialSize = compact ? 'w-9 h-9 text-sm' : 'w-10 h-10 text-base';
     const target = d.sameTab ? '_self' : '_blank';
     const active = SOCIAL_DEFS.filter(s => d.social[s.id] && String(d.social[s.id]).trim());
+    const order = ['youtube', 'telegram', 'x', 'instagram', 'discord'];
+    active.sort(function (a, b) {
+      const ia = order.indexOf(a.id), ib = order.indexOf(b.id);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    });
     const socialHtml = active.length
-      ? '<div class="flex flex-wrap justify-center gap-2.5 mb-4">' +
+      ? '<div class="flex flex-wrap justify-center gap-2.5 ' + (compact ? 'mb-4' : 'mb-5') + '">' +
         active.map(function (s) {
-          return '<a href="' + esc(d.social[s.id]) + '" target="' + target + '" rel="noopener" class="social-btn ' + socialSize + ' rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white"><i class="' + s.icon + '"></i></a>';
+          return '<a href="' + esc(d.social[s.id]) + '" target="' + target + '" rel="noopener" title="' + esc(s.label) +
+            '" class="social-btn ' + socialSize + ' rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white"><i class="' + s.icon + '"></i></a>';
         }).join('') + '</div>' : '';
-    const linksHtml = (d.links || []).filter(function (l) { return l.title || l.url || l.type === 'spacer'; }).map(function (l) {
+    const linksHtml = (d.links || []).filter(function (l) {
+      return l.title || l.url || l.type === 'spacer';
+    }).map(function (l) {
       if (l.type === 'heading') return '<h2 class="text-center text-sm font-medium text-steel/80 mt-5 mb-3">' + esc(l.title) + '</h2>';
       if (l.type === 'spacer') return '<div class="h-3"></div>';
       if (l.type === 'text') {
-        const inner = l.url ? '<a href="' + esc(l.url) + '" target="' + target + '" class="text-neon">' + esc(l.title) + '</a>' : esc(l.title);
+        const inner = l.url ? '<a href="' + esc(l.url) + '" target="' + target + '" class="text-neon hover:underline">' + esc(l.title) + '</a>' : esc(l.title);
         return '<p class="text-center text-xs text-steel mb-3">' + inner + '</p>';
       }
-      var href = l.url || '#';
+      var href = l.type === 'email' ? (String(l.url).indexOf('mailto:') === 0 ? l.url : 'mailto:' + l.url)
+        : l.type === 'phone' ? (String(l.url).indexOf('tel:') === 0 ? l.url : 'tel:' + l.url) : (l.url || '#');
       var cs = colorStyle(l.color, d, compact);
       var iconHtml = l.icon ? '<i class="' + esc(l.icon) + '"></i>' : '';
       return '<a href="' + esc(href) + '" target="' + target + '" rel="noopener" class="' + cs.className + '" style="' + cs.style + '">' + iconHtml + '<span>' + (esc(l.title) || 'Enlace') + '</span></a>';
     }).join('');
-    const badge = d.verified ? '<span class="inline-flex w-5 h-5 rounded-full bg-[#0a84ff] text-white text-[10px] ml-1.5 align-middle items-center justify-center"><i class="fa-solid fa-check"></i></span>' : '';
+    const badge = d.verified
+      ? '<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#0a84ff] text-white text-[10px] ml-1.5 align-middle"><i class="fa-solid fa-check"></i></span>' : '';
     const avatar = d.avatar
-      ? '<img src="' + esc(d.avatar) + '" alt="" class="' + avSize + ' rounded-full mx-auto mb-4 object-cover border-2 border-white/20">'
+      ? '<img src="' + esc(d.avatar) + '" alt="" class="' + avSize + ' rounded-full mx-auto mb-4 object-cover border-2 border-white/20 shadow-lg" onerror="this.style.opacity=\'0.3\'">' 
       : '<div class="' + avSize + ' rounded-full mx-auto mb-4 bg-panel border-2 border-white/10 flex items-center justify-center text-steel text-lg">' + esc((d.name || '?')[0].toUpperCase()) + '</div>';
-    const bgStyle = d.bgImage ? "background-image:linear-gradient(rgba(5,7,10,0.72),rgba(5,7,10,0.88)),url('" + esc(d.bgImage) + "');background-size:cover;background-position:center;" : '';
+    const bgStyle = d.bgImage
+      ? "background-image:linear-gradient(rgba(5,7,10,0.72),rgba(5,7,10,0.88)),url('" + esc(d.bgImage) + "');background-size:cover;background-position:center;" : '';
     container.innerHTML =
-      '<div style="' + bgStyle + '">' + avatar +
+      '<div class="' + (d.bgImage && !compact ? 'rounded-2xl p-4 -mx-2' : '') + '" style="' + bgStyle + '">' +
+      avatar +
       '<h1 class="' + nameClass + ' font-semibold text-white mb-2">' + (esc(d.name) || 'Nombre') + badge + '</h1>' +
-      '<p class="text-sm text-white/70 mb-4">' + esc(d.bio) + '</p>' +
-      socialHtml + renderContactCard(d, compact) +
+      '<p class="text-' + (compact ? '[11px]' : 'sm') + ' text-white/70 mb-4 leading-relaxed ' + (compact ? '' : 'max-w-sm mx-auto') + '">' + esc(d.bio) + '</p>' +
+      socialHtml +
+      renderContactCard(d, compact) +
       '<div class="space-y-0 max-w-sm mx-auto mt-2">' + (linksHtml || '<p class="text-[10px] text-steel/50">Sin enlaces</p>') + '</div>' +
       '<p class="mt-6 text-[10px] text-white/30">privtr.ee/@' + esc(d.username) + '</p></div>';
   }
+
   return {
-    SOCIAL_DEFS: SOCIAL_DEFS, DOMAINS: DOMAINS, PRESET_COLORS: PRESET_COLORS, BRANDS: BRANDS,
-    defaultPage: defaultPage, starkDemo: starkDemo, sanitizeUsername: sanitizeUsername,
-    load: load, save: save, normalize: normalize,
-    shapeClass: shapeClass, sizeClass: sizeClass, colorStyle: colorStyle,
-    esc: esc, renderProfile: renderProfile,
-    emptyContact: emptyContact, contactToVcard: contactToVcard, vcardHref: vcardHref, readImageFile: readImageFile,
+    SOCIAL_DEFS, DOMAINS, PRESET_COLORS, BRANDS,
+    defaultPage, starkDemo, sanitizeUsername, load, save, normalize,
+    shapeClass, sizeClass, colorStyle, esc, renderProfile,
+    emptyContact, contactToVcard, vcardHref, readImageFile,
   };
 })();
