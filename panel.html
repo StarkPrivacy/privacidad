@@ -12,6 +12,8 @@
 body{background:#05070a;font-family:Inter,system-ui,sans-serif}
 .tab.active{color:#0a84ff;border-bottom:2px solid #0a84ff}
 .phone{background:linear-gradient(160deg,#1c2333,#080b10);box-shadow:0 0 0 1.5px #3a4558,0 20px 40px -10px rgba(0,0,0,.7)}
+.social-btn:hover{transform:scale(1.08)}
+.link-btn{transition:transform .15s,opacity .15s}
 .link-btn:hover{transform:scale(1.02);opacity:.95}
 .drag-over{border-color:rgba(10,132,255,.5)!important;background:rgba(10,132,255,.08)}
 #toast{transition:opacity .3s}
@@ -28,7 +30,7 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
   </div>
 </header>
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl bg-panel border border-neon/30 text-sm text-white opacity-0 pointer-events-none z-50">Guardado</div>
-<div class="max-w-6xl mx-auto p-4 lg:p-6 grid lg:grid-cols-2 gap-6">
+<div class="max-w-6xl mx-auto p-4 lg:p-6 grid lg:grid-cols-2 gap-6 lg:gap-8">
   <div class="space-y-5 order-2 lg:order-1">
     <div class="flex gap-1 border-b border-white/5 overflow-x-auto text-sm">
       <button class="tab active px-3 py-2.5 whitespace-nowrap" data-tab="perfil" onclick="tab(this)">Perfil</button>
@@ -38,96 +40,153 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
       <button class="tab px-3 py-2.5 whitespace-nowrap text-steel" data-tab="estilo" onclick="tab(this)">Estilo</button>
       <button class="tab px-3 py-2.5 whitespace-nowrap text-steel" data-tab="mas" onclick="tab(this)">Más</button>
     </div>
+
     <div id="t-perfil" class="space-y-4">
-      <div class="p-4 rounded-xl bg-panel border border-white/10 space-y-3">
-        <h3 class="text-sm text-white font-medium"><i class="fa-solid fa-image text-neon"></i> Apariencia</h3>
+      <div class="p-4 rounded-xl bg-panel border border-white/10 space-y-4">
+        <h3 class="text-sm text-white font-medium flex items-center gap-2"><i class="fa-solid fa-image text-neon"></i> Apariencia</h3>
         <div class="flex items-center gap-4">
           <div id="av-wrap" class="w-16 h-16 rounded-full bg-void border-2 border-neon/40 overflow-hidden flex items-center justify-center text-steel shrink-0"></div>
-          <div class="flex-1 space-y-2">
-            <div><span class="text-[11px] text-steel">Avatar</span>
-              <div class="flex gap-2 mt-1 flex-wrap">
-                <label class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon cursor-pointer">Subir<input type="file" accept="image/*" class="hidden" onchange="onAvatarFile(event)"></label>
-                <button type="button" onclick="clearAvatar()" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-steel">Quitar</button>
-                <span class="text-[10px] text-steel/50 self-center" id="avatar-hint">Ninguna</span>
-              </div></div>
-            <div><span class="text-[11px] text-steel">Imagen de fondo</span>
-              <div class="flex gap-2 mt-1 flex-wrap">
-                <label class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon cursor-pointer">Subir fondo<input type="file" accept="image/*" class="hidden" onchange="onBgFile(event)"></label>
-                <button type="button" onclick="clearBg()" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-steel">Quitar</button>
-                <span class="text-[10px] text-steel/50 self-center" id="bg-hint">Ninguna</span>
-              </div></div>
+          <div class="flex-1">
+            <span class="text-[11px] text-steel">Avatar</span>
+            <div class="flex gap-2 mt-1 flex-wrap">
+              <label class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon cursor-pointer hover:bg-neon/10">Subir imagen<input type="file" accept="image/*" class="hidden" onchange="onAvatarFile(event)"></label>
+              <button type="button" onclick="clearAvatar()" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-steel">Quitar</button>
+              <span class="text-[10px] text-steel/50 self-center" id="avatar-hint">Ninguna</span>
+            </div>
           </div>
         </div>
+        <div class="pt-2 border-t border-white/5">
+          <span class="text-[11px] text-steel flex items-center gap-1.5"><i class="fa-solid fa-panorama text-neon/70"></i> Imagen de fondo del perfil</span>
+          <div class="flex gap-2 mt-2 flex-wrap">
+            <label class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon cursor-pointer hover:bg-neon/10">Subir fondo<input type="file" accept="image/*" class="hidden" onchange="onBgFile(event)"></label>
+            <button type="button" onclick="clearBg()" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-steel">Quitar</button>
+            <span class="text-[10px] text-steel/50 self-center" id="bg-hint">Ninguna</span>
+          </div>
+          <p class="text-[10px] text-steel/50 mt-1.5">Se comprime en el navegador. Aparece detrás del perfil (con overlay oscuro).</p>
+        </div>
       </div>
-      <div><label class="text-xs text-steel">Nombre</label>
+      <div><label class="text-xs text-steel">Nombre visible</label>
         <input id="name" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" oninput="onField()"></div>
       <div><label class="text-xs text-steel">Biografía</label>
         <textarea id="bio" rows="2" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white resize-none" oninput="onField()"></textarea></div>
-      <div><label class="text-xs text-steel">Usuario · @</label>
-        <input id="username" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" oninput="onField()"></div>
-      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" id="verified" onchange="state.verified=this.checked;refresh();scheduleSave()"><span class="text-steel">Badge verificado</span></label>
+      <div><label class="text-xs text-steel">Usuario · privtr.ee/@…</label>
+        <div class="mt-1 flex items-center gap-1 text-sm">
+          <span class="text-steel shrink-0">@</span>
+          <input id="username" class="flex-1 bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-white" oninput="onField()">
+        </div></div>
+      <label class="flex items-center gap-2 text-sm cursor-pointer">
+        <input type="checkbox" id="verified" onchange="state.verified=this.checked;refresh();scheduleSave()">
+        <span class="text-steel">Badge verificado</span>
+      </label>
     </div>
+
     <div id="t-identidad" class="hidden space-y-4">
-      <div class="p-3 rounded-xl border border-neon/20 bg-neon/5 text-xs text-mist">
-        <strong class="text-neon">Tarjeta de identidad (opcional).</strong> Bloque de contacto que el visitante puede guardar (.vcf). No es un enlace genérico.
+      <div class="p-3.5 rounded-xl border border-neon/25 bg-neon/5 text-xs text-mist leading-relaxed">
+        <strong class="text-neon">Módulo de identidad (opcional).</strong>
+        No es un enlace más: es una tarjeta de contacto que el visitante puede guardar en su agenda (.vcf).
+        Inspirada en el espíritu de QCard (privada, contextual, sin tracking), pero integrada en el diseño de privacidad.me.
+        <span class="text-steel mt-1.5 block">Mismo perfil en todos los dominios. En privtr.ee puedes desactivarla y quedar solo con enlaces.</span>
       </div>
-      <label class="flex items-center gap-3 p-4 rounded-xl bg-panel border border-white/10 cursor-pointer">
-        <input type="checkbox" id="contact-enabled" onchange="onContactToggle()">
-        <div><div class="text-sm text-white font-medium">Activar tarjeta de contacto</div>
-        <div class="text-[11px] text-steel">Email, teléfono, web y «Guardar contacto»</div></div>
+      <label class="flex items-center gap-3 p-4 rounded-xl bg-panel border border-white/10 cursor-pointer hover:border-neon/30 transition">
+        <input type="checkbox" id="contact-enabled" onchange="onContactToggle()" class="rounded accent-[#0a84ff]">
+        <div>
+          <div class="text-sm text-white font-medium">Activar tarjeta de identidad</div>
+          <div class="text-[11px] text-steel">Email · teléfono · web · nota contextual · «Guardar en agenda»</div>
+        </div>
       </label>
       <div id="contact-fields" class="hidden space-y-3">
-        <input id="c-title" class="w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="Cargo / título" oninput="onContactField()">
-        <input id="c-org" class="w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="Organización" oninput="onContactField()">
-        <textarea id="c-note" rows="2" class="w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white resize-none" placeholder="Nota" oninput="onContactField()"></textarea>
+        <div><label class="text-xs text-steel">Cargo / título</label>
+          <input id="c-title" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="Fundador · Boring Privacy" oninput="onContactField()"></div>
+        <div><label class="text-xs text-steel">Organización</label>
+          <input id="c-org" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="Boring Privacy" oninput="onContactField()"></div>
+        <div><label class="text-xs text-steel">Nota contextual <span class="text-steel/50">(estilo «nos conocimos en…»)</span></label>
+          <textarea id="c-note" rows="2" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white resize-none" placeholder="Privacidad, seguridad y soberanía digital…" oninput="onContactField()"></textarea></div>
         <div class="grid sm:grid-cols-2 gap-3">
-          <input id="c-email" class="w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="Email" oninput="onContactField()">
-          <input id="c-phone" class="w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="Teléfono" oninput="onContactField()">
+          <div><label class="text-xs text-steel">Email</label>
+            <input id="c-email" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="tu@email.privado" oninput="onContactField()"></div>
+          <div><label class="text-xs text-steel">Teléfono</label>
+            <input id="c-phone" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="+34…" oninput="onContactField()"></div>
         </div>
-        <input id="c-web" class="w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="https://" oninput="onContactField()">
+        <div><label class="text-xs text-steel">Web</label>
+          <input id="c-web" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="https://" oninput="onContactField()"></div>
       </div>
     </div>
-    <div id="t-redes" class="hidden space-y-3"><div id="social-list" class="space-y-2"></div></div>
+
+    <div id="t-redes" class="hidden space-y-3">
+      <p class="text-xs text-steel">Iconos sociales encima de los enlaces.</p>
+      <div id="social-list" class="space-y-2 max-h-[55vh] overflow-y-auto pr-1"></div>
+    </div>
+
     <div id="t-enlaces" class="hidden space-y-3">
-      <div class="flex gap-1.5 flex-wrap">
-        <button onclick="addLink('link')" class="text-xs text-neon border border-neon/30 px-2.5 py-1.5 rounded-lg">+ Enlace</button>
-        <button onclick="addLink('heading')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg">Título</button>
-        <button onclick="addLink('text')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg">Texto</button>
-        <button onclick="addLink('spacer')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg">Espacio</button>
+      <div class="flex justify-between items-center flex-wrap gap-2">
+        <p class="text-xs text-steel">Marca · color · ⠿</p>
+        <div class="flex gap-1.5 flex-wrap">
+          <button onclick="addLink('link')" class="text-xs text-neon border border-neon/30 px-2.5 py-1.5 rounded-lg">+ Enlace</button>
+          <button onclick="addLink('heading')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg">Título</button>
+          <button onclick="addLink('text')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg">Texto</button>
+          <button onclick="addLink('spacer')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg">Espacio</button>
+        </div>
       </div>
       <div id="link-list" class="space-y-2"></div>
     </div>
-    <div id="t-estilo" class="hidden space-y-4">
-      <p class="text-xs text-steel">Fondo y avatar están en <strong class="text-mist">Perfil → Apariencia</strong>.</p>
-      <div class="flex gap-2 text-xs flex-wrap">
-        <button type="button" onclick="setOpt('shape','rounded')" class="chip shape-btn px-3 py-2 rounded-xl border border-white/10 bg-panel" data-v="rounded">Redondeado</button>
-        <button type="button" onclick="setOpt('shape','pill')" class="chip shape-btn px-3 py-2 rounded-full border border-white/10 bg-panel" data-v="pill">Píldora</button>
-        <button type="button" onclick="setOpt('shape','square')" class="chip shape-btn px-3 py-2 rounded-md border border-white/10 bg-panel" data-v="square">Cuadrado</button>
-      </div>
-      <div class="flex gap-2 text-xs flex-wrap">
-        <button type="button" onclick="setOpt('btnStyle','outline')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="outline">Contorno</button>
-        <button type="button" onclick="setOpt('btnStyle','solid')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="solid">Sólido</button>
-        <button type="button" onclick="setOpt('btnStyle','soft')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="soft">Suave</button>
-        <button type="button" onclick="setOpt('btnStyle','ghost')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="ghost">Ghost</button>
-      </div>
-      <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="btnGlow" onchange="state.btnGlow=this.checked;refresh();scheduleSave()"><span class="text-steel">Glow</span></label>
-      <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="sameTab" onchange="state.sameTab=this.checked;refresh();scheduleSave()"><span class="text-steel">Misma pestaña</span></label>
-      <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="autosave" checked><span class="text-steel">Auto-guardar</span></label>
+
+    <div id="t-estilo" class="hidden space-y-5">
+      <p class="text-xs text-steel">Forma y estilo de botones. Avatar e <strong class="text-mist">imagen de fondo</strong> se configuran en <strong class="text-mist">Perfil → Apariencia</strong>.</p>
+      <div><label class="text-xs text-steel mb-2 block">Forma</label>
+        <div class="flex gap-2 text-xs flex-wrap">
+          <button type="button" onclick="setOpt('shape','rounded')" class="chip shape-btn px-3 py-2 rounded-xl border border-white/10 bg-panel" data-v="rounded">Redondeado</button>
+          <button type="button" onclick="setOpt('shape','pill')" class="chip shape-btn px-3 py-2 rounded-full border border-white/10 bg-panel" data-v="pill">Píldora</button>
+          <button type="button" onclick="setOpt('shape','square')" class="chip shape-btn px-3 py-2 rounded-md border border-white/10 bg-panel" data-v="square">Cuadrado</button>
+        </div></div>
+      <div><label class="text-xs text-steel mb-2 block">Relleno global</label>
+        <div class="flex gap-2 text-xs flex-wrap">
+          <button type="button" onclick="setOpt('btnStyle','outline')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="outline">Contorno</button>
+          <button type="button" onclick="setOpt('btnStyle','solid')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="solid">Sólido</button>
+          <button type="button" onclick="setOpt('btnStyle','soft')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="soft">Suave</button>
+          <button type="button" onclick="setOpt('btnStyle','ghost')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="ghost">Ghost</button>
+        </div></div>
+      <div><label class="text-xs text-steel mb-2 block">Tamaño</label>
+        <div class="flex gap-2 text-xs">
+          <button type="button" onclick="setOpt('btnSize','sm')" class="chip size-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="sm">S</button>
+          <button type="button" onclick="setOpt('btnSize','md')" class="chip size-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="md">M</button>
+          <button type="button" onclick="setOpt('btnSize','lg')" class="chip size-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="lg">L</button>
+        </div></div>
+      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" id="btnGlow" onchange="state.btnGlow=this.checked;refresh();scheduleSave()"><span class="text-steel">Glow</span></label>
+      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" id="sameTab" onchange="state.sameTab=this.checked;refresh();scheduleSave()"><span class="text-steel">Misma pestaña</span></label>
+      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" id="autosave" checked><span class="text-steel">Auto-guardar</span></label>
     </div>
+
     <div id="t-mas" class="hidden space-y-4">
-      <button type="button" onclick="loadStarkDemo()" class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon">Cargar demo @stark</button>
-      <div id="domain-list" class="space-y-2"></div>
-      <input id="ogTitle" placeholder="Título OG" class="w-full bg-void border border-white/10 rounded-lg px-3 py-2 text-sm text-white" oninput="state.ogTitle=this.value;scheduleSave()">
-      <input id="ogDesc" placeholder="Descripción OG" class="w-full bg-void border border-white/10 rounded-lg px-3 py-2 text-sm text-white" oninput="state.ogDesc=this.value;scheduleSave()">
-      <button type="button" onclick="exportJSON()" class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon">Exportar JSON</button>
-      <label class="text-xs px-3 py-1.5 rounded-lg border border-white/10 cursor-pointer">Importar<input type="file" accept="application/json" class="hidden" onchange="importJSON(event)"></label>
+      <div class="p-3 rounded-xl border border-neon/25 bg-neon/5 text-xs text-mist">Exporta de vez en cuando. En producción los datos vivirán en el servidor LinkStack.</div>
+      <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
+        <h3 class="text-sm text-white font-medium">Demo @stark</h3>
+        <button type="button" onclick="loadStarkDemo()" class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon">Cargar demo</button>
+      </div>
+      <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-3">
+        <h3 class="text-sm text-white font-medium">Enlaces públicos</h3>
+        <p class="text-[11px] text-steel">Mismos datos en los tres dominios. privtr.ee = link-in-bio; privacidad.me = hub de identidad.</p>
+        <div id="domain-list" class="space-y-2"></div>
+      </div>
+      <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
+        <h3 class="text-sm text-white font-medium">OG</h3>
+        <input id="ogTitle" placeholder="Título OG" class="w-full bg-void border border-white/10 rounded-lg px-3 py-2 text-sm text-white" oninput="state.ogTitle=this.value;scheduleSave()">
+        <input id="ogDesc" placeholder="Descripción OG" class="w-full bg-void border border-white/10 rounded-lg px-3 py-2 text-sm text-white" oninput="state.ogDesc=this.value;scheduleSave()">
+      </div>
+      <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
+        <h3 class="text-sm text-white font-medium">Exportar / Importar</h3>
+        <div class="flex gap-2 flex-wrap">
+          <button type="button" onclick="exportJSON()" class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon">Exportar JSON</button>
+          <label class="text-xs px-3 py-1.5 rounded-lg border border-white/10 cursor-pointer">Importar<input type="file" accept="application/json" class="hidden" onchange="importJSON(event)"></label>
+        </div>
+      </div>
     </div>
   </div>
   <div class="order-1 lg:order-2 flex justify-center lg:sticky lg:top-20 lg:self-start">
-    <div class="phone rounded-[2.5rem] p-2.5 w-[280px]">
+    <div class="phone rounded-[2.5rem] p-2.5 w-[280px] sm:w-[300px]">
       <div class="bg-void rounded-[2rem] overflow-hidden min-h-[520px] flex flex-col">
         <div class="flex justify-center pt-3 pb-1"><div class="w-20 h-5 bg-black rounded-full"></div></div>
         <div id="preview" class="flex-1 px-4 pb-6 pt-2 text-center overflow-y-auto max-h-[560px]"></div>
+        <div class="pb-2 flex justify-center"><div class="w-28 h-1 rounded-full bg-white/20"></div></div>
       </div>
     </div>
   </div>
