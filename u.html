@@ -6,10 +6,6 @@
 <title>Perfil — Privacidad.me</title>
 <meta name="description" id="meta-desc" content="Perfil en privacidad.me">
 <meta name="theme-color" content="#05070a">
-<meta property="og:type" content="profile">
-<meta property="og:title" id="og-title" content="Perfil">
-<meta property="og:description" id="og-desc" content="">
-<meta name="twitter:card" content="summary">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,23 +20,26 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif;min-height:100vh}
 #toast{transition:opacity .25s,transform .25s}
 .cta-pill{transition:border-color .2s,background .2s,color .2s}
 .cta-pill:hover{border-color:rgba(10,132,255,.45);background:rgba(10,132,255,.08);color:#c5d0e0}
+.vcard-shell .vcard-border{background:linear-gradient(120deg,rgba(10,132,255,.15),rgba(56,189,248,.12),rgba(124,58,237,.12),rgba(10,132,255,.15));background-size:200% 200%;opacity:0;transition:opacity .35s}
+.vcard-shell:hover .vcard-border{opacity:1;animation:vcardShine 3s ease infinite}
+.vcard-shell:hover .card-chevron{transform:rotate(180deg)}
+@keyframes vcardShine{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.card-details{transition:max-height .35s ease,opacity .3s ease,margin .3s ease}
+@media (hover:none){
+  .vcard-shell .card-details{max-height:none!important;opacity:1!important;margin-top:.75rem!important}
+  .vcard-shell .card-summary{display:none}
+}
 </style>
 </head>
 <body class="text-mist antialiased">
 <div class="fixed inset-0 cyber-grid opacity-40 pointer-events-none"></div>
 <div class="fixed top-4 right-4 z-20 flex gap-2">
-  <button type="button" onclick="sharePage()" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs text-white backdrop-blur hover:bg-white/20 transition">
-    <i class="fa-solid fa-share-nodes"></i> Compartir
-  </button>
-  <button type="button" onclick="copyLink()" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs text-white backdrop-blur hover:bg-white/20 transition" title="Copiar enlace">
-    <i class="fa-solid fa-link"></i>
-  </button>
+  <button type="button" onclick="sharePage()" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs text-white backdrop-blur hover:bg-white/20 transition"><i class="fa-solid fa-share-nodes"></i> Compartir</button>
+  <button type="button" onclick="copyLink()" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs text-white backdrop-blur hover:bg-white/20 transition" title="Copiar enlace"><i class="fa-solid fa-link"></i></button>
 </div>
 <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-xl bg-panel border border-neon/30 text-sm text-white opacity-0 pointer-events-none translate-y-2">Copiado</div>
 <div class="relative min-h-screen flex flex-col items-center justify-center px-4 py-14 sm:py-16">
-  <div id="page" class="w-full max-w-md sm:max-w-lg text-center">
-    <div class="py-16 text-steel text-sm animate-pulse">Cargando perfil…</div>
-  </div>
+  <div id="page" class="w-full max-w-md sm:max-w-lg text-center"><div class="py-16 text-steel text-sm animate-pulse">Cargando perfil…</div></div>
   <footer class="mt-12 flex flex-col items-center gap-3">
     <a href="index.html" class="cta-pill inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/[0.03] text-[11px] text-steel/80">
       <span class="w-1.5 h-1.5 rounded-full bg-neon/70"></span>
@@ -53,7 +52,6 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif;min-height:100vh}
 <script src="js/store.js"></script>
 <script>
 (function () {
-  var data = null;
   function toast(msg) {
     var t = document.getElementById('toast');
     t.textContent = msg;
@@ -62,39 +60,28 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif;min-height:100vh}
     window.__toastT = setTimeout(function () { t.classList.add('opacity-0', 'translate-y-2'); }, 1800);
   }
   function emptyState(username) {
-    return '<div class="py-12 px-4">' +
-      '<div class="w-20 h-20 rounded-full mx-auto mb-4 bg-panel border border-white/10 flex items-center justify-center text-2xl text-steel">?</div>' +
-      '<h1 class="text-xl font-semibold text-white mb-2">@' + PrivStore.esc(username) + '</h1>' +
-      '<p class="text-sm text-steel mb-6">Este perfil aún no tiene contenido público, o no existe en este dispositivo (demo local).</p>' +
-      '<a href="registro.html?username=' + encodeURIComponent(username) + '" class="inline-flex px-5 py-2.5 rounded-xl bg-neon text-void text-sm font-semibold">Crear mi página</a></div>';
+    return '<div class="py-12 px-4"><div class="w-20 h-20 rounded-full mx-auto mb-4 bg-panel border border-white/10 flex items-center justify-center text-2xl text-steel">?</div><h1 class="text-xl font-semibold text-white mb-2">@' + PrivStore.esc(username) + '</h1><p class="text-sm text-steel mb-6">Este perfil aún no tiene contenido público (demo local).</p><a href="registro.html?username=' + encodeURIComponent(username) + '" class="inline-flex px-5 py-2.5 rounded-xl bg-neon text-void text-sm font-semibold">Crear mi página</a></div>';
   }
   var u = new URLSearchParams(location.search).get('u') || '';
   if (!u && location.hash) u = location.hash.replace(/^#\/?@?/, '');
   u = PrivStore.sanitizeUsername(u || 'stark');
-  data = PrivStore.load(u);
+  var data = PrivStore.load(u);
   if (!data) {
     if (u === 'stark') data = PrivStore.starkDemo();
-    else {
-      document.getElementById('page').innerHTML = emptyState(u);
-      document.title = '@' + u + ' — privtr.ee';
-      return;
-    }
+    else { document.getElementById('page').innerHTML = emptyState(u); document.title = '@' + u + ' — privtr.ee'; return; }
   }
   document.title = (data.name || data.username) + ' — privtr.ee';
-  var desc = data.bio || ('Perfil de @' + data.username + ' en privacidad.me');
+  var desc = data.bio || ('Perfil de @' + data.username);
   document.getElementById('meta-desc').setAttribute('content', desc);
-  document.getElementById('og-title').setAttribute('content', data.name || data.username);
-  document.getElementById('og-desc').setAttribute('content', desc);
   PrivStore.renderProfile(data, document.getElementById('page'), { compact: false });
   window.sharePage = function () {
-    var url = location.href.split('#')[0];
-    if (!url.includes('u=')) url = location.origin + location.pathname + '?u=' + encodeURIComponent(data.username);
+    var url = location.origin + location.pathname + '?u=' + encodeURIComponent(data.username);
     if (navigator.share) navigator.share({ title: data.name || data.username, text: desc, url: url }).catch(function () {});
-    else navigator.clipboard.writeText(url).then(function () { toast('Enlace copiado'); }).catch(function () { toast(url); });
+    else navigator.clipboard.writeText(url).then(function () { toast('Enlace copiado'); });
   };
   window.copyLink = function () {
     var url = location.origin + location.pathname + '?u=' + encodeURIComponent(data.username);
-    navigator.clipboard.writeText(url).then(function () { toast('Enlace copiado'); }).catch(function () { toast(url); });
+    navigator.clipboard.writeText(url).then(function () { toast('Enlace copiado'); });
   };
 })();
 </script>
