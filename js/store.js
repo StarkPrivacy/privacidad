@@ -46,7 +46,7 @@ const PrivStore = (() => {
       name: username || 'Usuario', username: (username || 'user').toLowerCase().replace(/[^a-z0-9_-]/g, ''),
       bio: '', avatar: '', bgImage: '', shape: 'rounded', btnStyle: 'outline', btnSize: 'md', btnGlow: false,
       accentColor: '#0a84ff', profileMode: 'both', verified: false, sameTab: false,
-      social: emptySocial(), links: [], contact: emptyContact(), ogTitle: '', ogDesc: '', updatedAt: Date.now(),
+      social: emptySocial(), socialOrder: SOCIAL_DEFS.map(function(x){return x.id;}), links: [], contact: emptyContact(), ogTitle: '', ogDesc: '', updatedAt: Date.now(),
     };
   }
   function starkDemo() {
@@ -56,6 +56,7 @@ const PrivStore = (() => {
     p.verified = true; p.shape = 'rounded'; p.btnStyle = 'solid'; p.profileMode = 'both';
     p.social.youtube = 'https://youtube.com/@StarkPrivacy'; p.social.telegram = 'https://t.me/StarkPrivacy';
     p.social.x = 'https://x.com/StarkPrivacy'; p.social.instagram = 'https://instagram.com/StarkPrivacy';
+    p.socialOrder = ['youtube', 'telegram', 'x', 'instagram', 'discord', 'github', 'linkedin', 'mastodon', 'email'];
     p.contact = { enabled: true, title: 'Fundador · Boring Privacy', note: 'Privacidad, seguridad y soberanía digital',
       email: 'stark@boringprivacy.io', phone: '', web: 'https://boringprivacy.io', org: 'Boring Privacy', showQr: true };
     p.links = [
@@ -80,7 +81,9 @@ const PrivStore = (() => {
     return {
       ...base, ...d, username: sanitizeUsername(d.username || base.username), profileMode: mode,
       accentColor: d.accentColor || '#0a84ff',
-      social: { ...emptySocial(), ...(d.social || {}) }, contact: { ...emptyContact(), ...(d.contact || {}) },
+      social: { ...emptySocial(), ...(d.social || {}) },
+      socialOrder: Array.isArray(d.socialOrder) && d.socialOrder.length ? d.socialOrder : SOCIAL_DEFS.map(function(x){return x.id;}),
+      contact: { ...emptyContact(), ...(d.contact || {}) },
       links: Array.isArray(d.links) ? d.links.map((l, i) => ({
         id: l.id != null ? l.id : i + 1, title: l.title || '', url: l.url || '', type: l.type || 'link',
         color: l.color || '', customColor: l.customColor || '', icon: l.icon || '', brand: l.brand || '',
@@ -153,7 +156,7 @@ const PrivStore = (() => {
     if (d.btnStyle === 'ghost') fill = 'background:transparent;color:#c5d0e0;border:1px solid rgba(255,255,255,0.2);';
     return { className: 'link-btn flex items-center justify-center gap-2 w-full ' + sz + ' ' + sc + ' font-medium mb-2.5', style: fill + glow };
   }
-  function esc(s) { return String(s || '').replace(/&/g, '&').replace(/</g, '<').replace(/"/g, '"'); }
+  function esc(s) { return String(s || '').replace(/&/g, '&'+'amp;').replace(/</g, '&'+'lt;').replace(/"/g, '&'+'quot;'); }
   function faviconUrl(pageUrl) {
     try { const u = new URL(pageUrl.indexOf('http') === 0 ? pageUrl : 'https://' + pageUrl);
       return 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(u.hostname) + '&sz=32';
@@ -242,7 +245,7 @@ const PrivStore = (() => {
     const socialSize = compact ? 'w-9 h-9 text-sm' : 'w-10 h-10 text-base';
     const target = d.sameTab ? '_self' : '_blank';
     const active = SOCIAL_DEFS.filter(s => d.social[s.id] && String(d.social[s.id]).trim());
-    const order = ['youtube', 'telegram', 'x', 'instagram', 'discord'];
+    const order = Array.isArray(d.socialOrder) && d.socialOrder.length ? d.socialOrder : ['youtube', 'telegram', 'x', 'instagram', 'discord'];
     active.sort(function (a, b) { const ia = order.indexOf(a.id), ib = order.indexOf(b.id); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib); });
     const socialHtml = active.length
       ? '<div class="flex flex-wrap justify-center gap-2.5 ' + (compact ? 'mb-4' : 'mb-5') + '">' +
