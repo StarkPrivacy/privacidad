@@ -1,6 +1,3 @@
-/**
- * Privacidad.me — data layer (localStorage demo).
- */
 const PrivStore = (() => {
   const SOCIAL_DEFS = [
     { id: 'youtube', label: 'YouTube', icon: 'fa-brands fa-youtube', placeholder: 'https://youtube.com/...' },
@@ -10,27 +7,17 @@ const PrivStore = (() => {
     { id: 'discord', label: 'Discord', icon: 'fa-brands fa-discord', placeholder: 'https://discord.gg/...' },
     { id: 'github', label: 'GitHub', icon: 'fa-brands fa-github', placeholder: 'https://github.com/...' },
     { id: 'linkedin', label: 'LinkedIn', icon: 'fa-brands fa-linkedin', placeholder: 'https://linkedin.com/in/...' },
-    { id: 'mastodon', label: 'Mastodon', icon: 'fa-brands fa-mastodon', placeholder: 'https://mastodon.social/...' },
-    { id: 'bluesky', label: 'Bluesky', icon: 'fa-brands fa-bluesky', placeholder: 'https://bsky.app/profile/...' },
-    { id: 'tiktok', label: 'TikTok', icon: 'fa-brands fa-tiktok', placeholder: 'https://tiktok.com/@...' },
-    { id: 'twitch', label: 'Twitch', icon: 'fa-brands fa-twitch', placeholder: 'https://twitch.tv/...' },
-    { id: 'reddit', label: 'Reddit', icon: 'fa-brands fa-reddit', placeholder: 'https://reddit.com/u/...' },
-    { id: 'facebook', label: 'Facebook', icon: 'fa-brands fa-facebook', placeholder: 'https://facebook.com/...' },
-    { id: 'whatsapp', label: 'WhatsApp', icon: 'fa-brands fa-whatsapp', placeholder: 'https://wa.me/...' },
-    { id: 'signal', label: 'Signal', icon: 'fa-solid fa-comment-dots', placeholder: 'https://signal.me/...' },
-    { id: 'matrix', label: 'Matrix', icon: 'fa-solid fa-cube', placeholder: 'https://matrix.to/...' },
-    { id: 'nostr', label: 'Nostr', icon: 'fa-solid fa-bolt', placeholder: 'https://...' },
     { id: 'email', label: 'Email', icon: 'fa-solid fa-envelope', placeholder: 'mailto:...' },
   ];
   const DOMAINS = ['privacidad.me', 'privtr.ee', 'privtree.com'];
   const PRESET_COLORS = [
-    { id: 'blue', label: 'Azul', bg: '#2563eb', fg: '#ffffff' },
-    { id: 'red', label: 'Rojo', bg: '#dc2626', fg: '#ffffff' },
-    { id: 'black', label: 'Negro', bg: '#0a0a0a', fg: '#ffffff' },
+    { id: 'blue', label: 'Azul', bg: '#2563eb', fg: '#fff' },
+    { id: 'red', label: 'Rojo', bg: '#dc2626', fg: '#fff' },
+    { id: 'black', label: 'Negro', bg: '#0a0a0a', fg: '#fff' },
     { id: 'sky', label: 'Cielo', bg: '#38bdf8', fg: '#0a0a0a' },
     { id: 'neon', label: 'Neon', bg: '#0a84ff', fg: '#05070a' },
-    { id: 'green', label: 'Verde', bg: '#16a34a', fg: '#ffffff' },
-    { id: 'violet', label: 'Violeta', bg: '#7c3aed', fg: '#ffffff' },
+    { id: 'green', label: 'Verde', bg: '#16a34a', fg: '#fff' },
+    { id: 'violet', label: 'Violeta', bg: '#7c3aed', fg: '#fff' },
     { id: 'outline', label: 'Contorno', bg: 'transparent', fg: '#c5d0e0', border: 'rgba(255,255,255,0.15)' },
   ];
   const BRANDS = [
@@ -38,54 +25,52 @@ const PrivStore = (() => {
     { id: 'website', label: 'Web', icon: 'fa-solid fa-globe', color: 'blue' },
     { id: 'newsletter', label: 'Newsletter', icon: 'fa-solid fa-newspaper', color: 'red' },
     { id: 'podcast', label: 'Podcast', icon: 'fa-solid fa-podcast', color: 'black' },
-    { id: 'email', label: 'Email', icon: 'fa-solid fa-envelope', color: 'sky' },
-    { id: 'phone', label: 'Teléfono', icon: 'fa-solid fa-phone', color: 'green' },
     { id: 'youtube', label: 'YouTube', icon: 'fa-brands fa-youtube', color: 'red' },
     { id: 'telegram', label: 'Telegram', icon: 'fa-brands fa-telegram', color: 'sky' },
-    { id: 'x', label: 'X', icon: 'fa-brands fa-x-twitter', color: 'black' },
-    { id: 'instagram', label: 'Instagram', icon: 'fa-brands fa-instagram', color: 'violet' },
-    { id: 'discord', label: 'Discord', icon: 'fa-brands fa-discord', color: 'violet' },
-    { id: 'github', label: 'GitHub', icon: 'fa-brands fa-github', color: 'black' },
-    { id: 'linkedin', label: 'LinkedIn', icon: 'fa-brands fa-linkedin', color: 'blue' },
-    { id: 'paypal', label: 'PayPal', icon: 'fa-brands fa-paypal', color: 'blue' },
-    { id: 'bitcoin', label: 'Bitcoin / Crypto', icon: 'fa-brands fa-bitcoin', color: 'outline' },
-    { id: 'shop', label: 'Tienda', icon: 'fa-solid fa-cart-shopping', color: 'green' },
-    { id: 'calendar', label: 'Agenda', icon: 'fa-solid fa-calendar', color: 'blue' },
-    { id: 'map', label: 'Ubicación', icon: 'fa-solid fa-location-dot', color: 'red' },
-    { id: 'file', label: 'Archivo / PDF', icon: 'fa-solid fa-file', color: 'outline' },
-    { id: 'pgp', label: 'PGP / Seguridad', icon: 'fa-solid fa-key', color: 'outline' },
   ];
   function emptySocial() { const o = {}; SOCIAL_DEFS.forEach(s => { o[s.id] = ''; }); return o; }
-  function emptyVcard() { return { firstName: '', lastName: '', org: '', email: '', phone: '', url: '', note: '' }; }
+  function emptyContact() {
+    return { enabled: false, title: '', note: '', email: '', phone: '', web: '', org: '', showQr: true };
+  }
   function defaultPage(username) {
-    return { name: username || 'Usuario', username: (username || 'user').toLowerCase().replace(/[^a-z0-9_-]/g, ''),
-      bio: '', avatar: '', theme: 'dark', shape: 'rounded', btnStyle: 'outline', btnSize: 'md', btnGlow: false, bgImage: '',
-      verified: false, sameTab: false, social: emptySocial(), links: [], ogTitle: '', ogDesc: '', updatedAt: Date.now() };
+    return {
+      name: username || 'Usuario',
+      username: (username || 'user').toLowerCase().replace(/[^a-z0-9_-]/g, ''),
+      bio: '', avatar: '', bgImage: '',
+      shape: 'rounded', btnStyle: 'outline', btnSize: 'md', btnGlow: false,
+      verified: false, sameTab: false,
+      social: emptySocial(), links: [], contact: emptyContact(),
+      ogTitle: '', ogDesc: '', updatedAt: Date.now(),
+    };
   }
   function starkDemo() {
     const p = defaultPage('stark');
-    p.name = 'Stark Privacy'; p.bio = 'Sin privacidad tu libertad es solo una ilusión';
+    p.name = 'Stark Privacy';
+    p.bio = 'Sin privacidad tu libertad es solo una ilusión';
     p.avatar = 'https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg';
-    p.verified = true; p.shape = 'rounded'; p.btnStyle = 'solid'; p.btnSize = 'md';
-    p.social.youtube = 'https://youtube.com/@StarkPrivacy'; p.social.telegram = 'https://t.me/StarkPrivacy';
-    p.social.x = 'https://x.com/StarkPrivacy'; p.social.instagram = 'https://instagram.com/StarkPrivacy'; p.social.discord = 'https://discord.gg/';
+    p.verified = true; p.shape = 'rounded'; p.btnStyle = 'solid';
+    p.social.youtube = 'https://youtube.com/@StarkPrivacy';
+    p.social.telegram = 'https://t.me/StarkPrivacy';
+    p.social.x = 'https://x.com/StarkPrivacy';
+    p.social.instagram = 'https://instagram.com/StarkPrivacy';
+    p.contact = {
+      enabled: true, title: 'Fundador · Boring Privacy',
+      note: 'Privacidad, seguridad y soberanía digital',
+      email: 'stark@boringprivacy.io', phone: '', web: 'https://boringprivacy.io',
+      org: 'Boring Privacy', showQr: true,
+    };
     p.links = [
       { id: 1, type: 'link', title: 'Academia Boring Privacy', url: 'https://boringprivacy.io', color: 'blue', icon: 'fa-solid fa-globe', brand: 'website' },
       { id: 2, type: 'link', title: 'Suscríbete al Newsletter', url: 'https://boringprivacy.io/#newsletter', color: 'red', icon: 'fa-solid fa-newspaper', brand: 'newsletter' },
       { id: 3, type: 'link', title: 'Podcasts', url: 'https://privtr.ee/@starkpodcasts', color: 'black', icon: 'fa-solid fa-podcast', brand: 'podcast' },
-      { id: 4, type: 'heading', title: 'Correo electrónico seguro', url: '', color: '', icon: '', brand: '' },
-      { id: 5, type: 'email', title: 'stark@boringprivacy.io', url: 'stark@boringprivacy.io', color: 'sky', icon: 'fa-solid fa-envelope', brand: 'email' },
-      { id: 6, type: 'text', title: 'PGP Key ID: 0x0732E79E', url: 'https://boringprivacy.io/pgp/stark.txt', color: '', icon: '', brand: '' },
-      { id: 7, type: 'vcard', title: 'Guardar contacto', url: '', color: 'neon', icon: 'fa-solid fa-address-card', brand: '',
-        vcard: { firstName: 'Stark', lastName: 'Privacy', org: 'Boring Privacy', email: 'stark@boringprivacy.io', phone: '', url: 'https://boringprivacy.io', note: 'Privacidad y seguridad' } },
-      { id: 8, type: 'heading', title: 'Buenos servicios de privacidad', url: '', color: '', icon: '', brand: '' },
-      { id: 9, type: 'link', title: 'H. Wallet | 5% Descuento', url: 'https://bitbox.swiss/stark', color: 'blue', icon: 'fa-solid fa-wallet', brand: 'custom' },
-      { id: 10, type: 'link', title: 'Ordenadores | 5% Descuento', url: 'https://silkpad.net/?ref=STARK', color: 'outline', icon: 'fa-solid fa-laptop', brand: 'custom' },
-      { id: 11, type: 'link', title: 'Proton VPN | 70% Descuento', url: 'https://go.getproton.me/SH1Ou', color: 'violet', icon: 'fa-solid fa-shield-halved', brand: 'custom' },
+      { id: 4, type: 'heading', title: 'Servicios recomendados', url: '', color: '', icon: '', brand: '' },
+      { id: 5, type: 'link', title: 'Proton VPN | 70% Descuento', url: 'https://go.getproton.me/SH1Ou', color: 'violet', icon: 'fa-solid fa-shield-halved', brand: 'custom' },
     ];
     return p;
   }
-  function sanitizeUsername(u) { return String(u || '').replace(/^@/, '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 32); }
+  function sanitizeUsername(u) {
+    return String(u || '').replace(/^@/, '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 32);
+  }
   function load(username) {
     const u = sanitizeUsername(username);
     if (u) { try { const raw = localStorage.getItem('priv_page_' + u); if (raw) return normalize(JSON.parse(raw)); } catch (e) {} }
@@ -94,34 +79,25 @@ const PrivStore = (() => {
   }
   function normalize(d) {
     const base = defaultPage(d.username || 'user');
-    return { ...base, ...d, username: sanitizeUsername(d.username || base.username),
+    return {
+      ...base, ...d,
+      username: sanitizeUsername(d.username || base.username),
       social: { ...emptySocial(), ...(d.social || {}) },
+      contact: { ...emptyContact(), ...(d.contact || {}) },
       links: Array.isArray(d.links) ? d.links.map((l, i) => ({
         id: l.id != null ? l.id : i + 1, title: l.title || '', url: l.url || '', type: l.type || 'link',
         color: l.color || '', icon: l.icon || '', brand: l.brand || '',
-        vcard: l.vcard ? { ...emptyVcard(), ...l.vcard } : emptyVcard(),
       })) : [],
-      btnStyle: d.btnStyle || 'outline', btnSize: d.btnSize || 'md', btnGlow: !!d.btnGlow, verified: !!d.verified, sameTab: !!d.sameTab, bgImage: d.bgImage || '' };
+      btnStyle: d.btnStyle || 'outline', btnSize: d.btnSize || 'md',
+      btnGlow: !!d.btnGlow, verified: !!d.verified, sameTab: !!d.sameTab, bgImage: d.bgImage || '',
+    };
   }
   function save(page) {
     const d = normalize({ ...page, updatedAt: Date.now() });
     d.username = sanitizeUsername(d.username);
     try { localStorage.setItem('priv_page', JSON.stringify(d)); localStorage.setItem('priv_page_' + d.username, JSON.stringify(d)); }
-    catch (e) { console.warn('localStorage full', e); throw e; }
+    catch (e) { throw e; }
     return d;
-  }
-  function listUsers() {
-    const out = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith('priv_page_')) { try { out.push(normalize(JSON.parse(localStorage.getItem(k)))); } catch (e) {} }
-    }
-    return out.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
-  }
-  function exportAll() {
-    const data = {};
-    for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith('priv')) data[k] = localStorage.getItem(k); }
-    return data;
   }
   function shapeClass(shape) { if (shape === 'pill') return 'rounded-full'; if (shape === 'square') return 'rounded-md'; return 'rounded-xl'; }
   function sizeClass(size) { if (size === 'sm') return 'py-2 px-3 text-xs'; if (size === 'lg') return 'py-4 px-5 text-base'; return 'py-3.5 px-4 text-sm'; }
@@ -141,23 +117,23 @@ const PrivStore = (() => {
     return { className: 'link-btn flex items-center justify-center gap-2 w-full ' + sz + ' ' + sc + ' font-medium mb-2.5', style: fill + glow };
   }
   function esc(s) { return String(s || '').replace(/&/g, '&').replace(/</g, '<').replace(/"/g, '"'); }
-  function vcardString(vc) {
-    vc = vc || emptyVcard();
-    const lines = ['BEGIN:VCARD', 'VERSION:3.0', 'N:' + (vc.lastName || '') + ';' + (vc.firstName || '') + ';;;',
-      'FN:' + [vc.firstName, vc.lastName].filter(Boolean).join(' ')];
-    if (vc.org) lines.push('ORG:' + vc.org);
-    if (vc.email) lines.push('EMAIL;TYPE=INTERNET:' + vc.email);
-    if (vc.phone) lines.push('TEL;TYPE=CELL:' + vc.phone);
-    if (vc.url) lines.push('URL:' + vc.url);
-    if (vc.note) lines.push('NOTE:' + vc.note);
+  function contactToVcard(page) {
+    const c = page.contact || emptyContact();
+    const lines = ['BEGIN:VCARD', 'VERSION:3.0', 'FN:' + (page.name || ''), 'N:;' + (page.name || '') + ';;;'];
+    if (c.org) lines.push('ORG:' + c.org);
+    if (c.title) lines.push('TITLE:' + c.title);
+    if (c.email) lines.push('EMAIL;TYPE=INTERNET:' + c.email);
+    if (c.phone) lines.push('TEL;TYPE=CELL:' + c.phone);
+    if (c.web) lines.push('URL:' + c.web);
+    if (c.note) lines.push('NOTE:' + c.note);
     lines.push('END:VCARD');
     return lines.join('\r\n');
   }
-  function vcardHref(vc) { return 'data:text/vcard;charset=utf-8,' + encodeURIComponent(vcardString(vc)); }
+  function vcardHref(page) { return 'data:text/vcard;charset=utf-8,' + encodeURIComponent(contactToVcard(page)); }
   function readImageFile(file, maxSide, maxBytes) {
     maxSide = maxSide || 1600; maxBytes = maxBytes || 450000;
     return new Promise(function (resolve, reject) {
-      if (!file || !file.type.match(/^image\//)) { reject(new Error('Elige una imagen (JPG, PNG, WebP…)')); return; }
+      if (!file || !file.type.match(/^image\//)) { reject(new Error('Elige una imagen')); return; }
       const reader = new FileReader();
       reader.onload = function () {
         const img = new Image();
@@ -170,17 +146,32 @@ const PrivStore = (() => {
           const canvas = document.createElement('canvas');
           canvas.width = w; canvas.height = h;
           canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          let quality = 0.85; let data = canvas.toDataURL('image/jpeg', quality);
-          while (data.length > maxBytes && quality > 0.4) { quality -= 0.1; data = canvas.toDataURL('image/jpeg', quality); }
-          if (data.length > maxBytes * 1.5) { reject(new Error('Imagen demasiado grande. Prueba otra más ligera.')); return; }
+          let q = 0.85, data = canvas.toDataURL('image/jpeg', q);
+          while (data.length > maxBytes && q > 0.4) { q -= 0.1; data = canvas.toDataURL('image/jpeg', q); }
+          if (data.length > maxBytes * 1.5) { reject(new Error('Imagen demasiado grande')); return; }
           resolve(data);
         };
         img.onerror = function () { reject(new Error('No se pudo leer la imagen')); };
         img.src = reader.result;
       };
-      reader.onerror = function () { reject(new Error('Error al leer el archivo')); };
+      reader.onerror = function () { reject(new Error('Error al leer')); };
       reader.readAsDataURL(file);
     });
+  }
+  function renderContactCard(d, compact) {
+    const c = d.contact || emptyContact();
+    if (!c.enabled) return '';
+    const rows = [];
+    if (c.email) rows.push('<a href="mailto:' + esc(c.email) + '" class="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-white/5 border border-white/10 text-left hover:border-neon/40"><i class="fa-solid fa-envelope text-neon w-5 text-center"></i><span class="text-sm text-mist truncate">' + esc(c.email) + '</span></a>');
+    if (c.phone) rows.push('<a href="tel:' + esc(c.phone) + '" class="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-white/5 border border-white/10 text-left hover:border-neon/40"><i class="fa-solid fa-phone text-neon w-5 text-center"></i><span class="text-sm text-mist">' + esc(c.phone) + '</span></a>');
+    if (c.web) rows.push('<a href="' + esc(c.web) + '" target="_blank" rel="noopener" class="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-white/5 border border-white/10 text-left hover:border-neon/40"><i class="fa-solid fa-link text-neon w-5 text-center"></i><span class="text-sm text-mist truncate">' + esc(String(c.web).replace(/^https?:\/\//, '')) + '</span></a>');
+    const saveBtn = '<a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="mt-3 flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-neon text-void font-semibold text-sm"><i class="fa-solid fa-address-card"></i> Guardar contacto</a>';
+    return '<div class="mt-5 mb-2 rounded-2xl border border-white/10 bg-panel/80 p-4 text-left">' +
+      '<div class="text-[10px] uppercase tracking-wider text-neon/80 mb-2">Identidad</div>' +
+      (c.title ? '<p class="text-sm text-white font-medium mb-1">' + esc(c.title) + '</p>' : '') +
+      (c.org ? '<p class="text-xs text-steel mb-2">' + esc(c.org) + '</p>' : '') +
+      (c.note ? '<p class="text-xs text-steel/80 mb-3">' + esc(c.note) + '</p>' : '') +
+      '<div class="space-y-2">' + rows.join('') + '</div>' + (compact ? '' : saveBtn) + '</div>';
   }
   function renderProfile(page, container, opts) {
     opts = opts || {};
@@ -191,53 +182,42 @@ const PrivStore = (() => {
     const socialSize = compact ? 'w-9 h-9 text-sm' : 'w-10 h-10 text-base';
     const target = d.sameTab ? '_self' : '_blank';
     const active = SOCIAL_DEFS.filter(s => d.social[s.id] && String(d.social[s.id]).trim());
-    const order = ['youtube', 'telegram', 'x', 'instagram', 'discord'];
-    active.sort(function (a, b) { const ia = order.indexOf(a.id); const ib = order.indexOf(b.id); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib); });
     const socialHtml = active.length
-      ? '<div class="flex flex-wrap justify-center gap-2.5 ' + (compact ? 'mb-5' : 'mb-6') + '">' +
+      ? '<div class="flex flex-wrap justify-center gap-2.5 mb-4">' +
         active.map(function (s) {
-          return '<a href="' + esc(d.social[s.id]) + '" target="' + target + '" rel="noopener" title="' + esc(s.label) +
-            '" class="social-btn ' + socialSize + ' rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white hover:bg-white/20"><i class="' + s.icon + '"></i></a>';
+          return '<a href="' + esc(d.social[s.id]) + '" target="' + target + '" rel="noopener" class="social-btn ' + socialSize + ' rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white"><i class="' + s.icon + '"></i></a>';
         }).join('') + '</div>' : '';
-    const linksHtml = (d.links || []).filter(function (l) {
-      return l.title || l.url || l.type === 'spacer' || l.type === 'vcard';
-    }).map(function (l) {
-      if (l.type === 'heading') return '<h2 class="text-center text-sm font-medium text-steel/80 mt-5 mb-3 tracking-wide">' + esc(l.title) + '</h2>';
+    const linksHtml = (d.links || []).filter(function (l) { return l.title || l.url || l.type === 'spacer'; }).map(function (l) {
+      if (l.type === 'heading') return '<h2 class="text-center text-sm font-medium text-steel/80 mt-5 mb-3">' + esc(l.title) + '</h2>';
       if (l.type === 'spacer') return '<div class="h-3"></div>';
       if (l.type === 'text') {
-        const inner = l.url ? '<a href="' + esc(l.url) + '" target="' + target + '" rel="noopener" class="text-neon hover:underline">' + esc(l.title) + '</a>' : esc(l.title);
-        return '<p class="text-center text-xs text-steel mb-3 leading-relaxed">' + inner + '</p>';
+        const inner = l.url ? '<a href="' + esc(l.url) + '" target="' + target + '" class="text-neon">' + esc(l.title) + '</a>' : esc(l.title);
+        return '<p class="text-center text-xs text-steel mb-3">' + inner + '</p>';
       }
-      var href, download = '';
-      if (l.type === 'vcard') { href = vcardHref(l.vcard); download = ' download="' + esc((l.vcard && l.vcard.firstName) || 'contacto') + '.vcf"'; }
-      else if (l.type === 'email') href = String(l.url).indexOf('mailto:') === 0 ? l.url : 'mailto:' + l.url;
-      else if (l.type === 'phone') href = String(l.url).indexOf('tel:') === 0 ? l.url : 'tel:' + l.url;
-      else href = l.url || '#';
+      var href = l.url || '#';
       var cs = colorStyle(l.color, d, compact);
       var iconHtml = l.icon ? '<i class="' + esc(l.icon) + '"></i>' : '';
-      return '<a href="' + esc(href) + '" target="' + (l.type === 'vcard' ? '_self' : target) + '" rel="noopener"' + download +
-        ' class="' + cs.className + '" style="' + cs.style + '">' + iconHtml + '<span>' + (esc(l.title) || 'Enlace') + '</span></a>';
+      return '<a href="' + esc(href) + '" target="' + target + '" rel="noopener" class="' + cs.className + '" style="' + cs.style + '">' + iconHtml + '<span>' + (esc(l.title) || 'Enlace') + '</span></a>';
     }).join('');
-    const badge = d.verified
-      ? '<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#0a84ff] text-white text-[10px] ml-1.5 align-middle" title="Verificado"><i class="fa-solid fa-check"></i></span>' : '';
+    const badge = d.verified ? '<span class="inline-flex w-5 h-5 rounded-full bg-[#0a84ff] text-white text-[10px] ml-1.5 align-middle items-center justify-center"><i class="fa-solid fa-check"></i></span>' : '';
     const avatar = d.avatar
-      ? '<img src="' + esc(d.avatar) + '" alt="" class="' + avSize + ' rounded-full mx-auto mb-4 object-cover border-2 border-white/20 shadow-lg" onerror="this.style.opacity=\'0.3\'">'
+      ? '<img src="' + esc(d.avatar) + '" alt="" class="' + avSize + ' rounded-full mx-auto mb-4 object-cover border-2 border-white/20">'
       : '<div class="' + avSize + ' rounded-full mx-auto mb-4 bg-panel border-2 border-white/10 flex items-center justify-center text-steel text-lg">' + esc((d.name || '?')[0].toUpperCase()) + '</div>';
-    const bgStyle = d.bgImage
-      ? "background-image:linear-gradient(rgba(5,7,10,0.75),rgba(5,7,10,0.85)),url('" + esc(d.bgImage) + "');background-size:cover;background-position:center;" : '';
+    const bgStyle = d.bgImage ? "background-image:linear-gradient(rgba(5,7,10,0.72),rgba(5,7,10,0.88)),url('" + esc(d.bgImage) + "');background-size:cover;background-position:center;" : '';
     container.innerHTML =
-      '<div class="' + (d.bgImage && !compact ? 'rounded-2xl p-4 -mx-2' : '') + '" style="' + bgStyle + '">' +
-      avatar + '<h1 class="' + nameClass + ' font-semibold text-white mb-2">' + (esc(d.name) || 'Nombre') + badge + '</h1>' +
-      '<p class="text-' + (compact ? '[11px]' : 'sm') + ' text-white/70 mb-5 leading-relaxed ' + (compact ? '' : 'max-w-sm mx-auto') + '">' + esc(d.bio) + '</p>' +
-      socialHtml + '<div class="space-y-0 max-w-sm mx-auto">' + (linksHtml || '<p class="text-[10px] text-steel/50">Sin enlaces</p>') + '</div>' +
+      '<div style="' + bgStyle + '">' + avatar +
+      '<h1 class="' + nameClass + ' font-semibold text-white mb-2">' + (esc(d.name) || 'Nombre') + badge + '</h1>' +
+      '<p class="text-sm text-white/70 mb-4">' + esc(d.bio) + '</p>' +
+      socialHtml + renderContactCard(d, compact) +
+      '<div class="space-y-0 max-w-sm mx-auto mt-2">' + (linksHtml || '<p class="text-[10px] text-steel/50">Sin enlaces</p>') + '</div>' +
       '<p class="mt-6 text-[10px] text-white/30">privtr.ee/@' + esc(d.username) + '</p></div>';
   }
   return {
     SOCIAL_DEFS: SOCIAL_DEFS, DOMAINS: DOMAINS, PRESET_COLORS: PRESET_COLORS, BRANDS: BRANDS,
     defaultPage: defaultPage, starkDemo: starkDemo, sanitizeUsername: sanitizeUsername,
-    load: load, save: save, listUsers: listUsers, exportAll: exportAll,
+    load: load, save: save, normalize: normalize,
     shapeClass: shapeClass, sizeClass: sizeClass, colorStyle: colorStyle,
-    esc: esc, renderProfile: renderProfile, normalize: normalize,
-    emptyVcard: emptyVcard, vcardString: vcardString, vcardHref: vcardHref, readImageFile: readImageFile,
+    esc: esc, renderProfile: renderProfile,
+    emptyContact: emptyContact, contactToVcard: contactToVcard, vcardHref: vcardHref, readImageFile: readImageFile,
   };
 })();
