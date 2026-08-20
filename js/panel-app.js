@@ -1,29 +1,30 @@
 let state = PrivStore.defaultPage('stark');
-let nid = 10;
+let nid = 20;
 let dragId = null;
 let saveTimer = null;
 
 function init() {
   const loaded = PrivStore.load();
   if (loaded) state = loaded;
-  else {
-    state = PrivStore.defaultPage('stark');
-    state.name = 'Stark';
-    state.bio = 'Sin privacidad tu libertad es solo una ilusión';
-    state.avatar = 'https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg';
-    state.social.x = 'https://x.com/StarkPrivacy';
-    state.social.telegram = 'https://t.me/StarkPrivacy';
-    state.links = [
-      { id: 1, title: 'Academia Boring Privacy', url: 'https://boringprivacy.io', type: 'link' },
-      { id: 2, title: 'Canal de Telegram', url: 'https://t.me/StarkPrivacy', type: 'link' },
-    ];
-  }
-  nid = Math.max(10, ...(state.links.map(l => l.id || 0)), 0) + 1;
+  else state = PrivStore.starkDemo();
+  nid = Math.max(20, ...(state.links.map(l => l.id || 0)), 0) + 1;
   fillForm();
   renderSocialForm();
   renderLinksForm();
   updateChips();
   refresh();
+}
+
+function loadStarkDemo() {
+  if (!confirm('¿Cargar el perfil demo de Stark Privacy? Sustituye el contenido actual del editor.')) return;
+  state = PrivStore.starkDemo();
+  nid = Math.max(20, ...(state.links.map(l => l.id || 0)), 0) + 1;
+  fillForm();
+  renderSocialForm();
+  renderLinksForm();
+  updateChips();
+  refresh();
+  doSave(true);
 }
 
 function fillForm() {
@@ -65,15 +66,14 @@ function renderDomains() {
   const u = state.username || '…';
   document.getElementById('domain-list').innerHTML = PrivStore.DOMAINS.map(d => `
     <div class="flex items-center gap-2 p-2.5 rounded-lg bg-void border border-white/10">
-      <span class="flex-1 text-xs font-mono text-mist truncate">${d}/${u}</span>
+      <span class="flex-1 text-xs font-mono text-mist truncate">${d}/@${u}</span>
       <button type="button" onclick="copyDomain('${d}')" class="text-[11px] px-2.5 py-1 rounded-md border border-neon/30 text-neon shrink-0">Copiar</button>
     </div>`).join('');
 }
 
 function copyDomain(domain) {
-  const text = 'https://' + domain + '/' + state.username;
-  navigator.clipboard.writeText(text);
-  showToast('Copiado: ' + domain + '/' + state.username);
+  navigator.clipboard.writeText('https://' + domain + '/@' + state.username);
+  showToast('Copiado: ' + domain + '/@' + state.username);
 }
 
 function renderSocialForm() {
@@ -93,6 +93,12 @@ function typeLabel(t) {
   return { link: 'Enlace', heading: 'Título', text: 'Texto', spacer: 'Espacio', email: 'Email', phone: 'Tel.' }[t] || t;
 }
 
+function colorOptions(selected) {
+  return PrivStore.PRESET_COLORS.map(c =>
+    `<option value="${c.id}" ${selected === c.id ? 'selected' : ''}>${c.label}</option>`
+  ).join('') + `<option value="" ${!selected ? 'selected' : ''}>Global</option>`;
+}
+
 function renderLinksForm() {
   const el = document.getElementById('link-list');
   if (!state.links.length) {
@@ -102,6 +108,7 @@ function renderLinksForm() {
   el.innerHTML = state.links.map(l => {
     const isBlock = l.type === 'heading' || l.type === 'text' || l.type === 'spacer';
     const isSpacer = l.type === 'spacer';
+    const showStyle = !isBlock && l.type !== 'text';
     return `
     <div class="flex gap-2 p-3 rounded-xl bg-panel border border-white/5" draggable="true"
       data-id="${l.id}"
@@ -111,7 +118,11 @@ function renderLinksForm() {
         <div class="text-[10px] text-neon/80">${typeLabel(l.type)}</div>
         ${isSpacer ? '<p class="text-xs text-steel">Espaciador visual</p>' : `
         <input value="${PrivStore.esc(l.title)}" onchange="updLink(${l.id},'title',this.value)" class="w-full bg-transparent text-sm text-white font-medium" placeholder="${isBlock ? 'Contenido' : 'Título'}">
-        ${!isBlock ? `<input value="${PrivStore.esc(l.url)}" onchange="updLink(${l.id},'url',this.value)" class="w-full bg-transparent text-xs text-steel" placeholder="${l.type==='email'?'email@…':l.type==='phone'?'+34…':'https://'}">` : ''}`}
+        ${!isBlock || l.type === 'text' ? `<input value="${PrivStore.esc(l.url)}" onchange="updLink(${l.id},'url',this.value)" class="w-full bg-transparent text-xs text-steel" placeholder="${l.type==='email'?'email@…':l.type==='phone'?'+34…':l.type==='text'?'URL opcional':'https://'}">` : ''}
+        ${showStyle ? `<div class="flex gap-2 flex-wrap items-center">
+          <select onchange="updLink(${l.id},'color',this.value)" class="text-[11px] bg-void border border-white/10 rounded-lg px-2 py-1 text-mist">${colorOptions(l.color)}</select>
+          <input value="${PrivStore.esc(l.icon || '')}" onchange="updLink(${l.id},'icon',this.value)" class="flex-1 min-w-[100px] text-[11px] bg-void border border-white/10 rounded-lg px-2 py-1 text-mist" placeholder="fa-solid fa-globe">
+        </div>` : ''}`}
       </div>
       <button type="button" onclick="delLink(${l.id})" class="text-steel hover:text-red-400 self-center p-1">✕</button>
     </div>`;
@@ -121,15 +132,15 @@ function renderLinksForm() {
 function addLink(type) {
   type = type || 'link';
   const defaults = {
-    link: { title: '', url: '' },
-    heading: { title: 'Sección', url: '' },
-    text: { title: 'Texto libre…', url: '' },
-    spacer: { title: '', url: '' },
-    email: { title: 'Email', url: '' },
-    phone: { title: 'Teléfono', url: '' },
+    link: { title: '', url: '', color: 'blue', icon: 'fa-solid fa-link' },
+    heading: { title: 'Sección', url: '', color: '', icon: '' },
+    text: { title: 'Texto libre…', url: '', color: '', icon: '' },
+    spacer: { title: '', url: '', color: '', icon: '' },
+    email: { title: 'Email', url: '', color: 'sky', icon: 'fa-solid fa-envelope' },
+    phone: { title: 'Teléfono', url: '', color: 'green', icon: 'fa-solid fa-phone' },
   };
   const d = defaults[type] || defaults.link;
-  state.links.push({ id: nid++, type, title: d.title, url: d.url });
+  state.links.push({ id: nid++, type, title: d.title, url: d.url, color: d.color, icon: d.icon });
   renderLinksForm(); refresh(); scheduleSave();
 }
 function updLink(id, f, v) {
