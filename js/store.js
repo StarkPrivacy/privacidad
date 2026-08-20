@@ -113,13 +113,13 @@ const PrivStore = (() => {
   }
   function sizeClass(size, compact) {
     if (compact) {
-      if (size === 'sm') return 'py-1.5 px-2.5 text-[10px]';
-      if (size === 'lg') return 'py-3 px-3.5 text-sm';
-      return 'py-2.5 px-3 text-xs';
+      if (size === 'sm') return 'py-1 px-2 text-[10px]';
+      if (size === 'lg') return 'py-3.5 px-3.5 text-sm';
+      return 'py-2 px-3 text-xs';
     }
-    if (size === 'sm') return 'py-2 px-3 text-xs';
+    if (size === 'sm') return 'py-1.5 px-3 text-xs';
     if (size === 'lg') return 'py-4 px-5 text-base';
-    return 'py-3.5 px-4 text-sm';
+    return 'py-3 px-4 text-sm';
   }
   function contrastFg(hex) {
     let h = hex.replace('#', '');
@@ -207,8 +207,9 @@ const PrivStore = (() => {
     if (c.web) rows.push('<a href="' + esc(c.web) + '" target="_blank" rel="noopener" class="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 transition"><i class="fa-solid fa-globe text-neon/80 w-5 text-center"></i><span class="text-sm text-mist truncate">' + esc(c.web.replace(/^https?:\/\//, '')) + '</span></a>');
     const hasMeta = c.title || c.org || c.note;
     const uid = 'card-' + esc(d.username || 'u');
-    const saveBtn = compact ? '' :
-      '<div class="mt-3.5 flex gap-2">' +
+    const saveBtn = compact
+      ? '<div class="mt-2 flex justify-end"><button type="button" onclick="window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="px-2.5 py-1.5 rounded-lg border border-neon/30 text-neon text-[10px] hover:bg-neon/10" title="QR"><i class="fa-solid fa-qrcode"></i></button></div>'
+      : '<div class="mt-3.5 flex gap-2">' +
         '<a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-neon text-void font-semibold text-sm" style="box-shadow:0 0 18px rgba(10,132,255,0.22)"><i class="fa-solid fa-download"></i> Guardar</a>' +
         '<button type="button" onclick="window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="px-3.5 py-3 rounded-xl border border-neon/40 text-neon text-sm hover:bg-neon/10" title="Código QR"><i class="fa-solid fa-qrcode"></i></button>' +
       '</div>';
@@ -218,13 +219,13 @@ const PrivStore = (() => {
         (c.org ? '<p class="text-xs text-steel mt-0.5">' + esc(c.org) + '</p>' : '') +
         (c.note ? '<p class="text-xs text-steel/70 mt-2 italic border-l-2 border-neon/30 pl-2.5">' + esc(c.note) + '</p>' : '') + '</div>' : '') +
       (rows.length ? '<div class="space-y-1.5">' + rows.join('') + '</div>' : '') + saveBtn + '</div>';
-    const faceBack = compact ? '' :
+    const faceBack =
       '<div class="card-face card-back hidden" data-face="back">' +
-        '<div class="flex items-center justify-between mb-3"><div class="text-[10px] uppercase tracking-[0.14em] text-neon/70 font-medium">Código QR</div>' +
-        '<button type="button" onclick="window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="text-xs text-steel hover:text-neon"><i class="fa-solid fa-rotate-left"></i> Volver</button></div>' +
-        '<div class="flex flex-col items-center gap-2 py-2">' +
-          '<canvas class="priv-qr rounded-xl bg-white p-2" width="140" height="140" data-qr="' + esc(profileUrl(d)) + '"></canvas>' +
-          '<p class="text-[11px] text-steel text-center">Escanea para abrir el perfil</p>' +
+        '<div class="flex items-center justify-between mb-2"><div class="text-[10px] uppercase tracking-[0.14em] text-neon/70 font-medium">Código QR</div>' +
+        '<button type="button" onclick="window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="text-[10px] text-steel hover:text-neon"><i class="fa-solid fa-rotate-left"></i></button></div>' +
+        '<div class="flex flex-col items-center gap-1.5 py-1">' +
+          '<canvas class="priv-qr rounded-xl bg-white p-1.5" width="' + (compact ? '100' : '140') + '" height="' + (compact ? '100' : '140') + '" data-qr="' + esc(profileUrl(d)) + '"></canvas>' +
+          (compact ? '' : '<p class="text-[11px] text-steel text-center">Escanea para abrir el perfil</p>') +
           '<p class="text-[10px] text-mist font-mono">@' + esc(d.username) + '</p></div></div>';
     return '<div id="' + uid + '" class="mt-5 mb-1 rounded-2xl border border-neon/20 bg-gradient-to-b from-[#0d1219] to-[#0a0e14] p-4 text-left relative overflow-hidden ' + (compact ? 'text-xs' : '') + '" data-card-flip>' +
       '<div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neon/40 to-transparent"></div>' + faceFront + faceBack + '</div>';
