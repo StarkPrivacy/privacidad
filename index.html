@@ -29,8 +29,6 @@
     .glow-blue{box-shadow:0 0 20px rgba(10,132,255,.25),0 0 40px rgba(10,132,255,.1)}
     .text-glow{text-shadow:0 0 20px rgba(10,132,255,.4)}
     .phone-shell{background:linear-gradient(160deg,#1c2333 0%,#0c1018 40%,#080b10 100%);box-shadow:0 0 0 1.5px #3a4558,0 0 0 4px #151a24,0 30px 60px -15px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.08)}
-    .btn-link{transition:transform .15s ease,border-color .15s ease,background .15s ease}
-    .btn-link:hover{transform:scale(1.02);border-color:rgba(10,132,255,.45);background:rgba(10,132,255,.06)}
     .opacity-0-init{opacity:0}
     .animate-delay-100{animation-delay:.1s}.animate-delay-200{animation-delay:.2s}.animate-delay-300{animation-delay:.3s}
   </style>
@@ -57,11 +55,9 @@
     </div>
   </div>
 </nav>
-
 <section class="relative min-h-screen flex items-center pt-20 pb-16 overflow-hidden">
   <div class="absolute inset-0 cyber-grid opacity-40"></div>
   <div class="absolute inset-0 bg-gradient-to-b from-void via-transparent to-void"></div>
-  <div class="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-neon/5 rounded-full blur-[120px] pointer-events-none"></div>
   <div class="relative max-w-6xl mx-auto px-6 w-full">
     <div class="grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-10 items-center">
       <div class="text-center lg:text-left">
@@ -85,9 +81,9 @@
                   <option value="privacidad.me">privacidad.me/</option>
                   <option value="privtree.com">privtree.com/</option>
                 </select>
-                <input type="text" name="username" placeholder="tu-nombre" required class="flex-1 bg-transparent text-white placeholder-steel/50 px-3 py-3.5 text-sm focus:outline-none min-w-0" autocomplete="off" spellcheck="false">
+                <input type="text" name="username" placeholder="tu-nombre" required class="flex-1 bg-transparent text-white placeholder-steel/50 px-3 py-3.5 text-sm focus:outline-none min-w-0">
               </div>
-              <button type="submit" class="px-6 py-3.5 rounded-xl bg-neon text-void font-semibold text-sm hover:bg-neon-glow transition whitespace-nowrap shrink-0">Registrarse</button>
+              <button type="submit" class="px-6 py-3.5 rounded-xl bg-neon text-void font-semibold text-sm hover:bg-neon-glow transition shrink-0">Registrarse</button>
             </form>
           </div>
           <p class="mt-3 text-xs text-steel/70">Un perfil. Tres dominios. Tú eliges cómo se muestra.</p>
@@ -105,14 +101,9 @@
               <img src="https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg" alt="" class="w-[72px] h-[72px] rounded-full object-cover border-2 border-neon/50 mx-auto mb-3">
               <h3 class="text-[17px] font-semibold text-white mb-0.5">Stark Privacy <span class="text-neon text-xs">✓</span></h3>
               <p class="text-[11px] text-steel mb-3">Sin privacidad tu libertad es solo una ilusión</p>
-              <div class="rounded-xl border border-neon/25 bg-panel/90 p-3 text-left mb-3 relative overflow-hidden">
-                <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neon/40 to-transparent"></div>
-                <div class="flex items-center justify-between mb-1">
-                  <div class="text-[9px] uppercase tracking-wider text-neon/70">Identidad</div>
-                  <span class="text-[8px] text-neon/30">◆</span>
-                </div>
+              <div class="rounded-xl border border-neon/25 bg-panel/90 p-3 text-left mb-3">
+                <div class="text-[9px] uppercase tracking-wider text-neon/70 mb-1">Identidad</div>
                 <div class="text-[11px] text-white font-medium">Fundador · Boring Privacy</div>
-                <div class="text-[10px] text-steel/70 mt-0.5 italic">Privacidad y soberanía digital</div>
                 <div class="text-[10px] text-steel mt-1.5">stark@boringprivacy.io</div>
                 <div class="mt-2 text-center text-[10px] py-1.5 rounded-lg bg-neon text-void font-semibold">Guardar en agenda</div>
               </div>
@@ -129,113 +120,55 @@
     </div>
   </div>
 </section>
-
 <section id="dominios" class="py-20 border-t border-white/5">
   <div class="max-w-5xl mx-auto px-6">
     <div class="text-center mb-12">
       <h2 class="text-3xl font-bold text-white mb-3">Un producto. Dos caras. Mismos datos.</h2>
-      <p class="text-steel max-w-2xl mx-auto text-sm">No son apps distintas: es el mismo perfil con énfasis distinto. Tú eliges qué cara mostrar en cada contexto.</p>
+      <p class="text-steel max-w-2xl mx-auto text-sm">El mismo perfil con énfasis distinto según el dominio.</p>
     </div>
     <div class="grid md:grid-cols-3 gap-5">
-      <div class="p-6 rounded-2xl bg-panel border border-neon/30 relative overflow-hidden">
-        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neon/50 to-transparent"></div>
-        <div class="text-neon font-mono text-sm mb-2">privacidad.me</div>
-        <h3 class="text-white font-semibold mb-2">Hub de identidad digital</h3>
-        <p class="text-steel text-sm leading-relaxed">La marca del producto. Enlaces + tarjeta de identidad opcional (vCard). Pensado para quien quiere una presencia digital completa y privada.</p>
-      </div>
-      <div class="p-6 rounded-2xl bg-panel border border-white/10">
-        <div class="text-mist font-mono text-sm mb-2">privtr.ee</div>
-        <h3 class="text-white font-semibold mb-2">Enlace corto (link-in-bio)</h3>
-        <p class="text-steel text-sm leading-relaxed">La cara limpia y rápida. Competidor directo de Linktree: redes y botones. La tarjeta de identidad se puede desactivar y quedar solo con enlaces.</p>
-      </div>
-      <div class="p-6 rounded-2xl bg-panel border border-white/10">
-        <div class="text-mist font-mono text-sm mb-2">privtree.com</div>
-        <h3 class="text-white font-semibold mb-2">Alias</h3>
-        <p class="text-steel text-sm leading-relaxed">Dominio alternativo. Mismos datos, misma página, misma cuenta. Sin fricción.</p>
-      </div>
+      <div class="p-6 rounded-2xl bg-panel border border-neon/30"><div class="text-neon font-mono text-sm mb-2">privacidad.me</div><h3 class="text-white font-semibold mb-2">Hub de identidad</h3><p class="text-steel text-sm">Enlaces + tarjeta de identidad opcional (vCard).</p></div>
+      <div class="p-6 rounded-2xl bg-panel border border-white/10"><div class="text-mist font-mono text-sm mb-2">privtr.ee</div><h3 class="text-white font-semibold mb-2">Enlace corto</h3><p class="text-steel text-sm">Link-in-bio. Puedes ocultar la tarjeta y quedar solo con enlaces.</p></div>
+      <div class="p-6 rounded-2xl bg-panel border border-white/10"><div class="text-mist font-mono text-sm mb-2">privtree.com</div><h3 class="text-white font-semibold mb-2">Alias</h3><p class="text-steel text-sm">Mismos datos, misma cuenta.</p></div>
     </div>
-    <p class="text-center text-xs text-steel/60 mt-8 max-w-lg mx-auto">La tarjeta de identidad es un módulo opcional. Actívala cuando quieras compartir contacto real; desactívala cuando solo necesites el link en bio.</p>
   </div>
 </section>
-
 <section id="features" class="py-24 border-t border-white/5">
   <div class="max-w-6xl mx-auto px-6">
-    <div class="text-center mb-16">
-      <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Más que una lista de enlaces</h2>
-      <p class="text-steel max-w-xl mx-auto">Prioridad hoy: enlaces. Camino: identidad digital completa, sin rastreo.</p>
-    </div>
+    <div class="text-center mb-16"><h2 class="text-3xl font-bold text-white mb-4">Más que una lista de enlaces</h2></div>
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div class="p-6 rounded-2xl bg-panel border border-white/5 hover:border-neon/20 transition"><h3 class="text-lg font-semibold text-white mb-2">Enlaces</h3><p class="text-steel text-sm">Botones, colores, marcas, orden por arrastre. Lo esencial de Linktree, sin el modelo de datos ajenos.</p></div>
-      <div class="p-6 rounded-2xl bg-panel border border-white/5 hover:border-neon/20 transition"><h3 class="text-lg font-semibold text-white mb-2">Tarjeta de identidad</h3><p class="text-steel text-sm">Módulo opcional. Nota contextual, email, tel, web y «Guardar en agenda» (.vcf). Espíritu QCard, diseño propio.</p></div>
-      <div class="p-6 rounded-2xl bg-panel border border-white/5 hover:border-neon/20 transition"><h3 class="text-lg font-semibold text-white mb-2">Sin rastreo</h3><p class="text-steel text-sm">Sin cookies de tracking, sin vender tu IP ni tu grafo social.</p></div>
-      <div class="p-6 rounded-2xl bg-panel border border-white/5 hover:border-neon/20 transition"><h3 class="text-lg font-semibold text-white mb-2">Open source</h3><p class="text-steel text-sm">Código auditable. Basado en la línea LinkStack, renovado para privacidad.</p></div>
-      <div class="p-6 rounded-2xl bg-panel border border-white/5 hover:border-neon/20 transition"><h3 class="text-lg font-semibold text-white mb-2">Tus usuarios</h3><p class="text-steel text-sm">Migración y continuidad: no se pierden cuentas al renovar la interfaz.</p></div>
-      <div class="p-6 rounded-2xl bg-panel border border-white/5 hover:border-neon/20 transition"><h3 class="text-lg font-semibold text-white mb-2">Apariencia</h3><p class="text-steel text-sm">Avatar, fondo, formas y estilos de botón. Control visual sin plataformas cerradas.</p></div>
-      <div class="p-6 rounded-2xl bg-panel border border-dashed border-white/10 opacity-80"><h3 class="text-lg font-semibold text-white mb-2">Herramientas <span class="text-[10px] text-neon font-normal align-middle">próximamente</span></h3><p class="text-steel text-sm">Acortadores, limpieza de metadatos y utilidades de privacidad. Se integrarán más adelante en el mismo hub.</p></div>
+      <div class="p-6 rounded-2xl bg-panel border border-white/5"><h3 class="text-lg font-semibold text-white mb-2">Enlaces</h3><p class="text-steel text-sm">Botones, colores, marcas, orden. Sin modelo de datos ajenos.</p></div>
+      <div class="p-6 rounded-2xl bg-panel border border-white/5"><h3 class="text-lg font-semibold text-white mb-2">Tarjeta de identidad</h3><p class="text-steel text-sm">Módulo opcional. Nota, email, tel, web y «Guardar en agenda» (.vcf). Diseño propio, sin rastreo.</p></div>
+      <div class="p-6 rounded-2xl bg-panel border border-white/5"><h3 class="text-lg font-semibold text-white mb-2">Sin rastreo</h3><p class="text-steel text-sm">Sin cookies de tracking ni venta de grafo social.</p></div>
+      <div class="p-6 rounded-2xl bg-panel border border-white/5"><h3 class="text-lg font-semibold text-white mb-2">Open source</h3><p class="text-steel text-sm">Auditable. Línea LinkStack renovada para privacidad.</p></div>
+      <div class="p-6 rounded-2xl bg-panel border border-white/5"><h3 class="text-lg font-semibold text-white mb-2">Tus usuarios</h3><p class="text-steel text-sm">No se pierden cuentas al renovar la interfaz.</p></div>
+      <div class="p-6 rounded-2xl bg-panel border border-dashed border-white/10 opacity-80"><h3 class="text-lg font-semibold text-white mb-2">Herramientas <span class="text-[10px] text-neon">próximamente</span></h3><p class="text-steel text-sm">Acortadores, metadatos y utilidades de privacidad.</p></div>
     </div>
   </div>
 </section>
-
 <section id="comparativa" class="py-24 border-t border-white/5">
   <div class="max-w-5xl mx-auto px-6">
-    <div class="text-center mb-12"><h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">¿Por qué privtr.ee / privacidad.me?</h2></div>
+    <div class="text-center mb-12"><h2 class="text-3xl font-bold text-white mb-4">¿Por qué privtr.ee / privacidad.me?</h2></div>
     <div class="overflow-x-auto rounded-2xl border border-white/10">
       <table class="w-full text-left text-sm">
-        <thead><tr class="bg-panel border-b border-white/10"><th class="px-6 py-4 text-steel">Característica</th><th class="px-6 py-4 text-neon text-center font-semibold">Nosotros</th><th class="px-6 py-4 text-steel text-center">Otras</th></tr></thead>
+        <thead><tr class="bg-panel border-b border-white/10"><th class="px-6 py-4 text-steel">Característica</th><th class="px-6 py-4 text-neon text-center">Nosotros</th><th class="px-6 py-4 text-steel text-center">Otras</th></tr></thead>
         <tbody class="divide-y divide-white/5">
           <tr class="bg-void/50"><td class="px-6 py-4">Rastreo / venta de datos</td><td class="px-6 py-4 text-center text-green-400">No</td><td class="px-6 py-4 text-center text-red-400/80">Habitual</td></tr>
           <tr><td class="px-6 py-4">Open source</td><td class="px-6 py-4 text-center text-green-400">Sí</td><td class="px-6 py-4 text-center text-red-400/80">No</td></tr>
-          <tr class="bg-void/50"><td class="px-6 py-4">Tarjeta de identidad (.vcf)</td><td class="px-6 py-4 text-center text-green-400">Opcional</td><td class="px-6 py-4 text-center text-steel">Raro / de pago</td></tr>
+          <tr class="bg-void/50"><td class="px-6 py-4">Tarjeta de identidad (.vcf)</td><td class="px-6 py-4 text-center text-green-400">Opcional</td><td class="px-6 py-4 text-center text-steel">Raro</td></tr>
           <tr><td class="px-6 py-4">Precio</td><td class="px-6 py-4 text-center text-green-400">Gratuito</td><td class="px-6 py-4 text-center text-steel">Freemium</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
-
-<section class="py-24 border-t border-white/5">
-  <div class="max-w-4xl mx-auto px-6 text-center">
-    <h2 class="text-3xl font-bold text-white mb-4">Mismo espíritu que Boring Privacy</h2>
-    <p class="text-steel mb-12">Herramientas reales, no discurso vacío.</p>
-    <div class="grid sm:grid-cols-3 gap-5">
-      <a href="https://boringprivacy.io" target="_blank" class="p-6 rounded-2xl bg-panel border border-white/5 hover:border-neon/30 text-left"><div class="text-neon text-sm mb-2">Academia</div><div class="text-white font-semibold">Boring Privacy</div></a>
-      <a href="https://t.me/StarkPrivacy" target="_blank" class="p-6 rounded-2xl bg-panel border border-white/5 hover:border-neon/30 text-left"><div class="text-neon text-sm mb-2">Comunidad</div><div class="text-white font-semibold">Telegram</div></a>
-      <a href="https://x.com/StarkPrivacy" target="_blank" class="p-6 rounded-2xl bg-panel border border-white/5 hover:border-neon/30 text-left"><div class="text-neon text-sm mb-2">Actualizaciones</div><div class="text-white font-semibold">X / Twitter</div></a>
-    </div>
-  </div>
-</section>
-
 <section id="precios" class="py-16 border-t border-white/5">
-  <div class="max-w-3xl mx-auto px-6">
-    <div class="text-center mb-8">
-      <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">Precios</h2>
-      <p class="text-steel text-sm">Gratis · Sostenido con donaciones</p>
-    </div>
-    <div class="p-6 rounded-2xl bg-panel border border-white/5 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="text-center sm:text-left">
-        <div class="text-neon font-mono text-xs mb-1">PLAN ÚNICO</div>
-        <div class="text-xl font-bold text-white">0 € · Sin límites artificiales</div>
-      </div>
-      <p class="text-xs text-steel max-w-xs text-center sm:text-right">Se mantiene gracias al apoyo de la comunidad.</p>
-    </div>
-    <div class="grid grid-cols-3 gap-3">
-      <div class="p-3 rounded-xl bg-void border border-white/10 text-center"><div class="text-orange-400 font-bold text-sm">₿ BTC</div></div>
-      <div class="p-3 rounded-xl bg-void border border-white/10 text-center"><div class="text-orange-500 font-bold text-sm">XMR</div></div>
-      <div class="p-3 rounded-xl bg-void border border-white/10 text-center"><div class="text-green-400 font-bold text-sm">₮ USDT</div><p class="text-[10px] text-steel">TRC-20</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="py-24 border-t border-white/5">
   <div class="max-w-3xl mx-auto px-6 text-center">
-    <div class="p-10 rounded-3xl bg-gradient-to-b from-panel to-void border border-neon/20">
-      <h2 class="text-3xl font-bold text-white mb-4">Tu página. Tus reglas.</h2>
-      <p class="text-steel mb-8">Sin tarjeta. Sin rastreo. Open source.</p>
-      <a href="registro.html" class="inline-flex px-8 py-3.5 rounded-xl bg-neon text-void font-semibold hover:bg-neon-glow transition glow-blue">Crear mi cuenta</a>
-    </div>
+    <h2 class="text-2xl font-bold text-white mb-2">Precios</h2>
+    <p class="text-steel text-sm mb-6">0 € · Sostenido con donaciones (BTC / XMR / USDT TRC-20)</p>
+    <a href="registro.html" class="inline-flex px-8 py-3.5 rounded-xl bg-neon text-void font-semibold glow-blue">Crear mi cuenta</a>
   </div>
 </section>
-
 <footer class="border-t border-white/5 py-12">
   <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
     <span class="text-sm text-steel">privacidad.me · privtr.ee · privtree.com</span>
