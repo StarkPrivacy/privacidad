@@ -16,6 +16,21 @@ function ensureSocialOrder() {
   });
 }
 
+function flashPreview() {
+  var roots = [document.getElementById('preview'), document.getElementById('preview-desktop')];
+  roots.forEach(function (root) {
+    if (!root) return;
+    root.classList.remove('reorder-flash');
+    void root.offsetWidth;
+    root.classList.add('reorder-flash');
+  });
+  document.querySelectorAll('#link-list > div, #social-list > div').forEach(function (el) {
+    el.classList.remove('list-settle');
+    void el.offsetWidth;
+    el.classList.add('list-settle');
+  });
+}
+
 function init() {
   const loaded = PrivStore.load();
   state = loaded || PrivStore.starkDemo();
@@ -292,7 +307,7 @@ function socialDrop(e, targetId) {
   state.socialOrder.splice(from, 1);
   state.socialOrder.splice(to, 0, socialDragId);
   socialDragId = null;
-  renderSocialForm(); refresh(); scheduleSave();
+  renderSocialForm(); refresh(); flashPreview(); scheduleSave();
 }
 
 function typeLabel(t) {
@@ -407,7 +422,7 @@ function drop(e, targetId) {
   if (from < 0 || to < 0) return;
   const item = state.links.splice(from, 1)[0];
   state.links.splice(to, 0, item);
-  dragId = null; renderLinksForm(); refresh(); scheduleSave();
+  dragId = null; renderLinksForm(); refresh(); flashPreview(); scheduleSave();
 }
 function setOpt(key, val) { state[key] = val; updateChips(); refresh(); scheduleSave(); }
 function updateChips() {
@@ -465,8 +480,6 @@ function importJSON(ev) {
 }
 function demoPassword() {
   showToast('En producción se cambiará en el servidor');
-  document.getElementById('pw-current').value = '';
-  document.getElementById('pw-new').value = '';
 }
 function demo2FA(el) {
   showToast(el.checked ? '2FA activado (demo)' : '2FA desactivado (demo)');
@@ -474,7 +487,7 @@ function demo2FA(el) {
 function deleteAccount() {
   const pw = document.getElementById('del-pw').value;
   if (!pw) { alert('Introduce tu contraseña'); return; }
-  if (!confirm('¿Eliminar definitivamente tu cuenta y todos los datos de este dispositivo?')) return;
+  if (!confirm('¿Eliminar definitivamente tu cuenta?')) return;
   try {
     localStorage.removeItem('priv_page');
     localStorage.removeItem('priv_page_' + state.username);
