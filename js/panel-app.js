@@ -3,32 +3,35 @@ let nid = 20;
 let dragId = null;
 let saveTimer = null;
 let socialExpanded = false;
+let previewDevice = 'phone';
+let customAccentOpen = false;
 
 function init() {
   const loaded = PrivStore.load();
   state = loaded || PrivStore.starkDemo();
   nid = Math.max(20, ...(state.links.map(l => l.id || 0)), 0) + 1;
-  fillForm(); renderSocialForm(); renderLinksForm(); updateChips(); refresh();
+  fillForm(); renderSocialForm(); renderLinksForm(); updateChips(); updateIdentityLock(); refresh();
 }
 
 function loadStarkDemo() {
   if (!confirm('¿Cargar demo @stark? Sustituye el contenido actual.')) return;
   state = PrivStore.starkDemo();
   nid = 30;
-  fillForm(); renderSocialForm(); renderLinksForm(); updateChips(); refresh(); doSave(true);
+  fillForm(); renderSocialForm(); renderLinksForm(); updateChips(); updateIdentityLock(); refresh(); doSave(true);
 }
 
 function fillForm() {
   document.getElementById('name').value = state.name || '';
   document.getElementById('bio').value = state.bio || '';
   document.getElementById('username').value = state.username || '';
+  const up = document.getElementById('username-preview');
+  if (up) up.textContent = state.username || '…';
   const bg = document.getElementById('btnGlow'); if (bg) bg.checked = !!state.btnGlow;
   const st = document.getElementById('sameTab'); if (st) st.checked = !!state.sameTab;
-  const ot = document.getElementById('ogTitle'); if (ot) ot.value = state.ogTitle || '';
-  const od = document.getElementById('ogDesc'); if (od) od.value = state.ogDesc || '';
   const ac = state.accentColor || '#0a84ff';
   const acEl = document.getElementById('accentColor'); if (acEl) acEl.value = ac;
   const hx = document.getElementById('accentHex'); if (hx) hx.value = ac;
+  updateAccentSwatches();
   const c = state.contact || PrivStore.emptyContact();
   const ce = document.getElementById('contact-enabled');
   if (ce) {
@@ -43,6 +46,7 @@ function fillForm() {
   }
   updateImageHints();
   updateModeChips();
+  updateIdentityLock();
 }
 
 function updateImageHints() {
@@ -52,11 +56,19 @@ function updateImageHints() {
   if (bg) bg.textContent = state.bgImage ? (state.bgImage.indexOf('data:') === 0 ? 'Subida' : 'URL') : 'Ninguna';
 }
 
-function onField() {
+function onNameField() {
   state.name = document.getElementById('name').value;
-  state.bio = document.getElementById('bio').value;
-  state.username = PrivStore.sanitizeUsername(document.getElementById('username').value);
+  const slug = PrivStore.sanitizeUsername(state.name);
+  state.username = slug || state.username || 'user';
   document.getElementById('username').value = state.username;
+  const up = document.getElementById('username-preview');
+  if (up) up.textContent = state.username || '…';
+  state.bio = document.getElementById('bio').value;
+  refresh(); scheduleSave();
+}
+
+function onField() {
+  state.bio = document.getElementById('bio').value;
   refresh(); scheduleSave();
 }
 
@@ -68,14 +80,37 @@ function setProfileMode(mode) {
     const ce = document.getElementById('contact-enabled');
     if (ce) { ce.checked = true; document.getElementById('contact-fields').classList.remove('hidden'); }
   }
-  updateModeChips(); refresh(); scheduleSave();
+  if (mode === 'links') {
+    if (state.contact) state.contact.enabled = false;
+    const ce = document.getElementById('contact-enabled');
+    if (ce) { ce.checked = false; document.getElementById('contact-fields').classList.add('hidden'); }
+  }
+  updateModeChips();
+  updateIdentityLock();
+  refresh(); scheduleSave();
 }
 
 function updateModeChips() {
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('on', b.dataset.v === state.profileMode));
 }
 
+function updateIdentityLock() {
+  const locked = state.profileMode === 'links';
+  const lockEl = document.getElementById('identity-locked');
+  const wrap = document.getElementById('identity-toggle-wrap');
+  const fields = document.getElementById('contact-fields');
+  if (lockEl) lockEl.classList.toggle('hidden', !locked);
+  if (wrap) {
+    wrap.classList.toggle('opacity-40', locked);
+    wrap.classList.toggle('pointer-events-none', locked);
+    const ce = document.getElementById('contact-enabled');
+    if (ce) ce.disabled = locked;
+  }
+  if (locked && fields) fields.classList.add('hidden');
+}
+
 function onContactToggle() {
+  if (state.profileMode === 'links') return;
   if (!state.contact) state.contact = PrivStore.emptyContact();
   state.contact.enabled = document.getElementById('contact-enabled').checked;
   document.getElementById('contact-fields').classList.toggle('hidden', !state.contact.enabled);
@@ -93,10 +128,44 @@ function onContactField() {
   refresh(); scheduleSave();
 }
 
+function setAccentPreset(hex) {
+  state.accentColor = hex;
+  customAccentOpen = false;
+  const row = document.getElementById('accent-custom-row');
+  if (row) row.classList.add('hidden');
+  const acEl = document.getElementById('accentColor'); if (acEl) acEl.value = hex;
+  const hx = document.getElementById('accentHex'); if (hx) hx.value = hex;
+  updateAccentSwatches();
+  refresh(); scheduleSave();
+}
+
+function toggleCustomAccent() {
+  customAccentOpen = !customAccentOpen;
+  const row = document.getElementById('accent-custom-row');
+  if (row) row.classList.toggle('hidden', !customAccentOpen);
+  document.querySelectorAll('.accent-swatch').forEach(b => b.classList.remove('on'));
+}
+
+function updateAccentSwatches() {
+  const ac = (state.accentColor || '#0a84ff').toLowerCase();
+  let matched = false;
+  document.querySelectorAll('.accent-swatch').forEach(b => {
+    const on = (b.dataset.c || '').toLowerCase() === ac;
+    b.classList.toggle('on', on);
+    if (on) matched = true;
+  });
+  if (!matched) {
+    customAccentOpen = true;
+    const row = document.getElementById('accent-custom-row');
+    if (row) row.classList.remove('hidden');
+  }
+}
+
 function onAccentColor() {
   const v = document.getElementById('accentColor').value;
   state.accentColor = v;
   document.getElementById('accentHex').value = v;
+  document.querySelectorAll('.accent-swatch').forEach(b => b.classList.remove('on'));
   refresh(); scheduleSave();
 }
 function onAccentHex() {
@@ -104,8 +173,8 @@ function onAccentHex() {
   if (v && v.charAt(0) !== '#') v = '#' + v;
   if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v)) {
     state.accentColor = v;
-    document.getElementById('accentColor').value = v.length === 4
-      ? '#' + v[1]+v[1]+v[2]+v[2]+v[3]+v[3] : v;
+    document.getElementById('accentColor').value = v.length === 4 ? '#' + v[1]+v[1]+v[2]+v[2]+v[3]+v[3] : v;
+    document.querySelectorAll('.accent-swatch').forEach(b => b.classList.remove('on'));
     refresh(); scheduleSave();
   }
 }
@@ -127,13 +196,30 @@ function onBgFile(ev) {
 function clearAvatar() { state.avatar = ''; updateImageHints(); refresh(); scheduleSave(); }
 function clearBg() { state.bgImage = ''; updateImageHints(); refresh(); scheduleSave(); }
 
+function setPreviewDevice(dev) {
+  previewDevice = dev;
+  document.querySelectorAll('.preview-toggle').forEach(b => {
+    b.classList.toggle('on', b.dataset.v === dev);
+    b.classList.toggle('text-steel', b.dataset.v !== dev);
+  });
+  document.getElementById('frame-phone').classList.toggle('hidden', dev !== 'phone');
+  document.getElementById('frame-desktop').classList.toggle('hidden', dev !== 'desktop');
+  refresh();
+}
+
 function refresh() {
   document.getElementById('public-link').href = 'u.html?u=' + encodeURIComponent(state.username);
   const wrap = document.getElementById('av-wrap');
   if (state.avatar) wrap.innerHTML = '<img src="' + PrivStore.esc(state.avatar) + '" class="w-full h-full object-cover">';
   else wrap.textContent = (state.name || '?')[0].toUpperCase();
   renderDomains();
-  PrivStore.renderProfile(state, document.getElementById('preview'), { compact: true });
+  const du = document.getElementById('desktop-url');
+  if (du) du.textContent = 'privtr.ee/@' + (state.username || '…');
+  if (previewDevice === 'desktop') {
+    PrivStore.renderProfile(state, document.getElementById('preview-desktop'), { compact: false });
+  } else {
+    PrivStore.renderProfile(state, document.getElementById('preview'), { compact: true });
+  }
 }
 
 function renderDomains() {
@@ -141,9 +227,9 @@ function renderDomains() {
   if (!el) return;
   const u = state.username || '…';
   el.innerHTML = PrivStore.DOMAINS.map(function (d) {
-    return '<div class="flex items-center gap-2 p-2.5 rounded-lg bg-void border border-white/10">' +
-      '<span class="flex-1 text-xs font-mono text-mist truncate">' + d + '/@' + u + '</span>' +
-      '<button type="button" onclick="copyDomain(\'' + d + '\')" class="text-[11px] px-2.5 py-1 rounded-md border border-neon/30 text-neon">Copiar</button></div>';
+    return '<div class="flex items-center gap-2 py-1">' +
+      '<span class="flex-1 text-[11px] font-mono text-mist truncate">' + d + '/@' + u + '</span>' +
+      '<button type="button" onclick="copyDomain(\'' + d + '\')" class="text-[10px] px-2 py-0.5 rounded border border-neon/30 text-neon">Copiar</button></div>';
   }).join('');
 }
 function copyDomain(domain) {
@@ -171,24 +257,14 @@ function renderSocialForm() {
   }).join('');
   const btn = document.getElementById('social-more-btn');
   if (!btn) return;
-  if (!filled.length) {
-    btn.classList.add('hidden');
-    socialExpanded = true;
-  } else if (empty.length) {
+  if (!filled.length) { btn.classList.add('hidden'); socialExpanded = true; }
+  else if (empty.length) {
     btn.classList.remove('hidden');
     btn.textContent = socialExpanded ? 'Ver menos' : 'Ver más redes (' + empty.length + ')';
-  } else {
-    btn.classList.add('hidden');
-  }
+  } else btn.classList.add('hidden');
 }
-function onSocialInput(id, val) {
-  state.social[id] = val;
-  refresh(); scheduleSave();
-}
-function toggleSocialMore() {
-  socialExpanded = !socialExpanded;
-  renderSocialForm();
-}
+function onSocialInput(id, val) { state.social[id] = val; refresh(); scheduleSave(); }
+function toggleSocialMore() { socialExpanded = !socialExpanded; renderSocialForm(); }
 
 function typeLabel(t) {
   return { link: 'Enlace', heading: 'Título', text: 'Texto', spacer: 'Espacio' }[t] || t;
@@ -206,12 +282,11 @@ function brandOptions(selected) {
   }).join('');
 }
 function iconModeOptions(selected) {
-  const opts = [
+  return [
     { id: 'none', label: 'Sin icono' },
     { id: 'favicon', label: 'Favicon web' },
     { id: 'preset', label: 'Icono predeterminado' },
-  ];
-  return opts.map(function (o) {
+  ].map(function (o) {
     return '<option value="' + o.id + '"' + (selected === o.id ? ' selected' : '') + '>' + o.label + '</option>';
   }).join('');
 }
@@ -238,13 +313,11 @@ function renderLinksForm() {
       (showStyle ? '<div class="flex gap-2 flex-wrap items-center">' +
         '<select onchange="applyBrand(' + l.id + ',this.value)" class="text-[11px] bg-void border border-white/10 rounded-lg px-2 py-1 text-mist">' + brandOptions(l.brand || 'custom') + '</select>' +
         '<select onchange="onLinkColor(' + l.id + ',this.value)" class="text-[11px] bg-void border border-white/10 rounded-lg px-2 py-1 text-mist">' + colorOptions(isCustom ? 'custom' : l.color) + '</select>' +
-        (isCustom ? '<input type="color" value="' + PrivStore.esc(l.customColor || '#0a84ff') + '" oninput="updLinkCustomColor(' + l.id + ',this.value)" class="w-7 h-7 rounded border border-white/10 bg-void cursor-pointer">' +
-          '<input value="' + PrivStore.esc(l.customColor || '#0a84ff') + '" maxlength="7" onchange="updLinkCustomColor(' + l.id + ',this.value)" class="w-20 text-[11px] bg-void border border-white/10 rounded-lg px-1.5 py-1 text-mist font-mono">' : '') +
+        (isCustom ? '<input type="color" value="' + PrivStore.esc(l.customColor || '#0a84ff') + '" oninput="updLinkCustomColor(' + l.id + ',this.value)" class="w-7 h-7 rounded border border-white/10 bg-void cursor-pointer">' : '') +
         '</div>' +
         '<div class="flex gap-2 flex-wrap items-center">' +
         '<select onchange="onIconMode(' + l.id + ',this.value)" class="text-[11px] bg-void border border-white/10 rounded-lg px-2 py-1 text-mist">' + iconModeOptions(l.iconMode || 'none') + '</select>' +
         (l.iconMode === 'preset' ? '<select onchange="updLink(' + l.id + ',\'icon\',this.value)" class="text-[11px] bg-void border border-white/10 rounded-lg px-2 py-1 text-mist">' + presetIconOptions(l.icon) + '</select>' : '') +
-        (l.iconMode === 'favicon' ? '<span class="text-[10px] text-steel">Carga el favicon del dominio (opcional)</span>' : '') +
         '</div>' : '');
     return '<div class="flex gap-2 p-3 rounded-xl bg-panel border border-white/5" draggable="true" data-id="' + l.id + '" ondragstart="dragStart(event,' + l.id + ')" ondragover="dragOver(event)" ondrop="drop(event,' + l.id + ')" ondragend="dragEnd(event)">' +
       '<span class="text-steel cursor-grab self-center">⠿</span><div class="flex-1 space-y-1.5 min-w-0"><div class="text-[10px] text-neon/80">' + typeLabel(l.type) + '</div>' + body + '</div>' +
@@ -255,21 +328,15 @@ function renderLinksForm() {
 function onLinkColor(id, val) {
   const l = state.links.find(function (x) { return x.id === id; });
   if (!l) return;
-  if (val === 'custom') {
-    l.color = 'custom';
-    if (!l.customColor) l.customColor = '#0a84ff';
-  } else {
-    l.color = val;
-    l.customColor = '';
-  }
+  if (val === 'custom') { l.color = 'custom'; if (!l.customColor) l.customColor = '#0a84ff'; }
+  else { l.color = val; l.customColor = ''; }
   renderLinksForm(); refresh(); scheduleSave();
 }
 function updLinkCustomColor(id, val) {
   const l = state.links.find(function (x) { return x.id === id; });
   if (!l) return;
   if (val && val.charAt(0) !== '#') val = '#' + val;
-  l.color = 'custom';
-  l.customColor = val;
+  l.color = 'custom'; l.customColor = val;
   refresh(); scheduleSave();
 }
 function onIconMode(id, mode) {
@@ -279,7 +346,6 @@ function onIconMode(id, mode) {
   if (mode === 'preset' && !l.icon) l.icon = 'fa-solid fa-link';
   renderLinksForm(); refresh(); scheduleSave();
 }
-
 function applyBrand(id, brandId) {
   const l = state.links.find(function (x) { return x.id === id; });
   const b = PrivStore.BRANDS.find(function (x) { return x.id === brandId; });
@@ -333,6 +399,7 @@ function tab(btn) {
   document.querySelectorAll('[id^=t-]').forEach(function (e) { e.classList.add('hidden'); });
   document.getElementById('t-' + btn.dataset.tab).classList.remove('hidden');
   if (btn.dataset.tab === 'redes') renderSocialForm();
+  if (btn.dataset.tab === 'identidad') updateIdentityLock();
 }
 function scheduleSave() {
   const a = document.getElementById('autosave');
@@ -365,7 +432,7 @@ function importJSON(ev) {
   r.onload = function () {
     try {
       state = PrivStore.normalize(JSON.parse(r.result));
-      fillForm(); renderSocialForm(); renderLinksForm(); updateChips(); refresh(); doSave(true);
+      fillForm(); renderSocialForm(); renderLinksForm(); updateChips(); updateIdentityLock(); refresh(); doSave(true);
     } catch (e) { alert('JSON inválido'); }
   };
   r.readAsText(f);
@@ -377,5 +444,16 @@ function demoPassword() {
 }
 function demo2FA(el) {
   showToast(el.checked ? '2FA activado (demo)' : '2FA desactivado (demo)');
+}
+function deleteAccount() {
+  const pw = document.getElementById('del-pw').value;
+  if (!pw) { alert('Introduce tu contraseña'); return; }
+  if (!confirm('¿Eliminar definitivamente tu cuenta y todos los datos de este dispositivo?')) return;
+  try {
+    localStorage.removeItem('priv_page');
+    localStorage.removeItem('priv_page_' + state.username);
+  } catch (e) {}
+  showToast('Cuenta eliminada');
+  setTimeout(function () { location.href = 'index.html'; }, 800);
 }
 init();
