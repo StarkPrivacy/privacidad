@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sobre mí — Privacidad.me</title>
+<meta name="description" content="Quién está detrás de privacidad.me">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{background:#05070a}</style>
+</head>
+<body class="font-sans text-mist antialiased min-h-screen flex flex-col">
+<nav class="border-b border-white/5 h-14 flex items-center px-6 justify-between bg-void/80 backdrop-blur sticky top-0 z-20">
+  <a href="index.html" class="font-semibold text-white text-sm">privacidad<span class="text-neon">.me</span></a>
+  <div class="flex gap-4 text-sm text-steel"><a href="index.html" class="hover:text-white">Inicio</a><a href="contacto.html" class="hover:text-white">Contacto</a></div>
+</nav>
+<main class="flex-1 max-w-3xl mx-auto px-6 py-12 sm:py-16">
+  <p class="text-[11px] text-neon mb-2 uppercase tracking-wider">Proyecto</p>
+  <h1 class="text-3xl font-bold text-white mb-4">Sobre mí</h1>
+  <p class="text-sm text-steel leading-relaxed mb-6">Soy <a href="https://starkprivacy.com" target="_blank" rel="noopener" class="text-neon hover:underline">Stark</a>. Trabajo en privacidad práctica y formación a través de <a href="https://boringprivacy.io" target="_blank" rel="noopener" class="text-neon hover:underline">Boring Privacy</a>.</p>
+  <p class="text-sm text-steel leading-relaxed mb-6">privacidad.me / privtr.ee es una alternativa open source a los link-in-bio comerciales, sin modelo de negocio basado en vender tu grafo social.</p>
+  <div class="flex flex-wrap gap-3">
+    <a href="https://starkprivacy.com" target="_blank" rel="noopener" class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon">starkprivacy.com</a>
+    <a href="https://boringprivacy.io" target="_blank" rel="noopener" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-steel hover:text-white">Academia</a>
+    <a href="https://x.com/StarkPrivacy" target="_blank" rel="noopener" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-steel hover:text-white">X</a>
+  </div>
+</main>
+<footer class="border-t border-white/5 pt-14 pb-10 mt-auto">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+      <div class="col-span-2 md:col-span-1"><a href="index.html" class="font-semibold text-white text-sm">privacidad<span class="text-neon">.me</span></a></div>
+      <div><h4 class="text-[11px] uppercase tracking-wider text-steel mb-3">Explora</h4><ul class="space-y-2 text-sm text-mist"><li><a href="faq.html" class="hover:text-neon">FAQ</a></li><li><a href="panel.html" class="hover:text-neon">Demo</a></li></ul></div>
+      <div><h4 class="text-[11px] uppercase tracking-wider text-steel mb-3">Proyecto</h4><ul class="space-y-2 text-sm text-mist"><li><a href="sobre.html" class="hover:text-neon">Sobre mí</a></li><li><a href="donar.html" class="hover:text-neon">Donar</a></li><li><a href="open-source.html" class="hover:text-neon">Open source</a></li></ul></div>
+      <div><h4 class="text-[11px] uppercase tracking-wider text-steel mb-3">Conecta</h4><ul class="space-y-2 text-sm text-mist"><li><a href="https://x.com/StarkPrivacy" target="_blank" rel="noopener" class="hover:text-neon">X</a></li><li><a href="https://github.com/StarkPrivacy/privacidad" target="_blank" rel="noopener" class="hover:text-neon">GitHub</a></li></ul></div>
+    </div>
+    <div class="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-steel">
+      <span>privacidad.me · privtr.ee · privtree.com</span>
+      <p>Con <span class="text-red-400">❤</span> de <a href="https://starkprivacy.com" target="_blank" rel="noopener" class="text-mist hover:text-neon">Stark</a></p>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
