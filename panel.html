@@ -15,20 +15,21 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
 .social-btn:hover{transform:scale(1.08);border-color:rgba(10,132,255,.5)}
 .link-btn{transition:border-color .15s,background .15s}
 .link-btn:hover{border-color:rgba(10,132,255,.4);background:rgba(10,132,255,.06)}
+.drag-over{border-color:rgba(10,132,255,.5)!important;background:rgba(10,132,255,.08)}
+#toast{transition:opacity .3s,transform .3s}
 </style>
 </head>
 <body class="text-mist antialiased min-h-screen">
 <header class="h-14 border-b border-white/5 bg-void/90 backdrop-blur flex items-center justify-between px-4 sticky top-0 z-30">
-  <div class="flex items-center gap-3">
-    <a href="index.html" class="font-semibold text-white text-sm">privacidad<span class="text-neon">.me</span></a>
-    <span class="text-steel text-xs hidden sm:inline">/ panel</span>
-  </div>
+  <a href="index.html" class="font-semibold text-white text-sm">privacidad<span class="text-neon">.me</span></a>
   <div class="flex items-center gap-3">
     <a id="public-link" href="u.html" target="_blank" class="text-xs text-steel hover:text-white">Ver página →</a>
-    <button onclick="saveAll()" class="px-4 py-1.5 rounded-lg bg-neon text-void text-sm font-semibold">Guardar</button>
+    <button id="btn-save" onclick="doSave(true)" class="px-4 py-1.5 rounded-lg bg-neon text-void text-sm font-semibold">Guardar</button>
     <a href="index.html" class="text-xs text-steel hover:text-white">Salir</a>
   </div>
 </header>
+
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl bg-panel border border-neon/30 text-sm text-white opacity-0 pointer-events-none z-50">Guardado</div>
 
 <div class="max-w-6xl mx-auto p-4 lg:p-6 grid lg:grid-cols-2 gap-6 lg:gap-8">
   <div class="space-y-5 order-2 lg:order-1">
@@ -42,63 +43,72 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
 
     <div id="t-perfil" class="space-y-4">
       <div class="flex items-center gap-4">
-        <img id="av" src="https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg" class="w-16 h-16 rounded-full object-cover border-2 border-neon/40">
-        <div class="text-xs text-steel">Avatar (URL)<br><input id="avatar" class="mt-1 w-full max-w-xs bg-panel border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs" value="https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg" oninput="sync()"></div>
-      </div>
-      <div><label class="text-xs text-steel">Nombre</label>
-        <input id="name" value="Stark" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" oninput="sync()"></div>
-      <div><label class="text-xs text-steel">Biografía</label>
-        <textarea id="bio" rows="2" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white resize-none" oninput="sync()">Sin privacidad tu libertad es solo una ilusión</textarea></div>
-      <div><label class="text-xs text-steel">Usuario (URL)</label>
-        <div class="mt-1 flex items-center gap-1 text-sm">
-          <span class="text-steel">privtr.ee/</span>
-          <input id="username" value="stark" class="flex-1 bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-white" oninput="sync()">
+        <div id="av-wrap" class="w-16 h-16 rounded-full bg-panel border-2 border-neon/40 overflow-hidden flex items-center justify-center text-steel shrink-0"></div>
+        <div class="flex-1 min-w-0">
+          <label class="text-xs text-steel">URL del avatar</label>
+          <input id="avatar" class="mt-1 w-full bg-panel border border-white/10 rounded-lg px-3 py-2 text-white text-xs" placeholder="https://..." oninput="onField()">
         </div>
+      </div>
+      <div>
+        <label class="text-xs text-steel">Nombre visible</label>
+        <input id="name" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" oninput="onField()">
+      </div>
+      <div>
+        <label class="text-xs text-steel">Biografía</label>
+        <textarea id="bio" rows="2" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white resize-none" oninput="onField()"></textarea>
+      </div>
+      <div>
+        <label class="text-xs text-steel">Usuario (URL pública)</label>
+        <div class="mt-1 flex items-center gap-1 text-sm">
+          <span class="text-steel shrink-0">privtr.ee/</span>
+          <input id="username" class="flex-1 bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-white" oninput="onField()">
+        </div>
+        <p class="mt-1 text-[11px] text-steel/60">Solo letras, números, - y _</p>
       </div>
     </div>
 
     <div id="t-redes" class="hidden space-y-3">
-      <p class="text-xs text-steel">Debajo del perfil y encima de los enlaces (como LinkStack). Vacío = oculto.</p>
+      <p class="text-xs text-steel">Iconos debajo del perfil y <strong class="text-mist">encima de los enlaces</strong>. Vacío = no se muestra.</p>
       <div id="social-list" class="space-y-2"></div>
     </div>
 
     <div id="t-enlaces" class="hidden space-y-3">
       <div class="flex justify-between items-center">
-        <p class="text-xs text-steel">Botones de enlace</p>
+        <p class="text-xs text-steel">Arrastra ⠿ para reordenar</p>
         <button onclick="addLink()" class="text-xs text-neon border border-neon/30 px-3 py-1.5 rounded-lg hover:bg-neon/10">+ Añadir</button>
       </div>
       <div id="link-list" class="space-y-2"></div>
     </div>
 
     <div id="t-estilo" class="hidden space-y-4">
-      <div><label class="text-xs text-steel mb-2 block">Tema</label>
-        <div class="flex gap-2">
-          <button onclick="setTheme('dark')" class="theme-btn w-10 h-10 rounded-full bg-[#05070a] border-2 border-neon" data-t="dark"></button>
-          <button onclick="setTheme('blue')" class="theme-btn w-10 h-10 rounded-full bg-gradient-to-br from-[#0a1628] to-[#05070a] border border-white/20" data-t="blue"></button>
-          <button onclick="setTheme('violet')" class="theme-btn w-10 h-10 rounded-full bg-gradient-to-br from-[#1a0a28] to-[#05070a] border border-white/20" data-t="violet"></button>
-        </div></div>
-      <div><label class="text-xs text-steel mb-2 block">Forma de botones</label>
-        <div class="flex gap-2 text-xs">
-          <button onclick="setShape('rounded')" class="shape-btn px-3 py-2 rounded-xl border-2 border-neon bg-panel" data-s="rounded">Redondeado</button>
-          <button onclick="setShape('pill')" class="shape-btn px-3 py-2 rounded-full border border-white/10 bg-panel" data-s="pill">Píldora</button>
-          <button onclick="setShape('square')" class="shape-btn px-3 py-2 rounded-md border border-white/10 bg-panel" data-s="square">Cuadrado</button>
-        </div></div>
+      <div>
+        <label class="text-xs text-steel mb-2 block">Forma de botones</label>
+        <div class="flex gap-2 text-xs flex-wrap">
+          <button type="button" onclick="setShape('rounded')" class="shape-btn px-3 py-2 rounded-xl border bg-panel" data-s="rounded">Redondeado</button>
+          <button type="button" onclick="setShape('pill')" class="shape-btn px-3 py-2 rounded-full border bg-panel" data-s="pill">Píldora</button>
+          <button type="button" onclick="setShape('square')" class="shape-btn px-3 py-2 rounded-md border bg-panel" data-s="square">Cuadrado</button>
+        </div>
+      </div>
+      <label class="flex items-center gap-2 text-sm cursor-pointer">
+        <input type="checkbox" id="autosave" checked class="rounded">
+        <span class="text-steel">Guardar automáticamente al cambiar</span>
+      </label>
     </div>
 
     <div id="t-mas" class="hidden space-y-4">
       <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
-        <h3 class="text-sm text-white font-medium">QR / enlace</h3>
-        <p class="text-xs text-steel font-mono" id="qr-url">privtr.ee/stark</p>
-        <button onclick="copyPublic()" class="text-xs px-3 py-1.5 rounded-lg border border-neon/30 text-neon">Copiar enlace público</button>
+        <h3 class="text-sm text-white font-medium">Enlace público</h3>
+        <p class="text-xs text-steel font-mono" id="qr-url">privtr.ee/…</p>
+        <button type="button" onclick="copyPublic()" class="text-xs px-3 py-1.5 rounded-lg border border-neon/30 text-neon">Copiar enlace</button>
       </div>
       <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
         <h3 class="text-sm text-white font-medium">Dominios</h3>
-        <p class="text-xs text-steel font-mono">privacidad.me / privtr.ee / privtree.com · <span class="uname">stark</span></p>
+        <p class="text-xs text-steel font-mono leading-relaxed">privacidad.me/<span class="uname">…</span><br>privtr.ee/<span class="uname">…</span><br>privtree.com/<span class="uname">…</span></p>
       </div>
       <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
         <h3 class="text-sm text-white font-medium">Exportar / Importar</h3>
-        <div class="flex gap-2">
-          <button onclick="exportJSON()" class="text-xs px-3 py-1.5 rounded-lg border border-white/10">Exportar JSON</button>
+        <div class="flex gap-2 flex-wrap">
+          <button type="button" onclick="exportJSON()" class="text-xs px-3 py-1.5 rounded-lg border border-white/10">Exportar JSON</button>
           <label class="text-xs px-3 py-1.5 rounded-lg border border-white/10 cursor-pointer">Importar<input type="file" accept="application/json" class="hidden" onchange="importJSON(event)"></label>
         </div>
       </div>
@@ -116,71 +126,202 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
   </div>
 </div>
 
+<script src="js/store.js"></script>
 <script>
-const SOCIALS=[
-  {id:'x',label:'X / Twitter',icon:'𝕏',placeholder:'https://x.com/...'},
-  {id:'telegram',label:'Telegram',icon:'✈',placeholder:'https://t.me/...'},
-  {id:'github',label:'GitHub',icon:'⌥',placeholder:'https://github.com/...'},
-  {id:'youtube',label:'YouTube',icon:'▶',placeholder:'https://youtube.com/...'},
-  {id:'instagram',label:'Instagram',icon:'◎',placeholder:'https://instagram.com/...'},
-  {id:'linkedin',label:'LinkedIn',icon:'in',placeholder:'https://linkedin.com/in/...'},
-  {id:'matrix',label:'Matrix',icon:'⬡',placeholder:'https://matrix.to/...'},
-  {id:'email',label:'Email',icon:'✉',placeholder:'mailto:...'},
-];
-let state={name:'Stark',bio:'Sin privacidad tu libertad es solo una ilusión',username:'stark',
-  avatar:'https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg',
-  theme:'dark',shape:'rounded',
-  social:{x:'https://x.com/StarkPrivacy',telegram:'https://t.me/StarkPrivacy',github:'',youtube:'',instagram:'',linkedin:'',matrix:'',email:''},
-  links:[{id:1,title:'Academia Boring Privacy',url:'https://boringprivacy.io'},{id:2,title:'Canal de Telegram',url:'https://t.me/StarkPrivacy'}]};
-let nid=3;
-function load(){
-  try{const s=localStorage.getItem('priv_page');if(s)state=JSON.parse(s)}catch(e){}
-  document.getElementById('name').value=state.name||'';
-  document.getElementById('bio').value=state.bio||'';
-  document.getElementById('username').value=state.username||'';
-  document.getElementById('avatar').value=state.avatar||'';
-  document.getElementById('av').src=state.avatar||'';
-  renderSocialForm();renderLinksForm();sync();
+let state = PrivStore.defaultPage('stark');
+let nid = 10;
+let dragId = null;
+let saveTimer = null;
+
+function init() {
+  const loaded = PrivStore.load();
+  if (loaded) state = loaded;
+  else {
+    state = PrivStore.defaultPage('stark');
+    state.name = 'Stark';
+    state.bio = 'Sin privacidad tu libertad es solo una ilusión';
+    state.avatar = 'https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg';
+    state.social.x = 'https://x.com/StarkPrivacy';
+    state.social.telegram = 'https://t.me/StarkPrivacy';
+    state.links = [
+      { id: 1, title: 'Academia Boring Privacy', url: 'https://boringprivacy.io' },
+      { id: 2, title: 'Canal de Telegram', url: 'https://t.me/StarkPrivacy' },
+    ];
+  }
+  nid = Math.max(10, ...state.links.map(l => l.id || 0)) + 1;
+  fillForm();
+  renderSocialForm();
+  renderLinksForm();
+  updateShapeBtns();
+  refresh();
 }
-function sync(){
-  state.name=document.getElementById('name').value;
-  state.bio=document.getElementById('bio').value;
-  state.username=document.getElementById('username').value.replace(/[^a-zA-Z0-9_-]/g,'').toLowerCase();
-  document.getElementById('username').value=state.username;
-  state.avatar=document.getElementById('avatar').value;
-  document.getElementById('av').src=state.avatar;
-  document.querySelectorAll('.uname').forEach(e=>e.textContent=state.username);
-  document.getElementById('qr-url').textContent='privtr.ee/'+state.username;
-  document.getElementById('public-link').href='u.html?u='+encodeURIComponent(state.username);
-  renderPreview();
+
+function fillForm() {
+  document.getElementById('name').value = state.name || '';
+  document.getElementById('bio').value = state.bio || '';
+  document.getElementById('username').value = state.username || '';
+  document.getElementById('avatar').value = state.avatar || '';
 }
-function renderSocialForm(){
-  document.getElementById('social-list').innerHTML=SOCIALS.map(s=>`<div class="flex items-center gap-2 p-2.5 rounded-xl bg-panel border border-white/5"><span class="w-8 text-center text-sm">${s.icon}</span><div class="flex-1 min-w-0"><div class="text-[10px] text-steel">${s.label}</div><input data-sid="${s.id}" value="${state.social[s.id]||''}" placeholder="${s.placeholder}" class="w-full bg-transparent text-sm text-white focus:outline-none" oninput="updSocial('${s.id}',this.value)"></div></div>`).join('');
+
+function onField() {
+  state.name = document.getElementById('name').value;
+  state.bio = document.getElementById('bio').value;
+  state.username = PrivStore.sanitizeUsername(document.getElementById('username').value);
+  document.getElementById('username').value = state.username;
+  state.avatar = document.getElementById('avatar').value.trim();
+  refresh();
+  scheduleSave();
 }
-function updSocial(id,v){state.social[id]=v;renderPreview()}
-function renderLinksForm(){
-  document.getElementById('link-list').innerHTML=state.links.map(l=>`<div class="flex gap-2 p-3 rounded-xl bg-panel border border-white/5"><div class="flex-1 space-y-1.5"><input value="${esc(l.title)}" onchange="updLink(${l.id},'title',this.value)" class="w-full bg-transparent text-sm text-white font-medium" placeholder="Título"><input value="${esc(l.url)}" onchange="updLink(${l.id},'url',this.value)" class="w-full bg-transparent text-xs text-steel" placeholder="https://"></div><button onclick="delLink(${l.id})" class="text-steel hover:text-red-400 self-center">✕</button></div>`).join('')||'<p class="text-xs text-steel">Sin enlaces.</p>';
+
+function refresh() {
+  document.querySelectorAll('.uname').forEach(e => e.textContent = state.username);
+  document.getElementById('qr-url').textContent = 'privtr.ee/' + state.username;
+  document.getElementById('public-link').href = 'u.html?u=' + encodeURIComponent(state.username);
+  const wrap = document.getElementById('av-wrap');
+  if (state.avatar) {
+    wrap.innerHTML = `<img src="${PrivStore.esc(state.avatar)}" class="w-full h-full object-cover" onerror="this.parentElement.textContent='?'">`;
+  } else {
+    wrap.textContent = (state.name || '?')[0].toUpperCase();
+  }
+  PrivStore.renderProfile(state, document.getElementById('preview'), { compact: true });
 }
-function esc(s){return String(s).replace(/"/g,'&quot;').replace(/</g,'&lt;')}
-function addLink(){state.links.push({id:nid++,title:'Nuevo enlace',url:''});renderLinksForm();renderPreview()}
-function updLink(id,f,v){const l=state.links.find(x=>x.id===id);if(l){l[f]=v;renderPreview()}}
-function delLink(id){state.links=state.links.filter(x=>x.id!==id);renderLinksForm();renderPreview()}
-function shapeClass(){if(state.shape==='pill')return 'rounded-full';if(state.shape==='square')return 'rounded-md';return 'rounded-xl'}
-function renderPreview(){
-  const sc=shapeClass();
-  const active=SOCIALS.filter(s=>state.social[s.id]&&state.social[s.id].trim());
-  const socialHtml=active.length?`<div class="flex flex-wrap justify-center gap-2 mb-5">${active.map(s=>`<a href="${esc(state.social[s.id])}" target="_blank" rel="noopener" class="social-btn w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xs text-mist">${s.icon}</a>`).join('')}</div>`:'';
-  const linksHtml=state.links.filter(l=>l.title||l.url).map(l=>`<a href="${esc(l.url||'#')}" target="_blank" rel="noopener" class="link-btn flex items-center justify-center w-full py-2.5 px-3 ${sc} bg-panel border border-white/10 text-xs text-mist font-medium mb-2">${esc(l.title)||'Enlace'}</a>`).join('');
-  document.getElementById('preview').innerHTML=`<img src="${esc(state.avatar)}" class="w-16 h-16 rounded-full mx-auto mb-3 object-cover border-2 border-neon/40" onerror="this.style.opacity=0.3"><h3 class="text-base font-semibold text-white mb-1">${esc(state.name)||'Nombre'}</h3><p class="text-[11px] text-steel mb-4 leading-snug">${esc(state.bio)||''}</p>${socialHtml}<div>${linksHtml||'<p class="text-[10px] text-steel/50">Sin enlaces</p>'}</div><p class="mt-4 text-[10px] text-steel/40">privtr.ee/${esc(state.username)}</p>`;
+
+function renderSocialForm() {
+  document.getElementById('social-list').innerHTML = PrivStore.SOCIAL_DEFS.map(s => `
+    <div class="flex items-center gap-2 p-2.5 rounded-xl bg-panel border border-white/5">
+      <span class="w-8 text-center text-sm">${s.icon}</span>
+      <div class="flex-1 min-w-0">
+        <div class="text-[10px] text-steel">${s.label}</div>
+        <input value="${PrivStore.esc(state.social[s.id] || '')}" placeholder="${s.placeholder}"
+          class="w-full bg-transparent text-sm text-white focus:outline-none"
+          oninput="state.social['${s.id}']=this.value;refresh();scheduleSave()">
+      </div>
+    </div>`).join('');
 }
-function tab(btn){document.querySelectorAll('.tab').forEach(t=>{t.classList.remove('active');t.classList.add('text-steel')});btn.classList.add('active');btn.classList.remove('text-steel');document.querySelectorAll('[id^=t-]').forEach(e=>e.classList.add('hidden'));document.getElementById('t-'+btn.dataset.tab).classList.remove('hidden')}
-function setTheme(t){state.theme=t;document.querySelectorAll('.theme-btn').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('border-2',on);b.classList.toggle('border-neon',on);if(!on){b.classList.add('border','border-white/20')}})}
-function setShape(s){state.shape=s;document.querySelectorAll('.shape-btn').forEach(b=>{const on=b.dataset.s===s;b.classList.toggle('border-neon',on);b.classList.toggle('border-2',on)});renderPreview()}
-function saveAll(){localStorage.setItem('priv_page',JSON.stringify(state));localStorage.setItem('priv_page_'+state.username,JSON.stringify(state));const b=event.target;b.textContent='Guardado ✓';setTimeout(()=>b.textContent='Guardar',1200)}
-function copyPublic(){navigator.clipboard.writeText(location.href.replace('panel.html','u.html?u='+state.username));alert('Copiado')}
-function exportJSON(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));a.download=state.username+'-priv.json';a.click()}
-function importJSON(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{state=JSON.parse(r.result);load();saveAll()}catch(e){alert('JSON inválido')}};r.readAsText(f)}
-load();
+
+function renderLinksForm() {
+  const el = document.getElementById('link-list');
+  if (!state.links.length) {
+    el.innerHTML = '<p class="text-xs text-steel py-4 text-center border border-dashed border-white/10 rounded-xl">Aún no hay enlaces. Pulsa + Añadir.</p>';
+    return;
+  }
+  el.innerHTML = state.links.map(l => `
+    <div class="flex gap-2 p-3 rounded-xl bg-panel border border-white/5" draggable="true"
+      data-id="${l.id}"
+      ondragstart="dragStart(event,${l.id})" ondragover="dragOver(event)" ondrop="drop(event,${l.id})" ondragend="dragEnd(event)">
+      <span class="text-steel cursor-grab self-center select-none px-0.5" title="Arrastrar">⠿</span>
+      <div class="flex-1 space-y-1.5 min-w-0">
+        <input value="${PrivStore.esc(l.title)}" onchange="updLink(${l.id},'title',this.value)" class="w-full bg-transparent text-sm text-white font-medium" placeholder="Título">
+        <input value="${PrivStore.esc(l.url)}" onchange="updLink(${l.id},'url',this.value)" class="w-full bg-transparent text-xs text-steel" placeholder="https://">
+      </div>
+      <button type="button" onclick="delLink(${l.id})" class="text-steel hover:text-red-400 self-center p-1">✕</button>
+    </div>`).join('');
+}
+
+function addLink() {
+  state.links.push({ id: nid++, title: '', url: '' });
+  renderLinksForm();
+  refresh();
+  scheduleSave();
+}
+function updLink(id, f, v) {
+  const l = state.links.find(x => x.id === id);
+  if (l) { l[f] = v; refresh(); scheduleSave(); }
+}
+function delLink(id) {
+  state.links = state.links.filter(x => x.id !== id);
+  renderLinksForm();
+  refresh();
+  scheduleSave();
+}
+
+function dragStart(e, id) { dragId = id; e.currentTarget.classList.add('opacity-50'); }
+function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function dragEnd(e) { document.querySelectorAll('#link-list > div').forEach(d => d.classList.remove('drag-over','opacity-50')); }
+function drop(e, targetId) {
+  e.preventDefault();
+  if (dragId == null || dragId === targetId) return;
+  const from = state.links.findIndex(l => l.id === dragId);
+  const to = state.links.findIndex(l => l.id === targetId);
+  if (from < 0 || to < 0) return;
+  const [item] = state.links.splice(from, 1);
+  state.links.splice(to, 0, item);
+  dragId = null;
+  renderLinksForm();
+  refresh();
+  scheduleSave();
+}
+
+function setShape(s) {
+  state.shape = s;
+  updateShapeBtns();
+  refresh();
+  scheduleSave();
+}
+function updateShapeBtns() {
+  document.querySelectorAll('.shape-btn').forEach(b => {
+    const on = b.dataset.s === state.shape;
+    b.classList.toggle('border-neon', on);
+    b.classList.toggle('border-2', on);
+    b.classList.toggle('border-white/10', !on);
+  });
+}
+
+function tab(btn) {
+  document.querySelectorAll('.tab').forEach(t => { t.classList.remove('active'); t.classList.add('text-steel'); });
+  btn.classList.add('active'); btn.classList.remove('text-steel');
+  document.querySelectorAll('[id^=t-]').forEach(e => e.classList.add('hidden'));
+  document.getElementById('t-' + btn.dataset.tab).classList.remove('hidden');
+}
+
+function scheduleSave() {
+  if (!document.getElementById('autosave').checked) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => doSave(false), 600);
+}
+
+function doSave(manual) {
+  state = PrivStore.save(state);
+  const toast = document.getElementById('toast');
+  toast.textContent = manual ? 'Guardado ✓' : 'Auto-guardado';
+  toast.classList.remove('opacity-0');
+  toast.classList.add('opacity-100');
+  setTimeout(() => { toast.classList.add('opacity-0'); toast.classList.remove('opacity-100'); }, 1500);
+  if (manual) {
+    const b = document.getElementById('btn-save');
+    b.textContent = 'Guardado ✓';
+    setTimeout(() => b.textContent = 'Guardar', 1200);
+  }
+}
+
+function copyPublic() {
+  const url = location.href.replace(/panel\.html.*/, 'u.html?u=' + state.username);
+  navigator.clipboard.writeText(url);
+  document.getElementById('toast').textContent = 'Enlace copiado';
+  document.getElementById('toast').classList.remove('opacity-0');
+  setTimeout(() => document.getElementById('toast').classList.add('opacity-0'), 1500);
+}
+
+function exportJSON() {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' }));
+  a.download = state.username + '-priv.json';
+  a.click();
+}
+function importJSON(ev) {
+  const f = ev.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      state = PrivStore.normalize(JSON.parse(r.result));
+      fillForm(); renderSocialForm(); renderLinksForm(); updateShapeBtns(); refresh(); doSave(true);
+    } catch (e) { alert('JSON inválido'); }
+  };
+  r.readAsText(f);
+}
+
+init();
 </script>
 </body>
 </html>

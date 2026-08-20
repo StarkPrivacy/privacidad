@@ -18,79 +18,72 @@
     <button onclick="go('dash')" class="nav-btn active w-full text-left px-3 py-2 rounded-lg" data-s="dash">Dashboard</button>
     <button onclick="go('config')" class="nav-btn w-full text-left px-3 py-2 rounded-lg text-steel hover:text-white" data-s="config">Configuración</button>
     <button onclick="go('home')" class="nav-btn w-full text-left px-3 py-2 rounded-lg text-steel hover:text-white" data-s="home">Home / pie</button>
-    <button onclick="go('temas')" class="nav-btn w-full text-left px-3 py-2 rounded-lg text-steel hover:text-white" data-s="temas">Temas</button>
   </nav>
   <div class="p-3 border-t border-white/5"><a href="panel.html" class="text-xs text-steel hover:text-white">← Panel usuario</a></div>
 </aside>
 <div class="flex-1 lg:ml-56">
 <header class="h-14 border-b border-white/5 flex items-center justify-between px-4 sticky top-0 bg-void/90 backdrop-blur z-10">
   <h1 id="title" class="text-white font-semibold text-sm">Dashboard</h1>
-  <span class="text-[10px] text-steel border border-white/10 px-2 py-0.5 rounded-full">Fork · sin updater</span>
+  <span class="text-[10px] text-steel border border-white/10 px-2 py-0.5 rounded-full">Demo localStorage</span>
 </header>
 <main class="p-4 sm:p-6 max-w-4xl space-y-6">
 <section id="s-dash" class="space-y-5">
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-    <div class="p-4 rounded-xl bg-panel border border-white/5 text-center"><div class="text-xl font-bold text-white" id="stat-users">—</div><div class="text-[10px] text-steel">Usuarios (local)</div></div>
-    <div class="p-4 rounded-xl bg-panel border border-white/5 text-center"><div class="text-xl font-bold text-white">demo</div><div class="text-[10px] text-steel">Modo</div></div>
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+    <div class="p-4 rounded-xl bg-panel border border-white/5 text-center"><div class="text-xl font-bold text-white" id="stat-users">0</div><div class="text-[10px] text-steel">Perfiles locales</div></div>
     <div class="p-4 rounded-xl bg-panel border border-white/5 text-center"><div class="text-xl font-bold text-white">3</div><div class="text-[10px] text-steel">Dominios</div></div>
-    <div class="p-4 rounded-xl bg-panel border border-white/5 text-center"><div class="text-xl font-bold text-white">OK</div><div class="text-[10px] text-steel">Estado</div></div>
+    <div class="p-4 rounded-xl bg-panel border border-white/5 text-center"><div class="text-xl font-bold text-white">UI</div><div class="text-[10px] text-steel">Sin backend aún</div></div>
   </div>
   <div class="rounded-xl border border-white/10 overflow-hidden">
-    <div class="px-4 py-3 bg-panel border-b border-white/5 flex justify-between items-center">
-      <span class="text-sm text-white font-medium">Usuarios (prueba localStorage)</span>
-      <span class="text-[10px] text-steel">→ DB al conectar backend</span>
-    </div>
+    <div class="px-4 py-3 bg-panel border-b border-white/5 text-sm text-white font-medium">Usuarios en este navegador</div>
     <div id="user-table" class="divide-y divide-white/5 text-sm"></div>
   </div>
 </section>
 <section id="s-config" class="hidden space-y-4">
-  <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-3">
-    <h3 class="text-sm text-white font-medium">Registro</h3>
-    <label class="flex gap-2 text-sm items-center"><input type="checkbox" checked> Permitir registro</label>
-    <label class="flex gap-2 text-sm items-center"><input type="checkbox"> Modo single-user</label>
-  </div>
-  <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
-    <h3 class="text-sm text-white font-medium">Dominios</h3>
-    <p class="text-xs text-steel">privacidad.me · privtr.ee · privtree.com</p>
+  <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2 text-sm text-steel">
+    <p>Registro y single-user se configurarán en el servidor (fork LinkStack).</p>
+    <p>Dominios: privacidad.me · privtr.ee · privtree.com</p>
   </div>
   <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
     <h3 class="text-sm text-white font-medium">Datos de prueba</h3>
     <div class="flex gap-2 flex-wrap">
-      <button onclick="exportAll()" class="text-xs px-3 py-1.5 rounded-lg border border-white/10">Exportar todo</button>
-      <button onclick="if(confirm('¿Borrar?')){localStorage.clear();location.reload()}" class="text-xs px-3 py-1.5 rounded-lg border border-red-500/40 text-red-400">Limpiar localStorage</button>
+      <button onclick="doExport()" class="text-xs px-3 py-1.5 rounded-lg border border-white/10">Exportar todo</button>
+      <button onclick="if(confirm('¿Borrar datos locales?')){localStorage.clear();location.reload()}" class="text-xs px-3 py-1.5 rounded-lg border border-red-500/40 text-red-400">Limpiar</button>
     </div>
   </div>
 </section>
 <section id="s-home" class="hidden space-y-4">
-  <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
-    <input value="Tus enlaces. Con privacidad." class="w-full bg-void border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
-    <div class="flex gap-2 text-xs"><a href="terminos.html" class="text-neon">Términos</a><a href="privacidad.html" class="text-neon">Privacidad</a><a href="contacto.html" class="text-neon">Contacto</a></div>
-  </div>
-</section>
-<section id="s-temas" class="hidden space-y-4">
-  <div class="grid grid-cols-3 gap-3">
-    <div class="p-3 rounded-xl bg-panel border border-neon/30"><div class="h-12 rounded-lg bg-[#05070a] mb-2"></div><div class="text-xs text-white">Oscuro</div></div>
-    <div class="p-3 rounded-xl bg-panel border border-white/10"><div class="h-12 rounded-lg bg-gradient-to-br from-[#0a1628] to-[#05070a] mb-2"></div><div class="text-xs text-white">Azul</div></div>
-    <div class="p-3 rounded-xl bg-panel border border-white/10"><div class="h-12 rounded-lg bg-gradient-to-br from-[#1a0a28] to-[#05070a] mb-2"></div><div class="text-xs text-white">Violeta</div></div>
+  <div class="p-4 rounded-xl bg-panel border border-white/5 text-xs text-steel space-y-2">
+    <p>Landing y pie son estáticos en GitHub Pages por ahora.</p>
+    <div class="flex gap-3"><a href="terminos.html" class="text-neon">Términos</a><a href="privacidad.html" class="text-neon">Privacidad</a><a href="contacto.html" class="text-neon">Contacto</a></div>
   </div>
 </section>
 </main>
 </div>
+<script src="js/store.js"></script>
 <script>
-function go(id){
-  document.querySelectorAll('[id^=s-]').forEach(e=>e.classList.add('hidden'));
-  document.getElementById('s-'+id).classList.remove('hidden');
-  document.querySelectorAll('.nav-btn').forEach(b=>{b.classList.remove('active');b.classList.add('text-steel')});
-  const btn=document.querySelector('[data-s="'+id+'"]');btn.classList.add('active');btn.classList.remove('text-steel');
-  document.getElementById('title').textContent={dash:'Dashboard',config:'Configuración',home:'Home / pie',temas:'Temas'}[id];
+function go(id) {
+  document.querySelectorAll('[id^=s-]').forEach(e => e.classList.add('hidden'));
+  document.getElementById('s-' + id).classList.remove('hidden');
+  document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.classList.add('text-steel'); });
+  const btn = document.querySelector('[data-s="' + id + '"]');
+  btn.classList.add('active'); btn.classList.remove('text-steel');
+  document.getElementById('title').textContent = { dash: 'Dashboard', config: 'Configuración', home: 'Home / pie' }[id];
 }
-function listUsers(){
-  const keys=Object.keys(localStorage).filter(k=>k.startsWith('priv_page_'));
-  document.getElementById('stat-users').textContent=keys.length||(localStorage.getItem('priv_page')?1:0);
-  document.getElementById('user-table').innerHTML=keys.map(k=>{try{const d=JSON.parse(localStorage.getItem(k));return `<div class="px-4 py-3 flex justify-between"><span class="text-white">${d.username||k}</span><a class="text-xs text-neon" href="u.html?u=${encodeURIComponent(d.username)}" target="_blank">Ver</a></div>`}catch(e){return''}}).join('')||'<div class="px-4 py-6 text-xs text-steel text-center">Sin perfiles. Guarda desde el panel.</div>';
+function refreshUsers() {
+  const users = PrivStore.listUsers();
+  document.getElementById('stat-users').textContent = users.length;
+  document.getElementById('user-table').innerHTML = users.length
+    ? users.map(d => `<div class="px-4 py-3 flex justify-between items-center"><span class="text-white">${PrivStore.esc(d.username)}</span><a class="text-xs text-neon" href="u.html?u=${encodeURIComponent(d.username)}" target="_blank">Ver</a></div>`).join('')
+    : '<div class="px-4 py-6 text-xs text-steel text-center">Ninguno. Guarda un perfil en el panel.</div>';
 }
-function exportAll(){const data={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('priv'))data[k]=localStorage.getItem(k)}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='priv-backup.json';a.click()}
-listUsers();
+function doExport() {
+  const data = PrivStore.exportAll();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+  a.download = 'priv-backup.json';
+  a.click();
+}
+refreshUsers();
 </script>
 </body>
 </html>

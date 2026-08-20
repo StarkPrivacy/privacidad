@@ -1,41 +1,51 @@
-# privacidad.me
+# privacidad.me / privtr.ee
 
-**Alternativa real a Linktree enfocada en la privacidad.**
+Alternativa a Linktree enfocada en **privacidad**. Open source, basada en [LinkStack](https://linkstack.org/).
 
-Open source · Basado en [LinkStack](https://github.com/LinkStackOrg/LinkStack) · Colores de [Boring Privacy](https://boringprivacy.io)
+**Dominios:** privacidad.me · privtr.ee · privtree.com
 
-## Dominios
+## Demo UI (GitHub Pages)
 
-- [privacidad.me](https://privacidad.me)
-- [privtr.ee](https://privtr.ee)
-- [privtree.com](https://privtree.com)
+https://starkprivacy.github.io/privacidad/
 
-## Landing page actual
+| Página | Uso |
+|--------|-----|
+| `index.html` | Landing |
+| `panel.html` | Editor con vista previa en vivo |
+| `u.html?u=usuario` | Página pública del perfil |
+| `registro.html` / `acceso.html` | Flujo demo → panel |
+| `admin.html` | Admin mínimo (lista local) |
 
-- Diseño cyberpunk sutil (azules y negros)
-- Sección de características
-- **Tabla comparativa** privtr.ee vs otras alternativas
-- **Sección Precios**: gratuito + donaciones en BTC / XMR / USDT (TRON)
-- Responsive y open source
+### Cómo probar ahora
 
-Archivo principal: [`index.html`](./index.html)
+1. Abre [panel.html](https://starkprivacy.github.io/privacidad/panel.html)
+2. Edita perfil, redes y enlaces (las redes van **encima** de los enlaces)
+3. Pulsa **Guardar** (o deja auto-guardado)
+4. **Ver página** → `u.html?u=tu-usuario`
 
-> **Importante**: Las direcciones de donación en la landing son *placeholders*. Sustitúyelas por las direcciones reales antes de poner en producción.
+Los datos viven en `localStorage` del navegador (solo para prototipo).
 
-## Próximos pasos
+### Capa de datos
 
-1. Activar GitHub Pages para previsualizar en vivo (Settings → Pages → main / root)
-2. Reemplazar direcciones de cripto reales
-3. Integrar esta landing como tema/frontend de la instancia LinkStack existente
-4. Renovar interfaz de perfiles y panel de administración
-5. Migración sin pérdida de usuarios registrados
+`js/store.js` — única fuente de verdad:
 
-## Filosofía
+- `PrivStore.load` / `save` / `listUsers`
+- `PrivStore.renderProfile` (panel + página pública)
 
-> Solo lo esencial: sin rastreo, sin cookies, sin almacenar tu IP, ni venderte.
+Al conectar el backend (fork LinkStack), se sustituyen solo las lecturas/escrituras de `localStorage` por llamadas API; la UI no cambia.
 
-Proyecto sin ánimo de lucro, mantenido por apoyo de la comunidad.
+### Migración prevista
 
----
+1. Fork de LinkStack en servidor propio
+2. Tema/CSS con colores boringprivacy (azul `#0a84ff`, void `#05070a`)
+3. Multi-dominio y sin tracking de terceros
+4. Sustituir `PrivStore` I/O por API Laravel
+5. Importar usuarios existentes de la instancia actual
 
-Repositorio: [github.com/StarkPrivacy/privacidad](https://github.com/StarkPrivacy/privacidad)
+### Donaciones (landing)
+
+BTC / XMR / USDT (TRC-20) — direcciones al final del proyecto.
+
+## Licencia
+
+Open source. Código de UI en este repo; LinkStack mantiene su propia licencia aguas arriba.
