@@ -7,16 +7,18 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
 <style>
 body{background:#05070a;font-family:Inter,system-ui,sans-serif}
 .tab.active{color:#0a84ff;border-bottom:2px solid #0a84ff}
 .phone{background:linear-gradient(160deg,#1c2333,#080b10);box-shadow:0 0 0 1.5px #3a4558,0 20px 40px -10px rgba(0,0,0,.7)}
 .social-btn{transition:transform .15s,border-color .15s}
 .social-btn:hover{transform:scale(1.08);border-color:rgba(10,132,255,.5)}
-.link-btn{transition:border-color .15s,background .15s}
-.link-btn:hover{border-color:rgba(10,132,255,.4);background:rgba(10,132,255,.06)}
+.link-btn{transition:border-color .15s,background .15s,transform .15s,box-shadow .15s}
+.link-btn:hover{transform:scale(1.01)}
 .drag-over{border-color:rgba(10,132,255,.5)!important;background:rgba(10,132,255,.08)}
-#toast{transition:opacity .3s,transform .3s}
+#toast{transition:opacity .3s}
+.chip.on{border-color:#0a84ff;color:#0a84ff;background:rgba(10,132,255,.1)}
 </style>
 </head>
 <body class="text-mist antialiased min-h-screen">
@@ -58,57 +60,104 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
         <textarea id="bio" rows="2" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white resize-none" oninput="onField()"></textarea>
       </div>
       <div>
-        <label class="text-xs text-steel">Usuario (URL pública)</label>
+        <label class="text-xs text-steel">Usuario (URL)</label>
         <div class="mt-1 flex items-center gap-1 text-sm">
           <span class="text-steel shrink-0">privtr.ee/</span>
           <input id="username" class="flex-1 bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-white" oninput="onField()">
         </div>
-        <p class="mt-1 text-[11px] text-steel/60">Solo letras, números, - y _</p>
       </div>
+      <label class="flex items-center gap-2 text-sm cursor-pointer">
+        <input type="checkbox" id="verified" onchange="state.verified=this.checked;refresh();scheduleSave()">
+        <span class="text-steel">Mostrar badge verificado ✓</span>
+      </label>
     </div>
 
     <div id="t-redes" class="hidden space-y-3">
-      <p class="text-xs text-steel">Iconos debajo del perfil y <strong class="text-mist">encima de los enlaces</strong>. Vacío = no se muestra.</p>
-      <div id="social-list" class="space-y-2"></div>
+      <p class="text-xs text-steel">Debajo del perfil y <strong class="text-mist">encima de los enlaces</strong>. Vacío = oculto.</p>
+      <div id="social-list" class="space-y-2 max-h-[60vh] overflow-y-auto pr-1"></div>
     </div>
 
     <div id="t-enlaces" class="hidden space-y-3">
-      <div class="flex justify-between items-center">
-        <p class="text-xs text-steel">Arrastra ⠿ para reordenar</p>
-        <button onclick="addLink()" class="text-xs text-neon border border-neon/30 px-3 py-1.5 rounded-lg hover:bg-neon/10">+ Añadir</button>
+      <div class="flex justify-between items-center flex-wrap gap-2">
+        <p class="text-xs text-steel">Arrastra ⠿ · tipos de bloque</p>
+        <div class="flex gap-1.5 flex-wrap">
+          <button onclick="addLink('link')" class="text-xs text-neon border border-neon/30 px-2.5 py-1.5 rounded-lg hover:bg-neon/10">+ Enlace</button>
+          <button onclick="addLink('heading')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg hover:bg-white/5">Título</button>
+          <button onclick="addLink('text')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg hover:bg-white/5">Texto</button>
+          <button onclick="addLink('spacer')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg hover:bg-white/5">Espacio</button>
+          <button onclick="addLink('email')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg hover:bg-white/5">Email</button>
+          <button onclick="addLink('phone')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg hover:bg-white/5">Tel.</button>
+        </div>
       </div>
       <div id="link-list" class="space-y-2"></div>
     </div>
 
-    <div id="t-estilo" class="hidden space-y-4">
+    <div id="t-estilo" class="hidden space-y-5">
       <div>
-        <label class="text-xs text-steel mb-2 block">Forma de botones</label>
+        <label class="text-xs text-steel mb-2 block">Forma</label>
         <div class="flex gap-2 text-xs flex-wrap">
-          <button type="button" onclick="setShape('rounded')" class="shape-btn px-3 py-2 rounded-xl border bg-panel" data-s="rounded">Redondeado</button>
-          <button type="button" onclick="setShape('pill')" class="shape-btn px-3 py-2 rounded-full border bg-panel" data-s="pill">Píldora</button>
-          <button type="button" onclick="setShape('square')" class="shape-btn px-3 py-2 rounded-md border bg-panel" data-s="square">Cuadrado</button>
+          <button type="button" onclick="setOpt('shape','rounded')" class="chip shape-btn px-3 py-2 rounded-xl border border-white/10 bg-panel" data-v="rounded">Redondeado</button>
+          <button type="button" onclick="setOpt('shape','pill')" class="chip shape-btn px-3 py-2 rounded-full border border-white/10 bg-panel" data-v="pill">Píldora</button>
+          <button type="button" onclick="setOpt('shape','square')" class="chip shape-btn px-3 py-2 rounded-md border border-white/10 bg-panel" data-v="square">Cuadrado</button>
+        </div>
+      </div>
+      <div>
+        <label class="text-xs text-steel mb-2 block">Estilo de relleno</label>
+        <div class="flex gap-2 text-xs flex-wrap">
+          <button type="button" onclick="setOpt('btnStyle','outline')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="outline">Contorno</button>
+          <button type="button" onclick="setOpt('btnStyle','solid')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="solid">Sólido</button>
+          <button type="button" onclick="setOpt('btnStyle','soft')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="soft">Suave</button>
+          <button type="button" onclick="setOpt('btnStyle','ghost')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="ghost">Ghost</button>
+        </div>
+      </div>
+      <div>
+        <label class="text-xs text-steel mb-2 block">Tamaño</label>
+        <div class="flex gap-2 text-xs">
+          <button type="button" onclick="setOpt('btnSize','sm')" class="chip size-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="sm">S</button>
+          <button type="button" onclick="setOpt('btnSize','md')" class="chip size-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="md">M</button>
+          <button type="button" onclick="setOpt('btnSize','lg')" class="chip size-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="lg">L</button>
         </div>
       </div>
       <label class="flex items-center gap-2 text-sm cursor-pointer">
-        <input type="checkbox" id="autosave" checked class="rounded">
-        <span class="text-steel">Guardar automáticamente al cambiar</span>
+        <input type="checkbox" id="btnGlow" onchange="state.btnGlow=this.checked;refresh();scheduleSave()">
+        <span class="text-steel">Resplandor (glow) en botones</span>
+      </label>
+      <div>
+        <label class="text-xs text-steel">Imagen de fondo (URL)</label>
+        <input id="bgImage" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="https://..." oninput="state.bgImage=this.value.trim();refresh();scheduleSave()">
+      </div>
+      <label class="flex items-center gap-2 text-sm cursor-pointer">
+        <input type="checkbox" id="sameTab" onchange="state.sameTab=this.checked;refresh();scheduleSave()">
+        <span class="text-steel">Abrir enlaces en la misma pestaña</span>
+      </label>
+      <label class="flex items-center gap-2 text-sm cursor-pointer">
+        <input type="checkbox" id="autosave" checked>
+        <span class="text-steel">Auto-guardar al cambiar</span>
       </label>
     </div>
 
     <div id="t-mas" class="hidden space-y-4">
-      <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
-        <h3 class="text-sm text-white font-medium">Enlace público</h3>
-        <p class="text-xs text-steel font-mono" id="qr-url">privtr.ee/…</p>
-        <button type="button" onclick="copyPublic()" class="text-xs px-3 py-1.5 rounded-lg border border-neon/30 text-neon">Copiar enlace</button>
+      <div class="p-3 rounded-xl border border-neon/25 bg-neon/5 text-xs text-mist leading-relaxed">
+        <strong class="text-neon">Recomendación:</strong> exporta tu perfil en JSON de vez en cuando.
+        En esta demo los datos solo viven en tu navegador; un borrado de caché o cambiar de dispositivo puede perderlos.
       </div>
-      <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
-        <h3 class="text-sm text-white font-medium">Dominios</h3>
-        <p class="text-xs text-steel font-mono leading-relaxed">privacidad.me/<span class="uname">…</span><br>privtr.ee/<span class="uname">…</span><br>privtree.com/<span class="uname">…</span></p>
+
+      <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-3">
+        <h3 class="text-sm text-white font-medium">Tus enlaces públicos</h3>
+        <p class="text-[11px] text-steel">Elige el dominio y copia. Los tres apuntan a la misma página.</p>
+        <div id="domain-list" class="space-y-2"></div>
       </div>
+
+      <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
+        <h3 class="text-sm text-white font-medium">Vista previa al compartir (OG)</h3>
+        <input id="ogTitle" placeholder="Título OG" class="w-full bg-void border border-white/10 rounded-lg px-3 py-2 text-sm text-white" oninput="state.ogTitle=this.value;scheduleSave()">
+        <input id="ogDesc" placeholder="Descripción OG" class="w-full bg-void border border-white/10 rounded-lg px-3 py-2 text-sm text-white" oninput="state.ogDesc=this.value;scheduleSave()">
+      </div>
+
       <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
         <h3 class="text-sm text-white font-medium">Exportar / Importar</h3>
         <div class="flex gap-2 flex-wrap">
-          <button type="button" onclick="exportJSON()" class="text-xs px-3 py-1.5 rounded-lg border border-white/10">Exportar JSON</button>
+          <button type="button" onclick="exportJSON()" class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon">Exportar JSON</button>
           <label class="text-xs px-3 py-1.5 rounded-lg border border-white/10 cursor-pointer">Importar<input type="file" accept="application/json" class="hidden" onchange="importJSON(event)"></label>
         </div>
       </div>
@@ -119,7 +168,7 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
     <div class="phone rounded-[2.5rem] p-2.5 w-[280px] sm:w-[300px]">
       <div class="bg-void rounded-[2rem] overflow-hidden min-h-[520px] flex flex-col">
         <div class="flex justify-center pt-3 pb-1"><div class="w-20 h-5 bg-black rounded-full"></div></div>
-        <div id="preview" class="flex-1 px-5 pb-6 pt-2 text-center"></div>
+        <div id="preview" class="flex-1 px-5 pb-6 pt-2 text-center overflow-y-auto max-h-[560px]"></div>
         <div class="pb-2 flex justify-center"><div class="w-28 h-1 rounded-full bg-white/20"></div></div>
       </div>
     </div>
@@ -127,201 +176,6 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
 </div>
 
 <script src="js/store.js"></script>
-<script>
-let state = PrivStore.defaultPage('stark');
-let nid = 10;
-let dragId = null;
-let saveTimer = null;
-
-function init() {
-  const loaded = PrivStore.load();
-  if (loaded) state = loaded;
-  else {
-    state = PrivStore.defaultPage('stark');
-    state.name = 'Stark';
-    state.bio = 'Sin privacidad tu libertad es solo una ilusión';
-    state.avatar = 'https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg';
-    state.social.x = 'https://x.com/StarkPrivacy';
-    state.social.telegram = 'https://t.me/StarkPrivacy';
-    state.links = [
-      { id: 1, title: 'Academia Boring Privacy', url: 'https://boringprivacy.io' },
-      { id: 2, title: 'Canal de Telegram', url: 'https://t.me/StarkPrivacy' },
-    ];
-  }
-  nid = Math.max(10, ...state.links.map(l => l.id || 0)) + 1;
-  fillForm();
-  renderSocialForm();
-  renderLinksForm();
-  updateShapeBtns();
-  refresh();
-}
-
-function fillForm() {
-  document.getElementById('name').value = state.name || '';
-  document.getElementById('bio').value = state.bio || '';
-  document.getElementById('username').value = state.username || '';
-  document.getElementById('avatar').value = state.avatar || '';
-}
-
-function onField() {
-  state.name = document.getElementById('name').value;
-  state.bio = document.getElementById('bio').value;
-  state.username = PrivStore.sanitizeUsername(document.getElementById('username').value);
-  document.getElementById('username').value = state.username;
-  state.avatar = document.getElementById('avatar').value.trim();
-  refresh();
-  scheduleSave();
-}
-
-function refresh() {
-  document.querySelectorAll('.uname').forEach(e => e.textContent = state.username);
-  document.getElementById('qr-url').textContent = 'privtr.ee/' + state.username;
-  document.getElementById('public-link').href = 'u.html?u=' + encodeURIComponent(state.username);
-  const wrap = document.getElementById('av-wrap');
-  if (state.avatar) {
-    wrap.innerHTML = `<img src="${PrivStore.esc(state.avatar)}" class="w-full h-full object-cover" onerror="this.parentElement.textContent='?'">`;
-  } else {
-    wrap.textContent = (state.name || '?')[0].toUpperCase();
-  }
-  PrivStore.renderProfile(state, document.getElementById('preview'), { compact: true });
-}
-
-function renderSocialForm() {
-  document.getElementById('social-list').innerHTML = PrivStore.SOCIAL_DEFS.map(s => `
-    <div class="flex items-center gap-2 p-2.5 rounded-xl bg-panel border border-white/5">
-      <span class="w-8 text-center text-sm">${s.icon}</span>
-      <div class="flex-1 min-w-0">
-        <div class="text-[10px] text-steel">${s.label}</div>
-        <input value="${PrivStore.esc(state.social[s.id] || '')}" placeholder="${s.placeholder}"
-          class="w-full bg-transparent text-sm text-white focus:outline-none"
-          oninput="state.social['${s.id}']=this.value;refresh();scheduleSave()">
-      </div>
-    </div>`).join('');
-}
-
-function renderLinksForm() {
-  const el = document.getElementById('link-list');
-  if (!state.links.length) {
-    el.innerHTML = '<p class="text-xs text-steel py-4 text-center border border-dashed border-white/10 rounded-xl">Aún no hay enlaces. Pulsa + Añadir.</p>';
-    return;
-  }
-  el.innerHTML = state.links.map(l => `
-    <div class="flex gap-2 p-3 rounded-xl bg-panel border border-white/5" draggable="true"
-      data-id="${l.id}"
-      ondragstart="dragStart(event,${l.id})" ondragover="dragOver(event)" ondrop="drop(event,${l.id})" ondragend="dragEnd(event)">
-      <span class="text-steel cursor-grab self-center select-none px-0.5" title="Arrastrar">⠿</span>
-      <div class="flex-1 space-y-1.5 min-w-0">
-        <input value="${PrivStore.esc(l.title)}" onchange="updLink(${l.id},'title',this.value)" class="w-full bg-transparent text-sm text-white font-medium" placeholder="Título">
-        <input value="${PrivStore.esc(l.url)}" onchange="updLink(${l.id},'url',this.value)" class="w-full bg-transparent text-xs text-steel" placeholder="https://">
-      </div>
-      <button type="button" onclick="delLink(${l.id})" class="text-steel hover:text-red-400 self-center p-1">✕</button>
-    </div>`).join('');
-}
-
-function addLink() {
-  state.links.push({ id: nid++, title: '', url: '' });
-  renderLinksForm();
-  refresh();
-  scheduleSave();
-}
-function updLink(id, f, v) {
-  const l = state.links.find(x => x.id === id);
-  if (l) { l[f] = v; refresh(); scheduleSave(); }
-}
-function delLink(id) {
-  state.links = state.links.filter(x => x.id !== id);
-  renderLinksForm();
-  refresh();
-  scheduleSave();
-}
-
-function dragStart(e, id) { dragId = id; e.currentTarget.classList.add('opacity-50'); }
-function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
-function dragEnd(e) { document.querySelectorAll('#link-list > div').forEach(d => d.classList.remove('drag-over','opacity-50')); }
-function drop(e, targetId) {
-  e.preventDefault();
-  if (dragId == null || dragId === targetId) return;
-  const from = state.links.findIndex(l => l.id === dragId);
-  const to = state.links.findIndex(l => l.id === targetId);
-  if (from < 0 || to < 0) return;
-  const [item] = state.links.splice(from, 1);
-  state.links.splice(to, 0, item);
-  dragId = null;
-  renderLinksForm();
-  refresh();
-  scheduleSave();
-}
-
-function setShape(s) {
-  state.shape = s;
-  updateShapeBtns();
-  refresh();
-  scheduleSave();
-}
-function updateShapeBtns() {
-  document.querySelectorAll('.shape-btn').forEach(b => {
-    const on = b.dataset.s === state.shape;
-    b.classList.toggle('border-neon', on);
-    b.classList.toggle('border-2', on);
-    b.classList.toggle('border-white/10', !on);
-  });
-}
-
-function tab(btn) {
-  document.querySelectorAll('.tab').forEach(t => { t.classList.remove('active'); t.classList.add('text-steel'); });
-  btn.classList.add('active'); btn.classList.remove('text-steel');
-  document.querySelectorAll('[id^=t-]').forEach(e => e.classList.add('hidden'));
-  document.getElementById('t-' + btn.dataset.tab).classList.remove('hidden');
-}
-
-function scheduleSave() {
-  if (!document.getElementById('autosave').checked) return;
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => doSave(false), 600);
-}
-
-function doSave(manual) {
-  state = PrivStore.save(state);
-  const toast = document.getElementById('toast');
-  toast.textContent = manual ? 'Guardado ✓' : 'Auto-guardado';
-  toast.classList.remove('opacity-0');
-  toast.classList.add('opacity-100');
-  setTimeout(() => { toast.classList.add('opacity-0'); toast.classList.remove('opacity-100'); }, 1500);
-  if (manual) {
-    const b = document.getElementById('btn-save');
-    b.textContent = 'Guardado ✓';
-    setTimeout(() => b.textContent = 'Guardar', 1200);
-  }
-}
-
-function copyPublic() {
-  const url = location.href.replace(/panel\.html.*/, 'u.html?u=' + state.username);
-  navigator.clipboard.writeText(url);
-  document.getElementById('toast').textContent = 'Enlace copiado';
-  document.getElementById('toast').classList.remove('opacity-0');
-  setTimeout(() => document.getElementById('toast').classList.add('opacity-0'), 1500);
-}
-
-function exportJSON() {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' }));
-  a.download = state.username + '-priv.json';
-  a.click();
-}
-function importJSON(ev) {
-  const f = ev.target.files[0];
-  if (!f) return;
-  const r = new FileReader();
-  r.onload = () => {
-    try {
-      state = PrivStore.normalize(JSON.parse(r.result));
-      fillForm(); renderSocialForm(); renderLinksForm(); updateShapeBtns(); refresh(); doSave(true);
-    } catch (e) { alert('JSON inválido'); }
-  };
-  r.readAsText(f);
-}
-
-init();
-</script>
+<script src="js/panel-app.js"></script>
 </body>
 </html>
