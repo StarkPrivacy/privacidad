@@ -4,26 +4,57 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Iniciar sesión — Privacidad.me</title>
+<meta name="description" content="Accede a tu panel de privacidad.me">
 <script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
+<script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff','neon-glow':'#3b9eff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>body{background:#05070a}</style>
+<style>
+body{background:#05070a}
+.cyber-grid{background-image:linear-gradient(rgba(10,132,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(10,132,255,.03) 1px,transparent 1px);background-size:40px 40px}
+.glow-blue{box-shadow:0 0 20px rgba(10,132,255,.2)}
+</style>
 </head>
 <body class="font-sans text-mist antialiased min-h-screen flex flex-col">
-<nav class="border-b border-white/5 h-14 flex items-center px-6 justify-between">
+<nav class="border-b border-white/5 h-14 flex items-center px-6 justify-between bg-void/80 backdrop-blur sticky top-0 z-20">
   <a href="index.html" class="font-semibold text-white text-sm">privacidad<span class="text-neon">.me</span></a>
-  <a href="registro.html" class="text-sm text-steel hover:text-white">Crear cuenta</a>
+  <a href="registro.html" class="text-sm text-steel hover:text-white transition">Crear cuenta</a>
 </nav>
-<main class="flex-1 flex items-center justify-center px-6 py-16">
-  <div class="w-full max-w-sm">
-    <h1 class="text-xl font-bold text-white text-center mb-6">Iniciar sesión</h1>
-    <form class="p-6 rounded-2xl bg-panel border border-white/10 space-y-4" onsubmit="event.preventDefault(); location.href='panel.html'">
-      <input type="email" placeholder="Correo" required class="w-full bg-void border border-white/10 rounded-xl px-4 py-3 text-sm text-white">
-      <input type="password" placeholder="Contraseña" required class="w-full bg-void border border-white/10 rounded-xl px-4 py-3 text-sm text-white">
-      <button type="submit" class="w-full py-3 rounded-xl bg-neon text-void font-semibold text-sm">Entrar</button>
-      <p class="text-center text-xs text-steel">Modo demo: cualquier dato te lleva al panel.</p>
+<main class="flex-1 relative flex items-center justify-center px-6 py-16">
+  <div class="absolute inset-0 cyber-grid opacity-30 pointer-events-none"></div>
+  <div class="relative w-full max-w-sm">
+    <div class="text-center mb-8">
+      <h1 class="text-2xl font-bold text-white mb-2">Iniciar sesión</h1>
+      <p class="text-steel text-sm">Accede a tu panel de identidad digital.</p>
+    </div>
+    <form class="p-6 rounded-2xl bg-panel border border-white/10 glow-blue space-y-4" onsubmit="doLogin(event)">
+      <div>
+        <label class="text-xs text-steel mb-1.5 block">Correo o usuario</label>
+        <input type="text" id="login" required class="w-full bg-void border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neon/40" placeholder="tu@email o @usuario" autocomplete="username">
+      </div>
+      <div>
+        <label class="text-xs text-steel mb-1.5 block">Contraseña</label>
+        <input type="password" id="password" required class="w-full bg-void border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neon/40" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <div class="flex items-center justify-between text-[11px]">
+        <label class="flex items-center gap-1.5 text-steel cursor-pointer">
+          <input type="checkbox" class="accent-[#0a84ff]"> Recordarme
+        </label>
+        <span class="text-steel/50">¿Olvidaste la contraseña?</span>
+      </div>
+      <button type="submit" class="w-full py-3 rounded-xl bg-neon text-void font-semibold text-sm hover:bg-neon-glow transition">Entrar</button>
+      <p class="text-center text-[11px] text-steel">Demo: cualquier dato te lleva al panel local.</p>
     </form>
+    <p class="text-center text-sm text-steel mt-6">¿No tienes cuenta? <a href="registro.html" class="text-neon hover:underline">Crear cuenta</a></p>
   </div>
 </main>
+<footer class="border-t border-white/5 py-6 text-center text-xs text-steel">
+  <a href="index.html" class="hover:text-white">← Volver al inicio</a>
+</footer>
+<script>
+function doLogin(e) {
+  e.preventDefault();
+  location.href = 'panel.html';
+}
+</script>
 </body>
 </html>
