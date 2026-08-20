@@ -147,14 +147,14 @@ const PrivStore = (() => {
     const resolved = resolveColor(colorId, customColor);
     if (resolved) {
       const border = resolved.border ? 'border:1px solid ' + resolved.border + ';' : 'border:none;';
-      return { className: 'link-btn flex items-center justify-center gap-2 w-full ' + sz + ' ' + sc + ' font-medium mb-2.5',
+      return { className: 'link-btn flex items-center justify-center gap-2 w-full ' + sz + ' ' + sc + ' font-medium mb-3',
         style: 'background:' + resolved.bg + ';color:' + resolved.fg + ';' + border + glow };
     }
     let fill = 'background:#0b0f14;color:#c5d0e0;border:1px solid rgba(255,255,255,0.1);';
     if (d.btnStyle === 'solid') fill = 'background:' + glowColor + ';color:#05070a;border:none;';
     if (d.btnStyle === 'soft') fill = 'background:' + glowColor + '26;color:' + glowColor + ';border:1px solid ' + glowColor + '4d;';
     if (d.btnStyle === 'ghost') fill = 'background:transparent;color:#c5d0e0;border:1px solid rgba(255,255,255,0.2);';
-    return { className: 'link-btn flex items-center justify-center gap-2 w-full ' + sz + ' ' + sc + ' font-medium mb-2.5', style: fill + glow };
+    return { className: 'link-btn flex items-center justify-center gap-2 w-full ' + sz + ' ' + sc + ' font-medium mb-3', style: fill + glow };
   }
   function esc(s) { return String(s || '').replace(/&/g, '&'+'amp;').replace(/</g, '&'+'lt;').replace(/"/g, '&'+'quot;'); }
   function faviconUrl(pageUrl) {
@@ -213,11 +213,11 @@ const PrivStore = (() => {
     const saveBtn = compact
       ? '<div class="mt-2 flex justify-end"><button type="button" onclick="window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="px-2.5 py-1.5 rounded-lg border border-neon/30 text-neon text-[10px] hover:bg-neon/10" title="QR"><i class="fa-solid fa-qrcode"></i></button></div>'
       : '<div class="mt-3.5 flex gap-2">' +
-        '<a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-neon text-void font-semibold text-sm" style="box-shadow:0 0 18px rgba(10,132,255,0.22)"><i class="fa-solid fa-download"></i> Guardar</a>' +
+        '<a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-neon text-void font-semibold text-sm" style="box-shadow:0 0 18px rgba(10,132,255,0.22)"><i class="fa-solid fa-address-card"></i> Guardar contacto</a>' +
         '<button type="button" onclick="window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="px-3.5 py-3 rounded-xl border border-neon/40 text-neon text-sm hover:bg-neon/10" title="Código QR"><i class="fa-solid fa-qrcode"></i></button>' +
       '</div>';
     const faceFront = '<div class="card-face card-front" data-face="front">' +
-      '<div class="flex items-center justify-between mb-2.5"><div class="text-[10px] uppercase tracking-[0.14em] text-neon/70 font-medium">Identidad</div><i class="fa-solid fa-fingerprint text-neon/25 text-xs"></i></div>' +
+      '<div class="flex items-center justify-between mb-2.5"><div class="text-[10px] uppercase tracking-[0.14em] text-neon/80 font-medium">Tarjeta de identidad</div><i class="fa-solid fa-fingerprint text-neon/25 text-xs"></i></div>' +
       (hasMeta ? '<div class="mb-3">' + (c.title ? '<p class="text-sm text-white font-semibold">' + esc(c.title) + '</p>' : '') +
         (c.org ? '<p class="text-xs text-steel mt-0.5">' + esc(c.org) + '</p>' : '') +
         (c.note ? '<p class="text-xs text-steel/70 mt-2 italic border-l-2 border-neon/30 pl-2.5">' + esc(c.note) + '</p>' : '') + '</div>' : '') +
@@ -230,7 +230,7 @@ const PrivStore = (() => {
           '<canvas class="priv-qr rounded-xl bg-white p-1.5" width="' + (compact ? '100' : '140') + '" height="' + (compact ? '100' : '140') + '" data-qr="' + esc(profileUrl(d)) + '"></canvas>' +
           (compact ? '' : '<p class="text-[11px] text-steel text-center">Escanea para abrir el perfil</p>') +
           '<p class="text-[10px] text-mist font-mono">@' + esc(d.username) + '</p></div></div>';
-    return '<div id="' + uid + '" class="mt-5 mb-1 rounded-2xl border border-neon/20 bg-gradient-to-b from-[#0d1219] to-[#0a0e14] p-4 text-left relative overflow-hidden ' + (compact ? 'text-xs' : '') + '" data-card-flip>' +
+    return '<div id="' + uid + '" class="mt-5 mb-3 rounded-2xl border border-neon/25 bg-gradient-to-b from-[#0d1219] to-[#0a0e14] p-4 text-left relative overflow-hidden ' + (compact ? 'text-xs' : '') + '" data-card-flip>' +
       '<div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neon/40 to-transparent"></div>' + faceFront + faceBack + '</div>';
   }
   function renderProfile(page, container, opts) {
@@ -251,7 +251,7 @@ const PrivStore = (() => {
       ? '<div class="flex flex-wrap justify-center gap-2.5 ' + (compact ? 'mb-4' : 'mb-5') + '">' +
         active.map(function (s) {
           return '<a href="' + esc(d.social[s.id]) + '" target="' + target + '" rel="noopener" title="' + esc(s.label) +
-            '" class="social-btn ' + socialSize + ' rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white"><i class="' + s.icon + '"></i></a>';
+            '" data-reorder-id="s-' + s.id + '" class="social-btn ' + socialSize + ' rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white"><i class="' + s.icon + '"></i></a>';
         }).join('') + '</div>' : '';
     const linksHtml = showLinks ? (d.links || []).filter(function (l) { return l.title || l.url || l.type === 'spacer'; }).map(function (l) {
       if (l.type === 'heading') return '<h2 class="text-center text-sm font-medium text-steel/80 mt-5 mb-3">' + esc(l.title) + '</h2>';
@@ -267,7 +267,7 @@ const PrivStore = (() => {
         var fu = faviconUrl(l.url);
         if (fu) iconHtml = '<img src="' + esc(fu) + '" alt="" class="w-4 h-4 rounded-sm" loading="lazy" onerror="this.style.display=\'none\'">';
       } else if (l.iconMode !== 'none' && l.icon) iconHtml = '<i class="' + esc(l.icon) + '"></i>';
-      return '<a href="' + esc(href) + '" target="' + target + '" rel="noopener" class="' + cs.className + '" style="' + cs.style + '">' + iconHtml + '<span>' + (esc(l.title) || 'Enlace') + '</span></a>';
+      return '<a href="' + esc(href) + '" target="' + target + '" rel="noopener" data-reorder-id="l-' + l.id + '" class="' + cs.className + '" style="' + cs.style + '">' + iconHtml + '<span>' + (esc(l.title) || 'Enlace') + '</span></a>';
     }).join('') : '';
     const badge = d.verified ? '<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#0a84ff] text-white text-[10px] ml-1.5 align-middle"><i class="fa-solid fa-check"></i></span>' : '';
     const avatar = d.avatar
@@ -279,7 +279,7 @@ const PrivStore = (() => {
       avatar + '<h1 class="' + nameClass + ' font-semibold text-white mb-2">' + (esc(d.name) || 'Nombre') + badge + '</h1>' +
       '<p class="text-' + (compact ? '[11px]' : 'sm') + ' text-white/70 mb-4 leading-relaxed">' + esc(d.bio) + '</p>' +
       socialHtml + (showCard ? renderContactCard(d, compact) : '') +
-      (showLinks ? '<div class="space-y-0 max-w-sm mx-auto mt-2">' + (linksHtml || '') + '</div>' : '') +
+      (showLinks ? '<div class="space-y-0 max-w-sm mx-auto mt-4">' + (linksHtml || '') + '</div>' : '') +
       '<p class="mt-6 text-[10px] text-white/30">privtr.ee/@' + esc(d.username) + '</p></div>';
     if (typeof qrcode !== 'undefined') {
       container.querySelectorAll('canvas.priv-qr').forEach(function (canvas) {
