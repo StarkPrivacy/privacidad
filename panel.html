@@ -1,1 +1,257 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel — Privacidad.me</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
+<style>
+body{background:#05070a;font-family:Inter,system-ui,sans-serif}
+.tab.active{color:#0a84ff;border-bottom:2px solid #0a84ff}
+.tab.locked{opacity:.45;cursor:not-allowed}
+.phone{background:linear-gradient(160deg,#1c2333,#080b10);box-shadow:0 0 0 1.5px #3a4558,0 20px 40px -10px rgba(0,0,0,.7)}
+.desktop-frame{background:#0b0f14;border:1px solid rgba(255,255,255,.12);box-shadow:0 25px 50px -12px rgba(0,0,0,.75)}
+.social-btn:hover{transform:scale(1.08)}
+.link-btn{transition:transform .15s,opacity .15s}
+.link-btn:hover{transform:scale(1.02);opacity:.95}
+.drag-over{border-color:rgba(10,132,255,.5)!important;background:rgba(10,132,255,.08)}
+#toast{transition:opacity .3s}
+.chip.on{border-color:#0a84ff;color:#0a84ff;background:rgba(10,132,255,.1)}
+.mode-seg button.on{background:rgba(10,132,255,.15);color:#0a84ff;border-color:rgba(10,132,255,.4)}
+.accent-swatch.on{outline:2px solid #0a84ff;outline-offset:2px}
+.preview-toggle.on{color:#0a84ff;border-color:#0a84ff;background:rgba(10,132,255,.1)}
+.preview-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+</style>
+</head>
+<body class="text-mist antialiased min-h-screen">
+<header class="h-14 border-b border-white/5 bg-void/90 backdrop-blur flex items-center justify-between px-4 sticky top-0 z-30">
+  <a href="index.html" class="font-semibold text-white text-sm">privacidad<span class="text-neon">.me</span></a>
+  <div class="flex items-center gap-3">
+    <a id="public-link" href="u.html" target="_blank" class="text-xs text-steel hover:text-white">Ver página →</a>
+    <span id="save-status" class="text-[10px] text-steel hidden sm:inline">Cambios en vivo</span>
+    <button id="btn-save" onclick="doSave(true)" class="px-3 py-1.5 rounded-lg border border-neon/40 text-neon text-xs font-medium hover:bg-neon/10">Guardar ahora</button>
+    <a href="index.html" class="text-xs text-steel hover:text-white">Salir</a>
+  </div>
+</header>
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl bg-panel border border-neon/30 text-sm text-white opacity-0 pointer-events-none z-50">Guardado</div>
+<div class="max-w-7xl mx-auto p-4 lg:p-6 grid lg:grid-cols-[minmax(0,1fr)_minmax(320px,1.2fr)] gap-6 lg:gap-10">
+  <div class="space-y-5 order-2 lg:order-1 min-w-0">
+    <div class="flex gap-1 border-b border-white/5 overflow-x-auto text-sm">
+      <button class="tab active px-3 py-2.5 whitespace-nowrap" data-tab="perfil" onclick="tab(this)">Perfil</button>
+      <button id="tab-identidad" class="tab px-3 py-2.5 whitespace-nowrap text-steel" data-tab="identidad" onclick="tab(this)">Identidad</button>
+      <button class="tab px-3 py-2.5 whitespace-nowrap text-steel" data-tab="redes" onclick="tab(this)">Redes</button>
+      <button class="tab px-3 py-2.5 whitespace-nowrap text-steel" data-tab="enlaces" onclick="tab(this)">Enlaces</button>
+      <button class="tab px-3 py-2.5 whitespace-nowrap text-steel" data-tab="estilo" onclick="tab(this)">Estilo</button>
+      <button class="tab px-3 py-2.5 whitespace-nowrap text-steel" data-tab="seguridad" onclick="tab(this)">Seguridad</button>
+      <button class="tab px-3 py-2.5 whitespace-nowrap text-steel" data-tab="mas" onclick="tab(this)">Más</button>
+    </div>
+
+    <div id="t-perfil" class="space-y-4">
+      <div>
+        <label class="text-xs text-steel mb-2 block">Tipo de perfil</label>
+        <div class="mode-seg grid grid-cols-3 gap-1 p-1 rounded-xl bg-void border border-white/10">
+          <button type="button" onclick="setProfileMode('both')" class="mode-btn rounded-lg border border-transparent px-2 py-2 text-[11px] text-steel font-medium transition" data-v="both">Tarjeta + enlaces</button>
+          <button type="button" onclick="setProfileMode('card')" class="mode-btn rounded-lg border border-transparent px-2 py-2 text-[11px] text-steel font-medium transition" data-v="card">Solo tarjeta</button>
+          <button type="button" onclick="setProfileMode('links')" class="mode-btn rounded-lg border border-transparent px-2 py-2 text-[11px] text-steel font-medium transition" data-v="links">Solo enlaces</button>
+        </div>
+        <p class="text-[10px] text-steel/60 mt-1.5">Define qué ve el visitante. La pestaña Identidad solo se abre con tarjeta activada.</p>
+      </div>
+      <div class="p-4 rounded-xl bg-panel border border-white/10 space-y-4">
+        <h3 class="text-sm text-white font-medium flex items-center gap-2"><i class="fa-solid fa-image text-neon"></i> Apariencia</h3>
+        <div class="flex items-center gap-4">
+          <div id="av-wrap" class="w-16 h-16 rounded-full bg-void border-2 border-neon/40 overflow-hidden flex items-center justify-center text-steel shrink-0"></div>
+          <div class="flex-1">
+            <span class="text-[11px] text-steel">Avatar</span>
+            <div class="flex gap-2 mt-1 flex-wrap">
+              <label class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon cursor-pointer hover:bg-neon/10">Subir<input type="file" accept="image/*" class="hidden" onchange="onAvatarFile(event)"></label>
+              <button type="button" onclick="clearAvatar()" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-steel">Quitar</button>
+              <span class="text-[10px] text-steel/50 self-center" id="avatar-hint">Ninguna</span>
+            </div>
+          </div>
+        </div>
+        <div class="pt-2 border-t border-white/5">
+          <span class="text-[11px] text-steel">Imagen de fondo</span>
+          <div class="flex gap-2 mt-2 flex-wrap">
+            <label class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon cursor-pointer hover:bg-neon/10">Subir<input type="file" accept="image/*" class="hidden" onchange="onBgFile(event)"></label>
+            <button type="button" onclick="clearBg()" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-steel">Quitar</button>
+            <span class="text-[10px] text-steel/50 self-center" id="bg-hint">Ninguna</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <label class="text-xs text-steel">Nombre visible <span class="text-steel/50">(también genera tu @)</span></label>
+        <input id="name" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" oninput="onNameField()" placeholder="Tu nombre">
+        <p class="text-[10px] text-steel/60 mt-1">Tu enlace será <span class="font-mono text-mist">privtr.ee/@<span id="username-preview">…</span></span></p>
+        <input type="hidden" id="username">
+      </div>
+      <div>
+        <label class="text-xs text-steel">Biografía</label>
+        <textarea id="bio" rows="2" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white resize-none" oninput="onField()"></textarea>
+      </div>
+      <div class="p-3 rounded-xl bg-panel border border-white/5 space-y-2">
+        <h3 class="text-xs text-white font-medium">Enlaces públicos</h3>
+        <div id="domain-list" class="space-y-1.5"></div>
+      </div>
+    </div>
+
+    <div id="t-identidad" class="hidden space-y-4">
+      <div class="p-3.5 rounded-xl border border-neon/25 bg-neon/5 text-xs text-mist leading-relaxed">
+        <strong class="text-neon">Tarjeta de identidad.</strong>
+        Datos de contacto (.vcf) y QR. Visible porque tu tipo de perfil incluye tarjeta.
+      </div>
+      <div id="contact-fields" class="space-y-3">
+        <div><label class="text-xs text-steel">Cargo / título</label>
+          <input id="c-title" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="Fundador · Boring Privacy" oninput="onContactField()"></div>
+        <div><label class="text-xs text-steel">Organización</label>
+          <input id="c-org" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="Boring Privacy" oninput="onContactField()"></div>
+        <div><label class="text-xs text-steel">Nota contextual</label>
+          <textarea id="c-note" rows="2" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white resize-none" placeholder="Privacidad, seguridad…" oninput="onContactField()"></textarea></div>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div><label class="text-xs text-steel">Email</label>
+            <input id="c-email" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" oninput="onContactField()"></div>
+          <div><label class="text-xs text-steel">Teléfono</label>
+            <input id="c-phone" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" oninput="onContactField()"></div>
+        </div>
+        <div><label class="text-xs text-steel">Web</label>
+          <input id="c-web" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="https://" oninput="onContactField()"></div>
+      </div>
+    </div>
+
+    <div id="t-redes" class="hidden space-y-3">
+      <p class="text-xs text-steel">Arrastra ⠿ para ordenar las rellenas. «Ver más» muestra el resto.</p>
+      <div id="social-list" class="space-y-2 max-h-[55vh] overflow-y-auto pr-1"></div>
+      <button type="button" id="social-more-btn" onclick="toggleSocialMore()" class="hidden text-xs text-neon border border-neon/30 px-3 py-2 rounded-lg w-full hover:bg-neon/10">Ver más redes</button>
+    </div>
+
+    <div id="t-enlaces" class="hidden space-y-3">
+      <div class="flex justify-between items-center flex-wrap gap-2">
+        <p class="text-xs text-steel">Icono · color · ⠿ · cambios en vivo</p>
+        <div class="flex gap-1.5 flex-wrap">
+          <button onclick="addLink('link')" class="text-xs text-neon border border-neon/30 px-2.5 py-1.5 rounded-lg">+ Enlace</button>
+          <button onclick="addLink('heading')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg">Título</button>
+          <button onclick="addLink('text')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg">Texto</button>
+          <button onclick="addLink('spacer')" class="text-xs text-steel border border-white/10 px-2.5 py-1.5 rounded-lg">Espacio</button>
+        </div>
+      </div>
+      <div id="link-list" class="space-y-2"></div>
+    </div>
+
+    <div id="t-estilo" class="hidden space-y-5">
+      <div><label class="text-xs text-steel mb-2 block">Forma</label>
+        <div class="flex gap-2 text-xs flex-wrap">
+          <button type="button" onclick="setOpt('shape','rounded')" class="chip shape-btn px-3 py-2 rounded-xl border border-white/10 bg-panel" data-v="rounded">Redondeado</button>
+          <button type="button" onclick="setOpt('shape','pill')" class="chip shape-btn px-3 py-2 rounded-full border border-white/10 bg-panel" data-v="pill">Píldora</button>
+          <button type="button" onclick="setOpt('shape','square')" class="chip shape-btn px-3 py-2 rounded-md border border-white/10 bg-panel" data-v="square">Cuadrado</button>
+        </div></div>
+      <div><label class="text-xs text-steel mb-2 block">Relleno global</label>
+        <div class="flex gap-2 text-xs flex-wrap">
+          <button type="button" onclick="setOpt('btnStyle','outline')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="outline">Contorno</button>
+          <button type="button" onclick="setOpt('btnStyle','solid')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="solid">Sólido</button>
+          <button type="button" onclick="setOpt('btnStyle','soft')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="soft">Suave</button>
+          <button type="button" onclick="setOpt('btnStyle','ghost')" class="chip style-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="ghost">Ghost</button>
+        </div></div>
+      <div><label class="text-xs text-steel mb-2 block">Tamaño</label>
+        <div class="flex gap-2 text-xs">
+          <button type="button" onclick="setOpt('btnSize','sm')" class="chip size-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="sm">S</button>
+          <button type="button" onclick="setOpt('btnSize','md')" class="chip size-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="md">M</button>
+          <button type="button" onclick="setOpt('btnSize','lg')" class="chip size-btn px-3 py-2 rounded-lg border border-white/10 bg-panel" data-v="lg">L</button>
+        </div></div>
+      <div>
+        <label class="text-xs text-steel mb-2 block">Color de acento</label>
+        <div class="flex items-center gap-2 flex-wrap" id="accent-presets">
+          <button type="button" class="accent-swatch w-8 h-8 rounded-full border border-white/20" style="background:#0a84ff" data-c="#0a84ff" onclick="setAccentPreset('#0a84ff')" title="Neon"></button>
+          <button type="button" class="accent-swatch w-8 h-8 rounded-full border border-white/20" style="background:#2563eb" data-c="#2563eb" onclick="setAccentPreset('#2563eb')" title="Azul"></button>
+          <button type="button" class="accent-swatch w-8 h-8 rounded-full border border-white/20" style="background:#7c3aed" data-c="#7c3aed" onclick="setAccentPreset('#7c3aed')" title="Violeta"></button>
+          <button type="button" class="accent-swatch w-8 h-8 rounded-full border border-white/20" style="background:#16a34a" data-c="#16a34a" onclick="setAccentPreset('#16a34a')" title="Verde"></button>
+          <button type="button" class="accent-swatch w-8 h-8 rounded-full border border-white/20" style="background:#dc2626" data-c="#dc2626" onclick="setAccentPreset('#dc2626')" title="Rojo"></button>
+          <button type="button" class="accent-swatch w-8 h-8 rounded-full border border-white/20" style="background:#38bdf8" data-c="#38bdf8" onclick="setAccentPreset('#38bdf8')" title="Cielo"></button>
+          <button type="button" id="accent-custom-btn" onclick="toggleCustomAccent()" class="text-[11px] px-2.5 py-1.5 rounded-lg border border-white/10 text-steel hover:text-neon">Personalizado</button>
+        </div>
+        <div id="accent-custom-row" class="hidden mt-2 flex items-center gap-2">
+          <input type="color" id="accentColor" value="#0a84ff" class="w-9 h-9 rounded-lg border border-white/10 bg-void cursor-pointer" oninput="onAccentColor()">
+          <input type="text" id="accentHex" value="#0a84ff" maxlength="7" class="w-28 bg-panel border border-white/10 rounded-lg px-2 py-1.5 text-sm text-white font-mono" oninput="onAccentHex()" placeholder="#0a84ff">
+        </div>
+      </div>
+      <div class="space-y-3">
+        <label class="flex items-start gap-3 p-3 rounded-xl bg-panel border border-white/10 cursor-pointer">
+          <input type="checkbox" id="btnGlow" class="mt-1 accent-[#0a84ff]" onchange="state.btnGlow=this.checked;refresh();scheduleSave()">
+          <div><div class="text-sm text-white font-medium">Glow</div><div class="text-[11px] text-steel">Halo luminoso en los botones (usa el color de acento).</div></div>
+        </label>
+        <label class="flex items-start gap-3 p-3 rounded-xl bg-panel border border-white/10 cursor-pointer">
+          <input type="checkbox" id="sameTab" class="mt-1 accent-[#0a84ff]" onchange="state.sameTab=this.checked;refresh();scheduleSave()">
+          <div><div class="text-sm text-white font-medium">Misma pestaña</div><div class="text-[11px] text-steel">Abrir enlaces en la pestaña actual.</div></div>
+        </label>
+      </div>
+    </div>
+
+    <div id="t-seguridad" class="hidden space-y-4">
+      <div class="p-3.5 rounded-xl border border-neon/25 bg-neon/5 text-xs text-mist">Demo local. En producción, contraseña y 2FA viven en el servidor.</div>
+      <div class="p-4 rounded-xl bg-panel border border-white/10 space-y-3">
+        <h3 class="text-sm text-white font-medium">Contraseña</h3>
+        <input type="password" id="pw-current" placeholder="Contraseña actual" class="w-full bg-void border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
+        <input type="password" id="pw-new" placeholder="Nueva contraseña" class="w-full bg-void border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
+        <button type="button" onclick="demoPassword()" class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon">Cambiar contraseña</button>
+      </div>
+      <div class="p-4 rounded-xl bg-panel border border-white/10 space-y-3">
+        <h3 class="text-sm text-white font-medium">2FA</h3>
+        <p class="text-[11px] text-steel">Segunda capa (TOTP o clave). Aunque tengan la contraseña, no entrarán sin el segundo factor.</p>
+        <label class="flex items-center gap-2 text-sm cursor-pointer">
+          <input type="checkbox" id="twofa" class="accent-[#0a84ff]" onchange="demo2FA(this)">
+          <span class="text-steel">Activar 2FA (demo)</span>
+        </label>
+      </div>
+      <div class="p-4 rounded-xl bg-panel border border-white/10 space-y-3">
+        <h3 class="text-sm text-white font-medium">Exportar / Importar</h3>
+        <div class="flex gap-2 flex-wrap">
+          <button type="button" onclick="exportJSON()" class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon">Exportar JSON</button>
+          <label class="text-xs px-3 py-1.5 rounded-lg border border-white/10 cursor-pointer">Importar<input type="file" accept="application/json" class="hidden" onchange="importJSON(event)"></label>
+        </div>
+      </div>
+      <div class="p-4 rounded-xl border border-red-500/40 bg-red-500/5 space-y-3">
+        <h3 class="text-sm text-red-400 font-medium flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Precaución — Eliminar cuenta</h3>
+        <p class="text-[11px] text-steel leading-relaxed">Borra tu perfil y datos de este dispositivo. En producción pedirá contraseña y 2FA.</p>
+        <input type="password" id="del-pw" placeholder="Contraseña" class="w-full bg-void border border-red-500/30 rounded-lg px-3 py-2 text-sm text-white">
+        <input type="text" id="del-2fa" placeholder="Código 2FA (si está activo)" class="w-full bg-void border border-red-500/30 rounded-lg px-3 py-2 text-sm text-white">
+        <button type="button" onclick="deleteAccount()" class="text-xs px-3 py-1.5 rounded-lg border border-red-500/50 text-red-400 hover:bg-red-500/10">Eliminar cuenta definitivamente</button>
+      </div>
+    </div>
+
+    <div id="t-mas" class="hidden space-y-4">
+      <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
+        <h3 class="text-sm text-white font-medium">Demo @stark</h3>
+        <button type="button" onclick="loadStarkDemo()" class="text-xs px-3 py-1.5 rounded-lg border border-neon/40 text-neon">Cargar demo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="order-1 lg:order-2 preview-col lg:sticky lg:top-20 lg:self-start gap-3 w-full">
+    <div class="flex gap-1 p-1 rounded-xl bg-panel border border-white/10 text-xs">
+      <button type="button" class="preview-toggle on px-3 py-1.5 rounded-lg border border-transparent" data-v="phone" onclick="setPreviewDevice('phone')"><i class="fa-solid fa-mobile-screen-button mr-1"></i> Móvil</button>
+      <button type="button" class="preview-toggle px-3 py-1.5 rounded-lg border border-transparent text-steel" data-v="desktop" onclick="setPreviewDevice('desktop')"><i class="fa-solid fa-desktop mr-1"></i> Escritorio</button>
+    </div>
+    <div id="frame-phone" class="phone rounded-[2.5rem] p-2.5 w-[280px] sm:w-[300px] mx-auto">
+      <div class="bg-void rounded-[2rem] overflow-hidden min-h-[520px] flex flex-col">
+        <div class="flex justify-center pt-3 pb-1"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+        <div id="preview" class="flex-1 px-4 pb-6 pt-2 text-center overflow-y-auto max-h-[560px]"></div>
+        <div class="pb-2 flex justify-center"><div class="w-28 h-1 rounded-full bg-white/20"></div></div>
+      </div>
+    </div>
+    <div id="frame-desktop" class="hidden desktop-frame rounded-xl overflow-hidden w-full max-w-[560px] mx-auto">
+      <div class="h-9 bg-panel border-b border-white/10 flex items-center gap-1.5 px-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-red-400/80"></span>
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-400/80"></span>
+        <span class="w-2.5 h-2.5 rounded-full bg-green-400/80"></span>
+        <span class="ml-2 flex-1 h-5 rounded-md bg-void/80 border border-white/5 px-2 text-[10px] text-steel font-mono truncate flex items-center" id="desktop-url">privtr.ee/@…</span>
+      </div>
+      <div id="preview-desktop" class="px-8 py-10 text-center min-h-[480px] max-h-[640px] overflow-y-auto bg-void"></div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script src="js/store.js"></script>
+<script src="js/panel-app.js"></script>
+</body>
+</html>
