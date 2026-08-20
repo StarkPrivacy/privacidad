@@ -8,19 +8,19 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
 <style>
 body{background:#05070a;font-family:Inter,system-ui,sans-serif;min-height:100vh}
 .social-btn{transition:transform .15s,border-color .15s}
 .social-btn:hover{transform:scale(1.08);border-color:rgba(10,132,255,.5)}
 .link-btn{transition:border-color .15s,background .15s,transform .15s}
-.link-btn:hover{border-color:rgba(10,132,255,.45);background:rgba(10,132,255,.06);transform:scale(1.01)}
+.link-btn:hover{transform:scale(1.01)}
 </style>
 </head>
 <body class="text-mist antialiased">
 <div class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
   <div id="page" class="w-full max-w-md text-center"><p class="text-steel text-sm">Cargando…</p></div>
-  <p class="mt-10 text-[10px] text-steel/40"><a href="index.html" class="hover:text-steel">privacidad.me</a>
-    · <a href="panel.html" class="hover:text-steel">editar</a></p>
+  <p class="mt-10 text-[10px] text-steel/40"><a href="index.html" class="hover:text-steel">privacidad.me</a> · <a href="panel.html" class="hover:text-steel">editar</a></p>
 </div>
 <script src="js/store.js"></script>
 <script>
@@ -36,9 +36,9 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif;min-height:100vh}
       data.social.x = 'https://x.com/StarkPrivacy';
       data.social.telegram = 'https://t.me/StarkPrivacy';
       data.links = [
-        { id: 1, title: 'Academia Boring Privacy', url: 'https://boringprivacy.io' },
-        { id: 2, title: 'Canal de Telegram', url: 'https://t.me/StarkPrivacy' },
-        { id: 3, title: 'X / Twitter', url: 'https://x.com/StarkPrivacy' },
+        { id: 1, title: 'Academia Boring Privacy', url: 'https://boringprivacy.io', type: 'link' },
+        { id: 2, title: 'Canal de Telegram', url: 'https://t.me/StarkPrivacy', type: 'link' },
+        { id: 3, title: 'X / Twitter', url: 'https://x.com/StarkPrivacy', type: 'link' },
       ];
     }
   }
