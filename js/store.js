@@ -243,7 +243,7 @@ const PrivStore = (() => {
     const active = SOCIAL_DEFS.filter(s => d.social[s.id] && String(d.social[s.id]).trim());
     const order = ['youtube', 'telegram', 'x', 'instagram', 'discord'];
     active.sort(function (a, b) { const ia = order.indexOf(a.id), ib = order.indexOf(b.id); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib); });
-    const socialHtml = (showLinks || mode === 'both') && active.length
+    const socialHtml = active.length
       ? '<div class="flex flex-wrap justify-center gap-2.5 ' + (compact ? 'mb-4' : 'mb-5') + '">' +
         active.map(function (s) {
           return '<a href="' + esc(d.social[s.id]) + '" target="' + target + '" rel="noopener" title="' + esc(s.label) +
@@ -274,7 +274,7 @@ const PrivStore = (() => {
       '<div class="' + (d.bgImage && !compact ? 'rounded-2xl p-4 -mx-2' : '') + '" style="' + bgStyle + '">' +
       avatar + '<h1 class="' + nameClass + ' font-semibold text-white mb-2">' + (esc(d.name) || 'Nombre') + badge + '</h1>' +
       '<p class="text-' + (compact ? '[11px]' : 'sm') + ' text-white/70 mb-4 leading-relaxed">' + esc(d.bio) + '</p>' +
-      (showLinks ? socialHtml : '') + (showCard ? renderContactCard(d, compact) : '') +
+      socialHtml + (showCard ? renderContactCard(d, compact) : '') +
       (showLinks ? '<div class="space-y-0 max-w-sm mx-auto mt-2">' + (linksHtml || '') + '</div>' : '') +
       '<p class="mt-6 text-[10px] text-white/30">privtr.ee/@' + esc(d.username) + '</p></div>';
     if (typeof qrcode !== 'undefined') {
