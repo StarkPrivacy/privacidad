@@ -4,47 +4,113 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Perfil — Privacidad.me</title>
-<meta name="robots" content="noindex">
+<meta name="description" id="meta-desc" content="Perfil en privacidad.me">
+<meta name="theme-color" content="#05070a">
+<meta property="og:type" content="profile">
+<meta property="og:title" id="og-title" content="Perfil">
+<meta property="og:description" id="og-desc" content="">
+<meta name="twitter:card" content="summary">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
 <style>
 body{background:#05070a;font-family:Inter,system-ui,sans-serif;min-height:100vh}
+.cyber-grid{background-image:linear-gradient(rgba(10,132,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(10,132,255,.025) 1px,transparent 1px);background-size:48px 48px}
 .social-btn{transition:transform .15s,background .15s}
 .social-btn:hover{transform:scale(1.08);background:rgba(255,255,255,.2)}
 .link-btn{transition:transform .15s,opacity .15s}
 .link-btn:hover{transform:scale(1.02);opacity:.95}
+#toast{transition:opacity .25s,transform .25s}
 </style>
 </head>
 <body class="text-mist antialiased">
+<div class="fixed inset-0 cyber-grid opacity-40 pointer-events-none"></div>
 <div class="fixed top-4 right-4 z-20 flex gap-2">
-  <button onclick="sharePage()" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs text-white backdrop-blur hover:bg-white/20">
+  <button type="button" onclick="sharePage()" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs text-white backdrop-blur hover:bg-white/20 transition">
     <i class="fa-solid fa-share-nodes"></i> Compartir
   </button>
+  <button type="button" onclick="copyLink()" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs text-white backdrop-blur hover:bg-white/20 transition" title="Copiar enlace">
+    <i class="fa-solid fa-link"></i>
+  </button>
 </div>
-<div class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
-  <div id="page" class="w-full max-w-md text-center"><p class="text-steel text-sm">Cargando…</p></div>
-  <p class="mt-8 text-[10px] text-steel/40"><a href="index.html" class="hover:text-steel">privacidad.me</a> · <a href="panel.html" class="hover:text-steel">editar</a></p>
+<div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-xl bg-panel border border-neon/30 text-sm text-white opacity-0 pointer-events-none translate-y-2">Copiado</div>
+
+<div class="relative min-h-screen flex flex-col items-center justify-center px-4 py-14 sm:py-16">
+  <div id="page" class="w-full max-w-md sm:max-w-lg text-center">
+    <div class="py-16 text-steel text-sm animate-pulse">Cargando perfil…</div>
+  </div>
+  <footer class="mt-10 flex flex-col items-center gap-2 text-[10px] text-steel/40">
+    <div class="flex gap-3">
+      <a href="index.html" class="hover:text-steel transition">privacidad.me</a>
+      <span>·</span>
+      <a href="panel.html" class="hover:text-steel transition">editar perfil</a>
+    </div>
+    <p class="text-steel/25">Sin rastreo · Open source</p>
+  </footer>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <script src="js/store.js"></script>
 <script>
 (function () {
-  let u = new URLSearchParams(location.search).get('u') || '';
+  var data = null;
+
+  function toast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.remove('opacity-0', 'translate-y-2');
+    clearTimeout(window.__toastT);
+    window.__toastT = setTimeout(function () {
+      t.classList.add('opacity-0', 'translate-y-2');
+    }, 1800);
+  }
+
+  function emptyState(username) {
+    return '<div class="py-12 px-4">' +
+      '<div class="w-20 h-20 rounded-full mx-auto mb-4 bg-panel border border-white/10 flex items-center justify-center text-2xl text-steel">?</div>' +
+      '<h1 class="text-xl font-semibold text-white mb-2">@' + PrivStore.esc(username) + '</h1>' +
+      '<p class="text-sm text-steel mb-6">Este perfil aún no tiene contenido público, o no existe en este dispositivo (demo local).</p>' +
+      '<a href="registro.html?username=' + encodeURIComponent(username) + '" class="inline-flex px-5 py-2.5 rounded-xl bg-neon text-void text-sm font-semibold">Crear mi página</a>' +
+      '</div>';
+  }
+
+  var u = new URLSearchParams(location.search).get('u') || '';
   if (!u && location.hash) u = location.hash.replace(/^#\/?@?/, '');
   u = PrivStore.sanitizeUsername(u || 'stark');
-  let data = PrivStore.load(u);
+
+  data = PrivStore.load(u);
   if (!data) {
     if (u === 'stark') data = PrivStore.starkDemo();
-    else data = PrivStore.defaultPage(u);
+    else {
+      document.getElementById('page').innerHTML = emptyState(u);
+      document.title = '@' + u + ' — privtr.ee';
+      return;
+    }
   }
-  document.title = (data.name || data.username) + ' — privtr.ee';
+
+  var title = (data.name || data.username) + ' — privtr.ee';
+  document.title = title;
+  var desc = data.bio || ('Perfil de @' + data.username + ' en privacidad.me');
+  document.getElementById('meta-desc').setAttribute('content', desc);
+  document.getElementById('og-title').setAttribute('content', data.name || data.username);
+  document.getElementById('og-desc').setAttribute('content', desc);
+
   PrivStore.renderProfile(data, document.getElementById('page'), { compact: false });
+
   window.sharePage = function () {
-    const url = location.href;
-    if (navigator.share) navigator.share({ title: data.name, url }).catch(function () {});
-    else { navigator.clipboard.writeText(url); alert('Enlace copiado'); }
+    var url = location.href.split('#')[0];
+    if (!url.includes('u=')) url = location.origin + location.pathname + '?u=' + encodeURIComponent(data.username);
+    if (navigator.share) {
+      navigator.share({ title: data.name || data.username, text: desc, url: url }).catch(function () {});
+    } else {
+      navigator.clipboard.writeText(url).then(function () { toast('Enlace copiado'); }).catch(function () { toast(url); });
+    }
+  };
+
+  window.copyLink = function () {
+    var url = location.origin + location.pathname + '?u=' + encodeURIComponent(data.username);
+    navigator.clipboard.writeText(url).then(function () { toast('Enlace copiado'); }).catch(function () { toast(url); });
   };
 })();
 </script>
