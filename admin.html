@@ -17,44 +17,36 @@
   <nav class="p-2 space-y-0.5 text-sm flex-1">
     <button onclick="go('dash')" class="nav-btn active w-full text-left px-3 py-2 rounded-lg" data-s="dash">Dashboard</button>
     <button onclick="go('config')" class="nav-btn w-full text-left px-3 py-2 rounded-lg text-steel hover:text-white" data-s="config">Configuración</button>
-    <button onclick="go('home')" class="nav-btn w-full text-left px-3 py-2 rounded-lg text-steel hover:text-white" data-s="home">Home / pie</button>
   </nav>
   <div class="p-3 border-t border-white/5"><a href="panel.html" class="text-xs text-steel hover:text-white">← Panel usuario</a></div>
 </aside>
 <div class="flex-1 lg:ml-56">
 <header class="h-14 border-b border-white/5 flex items-center justify-between px-4 sticky top-0 bg-void/90 backdrop-blur z-10">
   <h1 id="title" class="text-white font-semibold text-sm">Dashboard</h1>
-  <span class="text-[10px] text-steel border border-white/10 px-2 py-0.5 rounded-full">Demo localStorage</span>
+  <span class="text-[10px] text-steel border border-white/10 px-2 py-0.5 rounded-full">Solo admin: badge verificado</span>
 </header>
 <main class="p-4 sm:p-6 max-w-4xl space-y-6">
 <section id="s-dash" class="space-y-5">
+  <div class="p-3.5 rounded-xl border border-neon/25 bg-neon/5 text-xs text-mist">
+    <strong class="text-neon">Badge verificado</strong> solo lo gestiona el administrador. Los usuarios no pueden auto-asignárselo.
+  </div>
   <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
     <div class="p-4 rounded-xl bg-panel border border-white/5 text-center"><div class="text-xl font-bold text-white" id="stat-users">0</div><div class="text-[10px] text-steel">Perfiles locales</div></div>
     <div class="p-4 rounded-xl bg-panel border border-white/5 text-center"><div class="text-xl font-bold text-white">3</div><div class="text-[10px] text-steel">Dominios</div></div>
-    <div class="p-4 rounded-xl bg-panel border border-white/5 text-center"><div class="text-xl font-bold text-white">UI</div><div class="text-[10px] text-steel">Sin backend aún</div></div>
+    <div class="p-4 rounded-xl bg-panel border border-white/5 text-center"><div class="text-xl font-bold text-white">UI</div><div class="text-[10px] text-steel">Demo local</div></div>
   </div>
   <div class="rounded-xl border border-white/10 overflow-hidden">
-    <div class="px-4 py-3 bg-panel border-b border-white/5 text-sm text-white font-medium">Usuarios en este navegador</div>
+    <div class="px-4 py-3 bg-panel border-b border-white/5 text-sm text-white font-medium">Usuarios</div>
     <div id="user-table" class="divide-y divide-white/5 text-sm"></div>
   </div>
 </section>
 <section id="s-config" class="hidden space-y-4">
-  <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2 text-sm text-steel">
-    <p>Registro y single-user se configurarán en el servidor (fork LinkStack).</p>
-    <p>Dominios: privacidad.me · privtr.ee · privtree.com</p>
-  </div>
   <div class="p-4 rounded-xl bg-panel border border-white/5 space-y-2">
     <h3 class="text-sm text-white font-medium">Datos de prueba</h3>
     <div class="flex gap-2 flex-wrap">
       <button onclick="doExport()" class="text-xs px-3 py-1.5 rounded-lg border border-white/10">Exportar todo</button>
       <button onclick="if(confirm('¿Borrar datos locales?')){localStorage.clear();location.reload()}" class="text-xs px-3 py-1.5 rounded-lg border border-red-500/40 text-red-400">Limpiar</button>
     </div>
-  </div>
-</section>
-<section id="s-home" class="hidden space-y-4">
-  <div class="p-4 rounded-xl bg-panel border border-white/5 text-xs text-steel space-y-2">
-    <p>Landing y pie son estáticos en GitHub Pages por ahora.</p>
-    <div class="flex gap-3"><a href="terminos.html" class="text-neon">Términos</a><a href="privacidad.html" class="text-neon">Privacidad</a><a href="contacto.html" class="text-neon">Contacto</a></div>
   </div>
 </section>
 </main>
@@ -67,21 +59,30 @@ function go(id) {
   document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.classList.add('text-steel'); });
   const btn = document.querySelector('[data-s="' + id + '"]');
   btn.classList.add('active'); btn.classList.remove('text-steel');
-  document.getElementById('title').textContent = { dash: 'Dashboard', config: 'Configuración', home: 'Home / pie' }[id];
+  document.getElementById('title').textContent = { dash: 'Dashboard', config: 'Configuración' }[id];
+}
+function toggleVerified(username, checked) {
+  PrivStore.setVerified(username, checked);
+  refreshUsers();
 }
 function refreshUsers() {
   const users = PrivStore.listUsers();
   document.getElementById('stat-users').textContent = users.length;
   document.getElementById('user-table').innerHTML = users.length
-    ? users.map(d => `<div class="px-4 py-3 flex justify-between items-center"><span class="text-white">${PrivStore.esc(d.username)}</span><a class="text-xs text-neon" href="u.html?u=${encodeURIComponent(d.username)}" target="_blank">Ver</a></div>`).join('')
+    ? users.map(d => {
+        const v = d.verified ? 'checked' : '';
+        return '<div class="px-4 py-3 flex justify-between items-center gap-3"><div><span class="text-white">@' + PrivStore.esc(d.username) + '</span>' +
+          (d.verified ? ' <span class="text-[10px] text-neon">✓</span>' : '') +
+          '</div><div class="flex items-center gap-3"><label class="text-[11px] text-steel flex items-center gap-1.5 cursor-pointer"><input type="checkbox" ' + v + ' onchange="toggleVerified(\'' + PrivStore.esc(d.username) + '\',this.checked)"> Verificado</label>' +
+          '<a class="text-xs text-neon" href="u.html?u=' + encodeURIComponent(d.username) + '" target="_blank">Ver</a></div></div>';
+      }).join('')
     : '<div class="px-4 py-6 text-xs text-steel text-center">Ninguno. Guarda un perfil en el panel.</div>';
 }
 function doExport() {
   const data = PrivStore.exportAll();
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
-  a.download = 'priv-backup.json';
-  a.click();
+  a.download = 'priv-backup.json'; a.click();
 }
 refreshUsers();
 </script>
