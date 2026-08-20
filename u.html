@@ -11,29 +11,57 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
 <style>
 body{background:#05070a;font-family:Inter,system-ui,sans-serif;min-height:100vh}
+.social-btn{transition:transform .15s,background .15s}
 .social-btn:hover{transform:scale(1.08);background:rgba(255,255,255,.2)}
+.link-btn{transition:transform .15s,opacity .15s}
 .link-btn:hover{transform:scale(1.02);opacity:.95}
 </style>
 </head>
 <body class="text-mist antialiased">
-<div class="fixed top-4 right-4 z-20">
+<div class="fixed top-4 right-4 z-20 flex gap-2">
   <button onclick="sharePage()" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs text-white backdrop-blur hover:bg-white/20">
-    <i class="fa-solid fa-share"></i> Compartir
+    <i class="fa-solid fa-share-nodes"></i> Compartir
   </button>
 </div>
 <div class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
   <div id="page" class="w-full max-w-md text-center"><p class="text-steel text-sm">Cargando…</p></div>
-  <p class="mt-10 text-[10px] text-steel/40"><a href="index.html" class="hover:text-steel">privacidad.me</a> · <a href="panel.html" class="hover:text-steel">editar</a></p>
+  <div class="mt-8 flex flex-col items-center gap-3">
+    <canvas id="qr" width="120" height="120" class="rounded-lg bg-white p-2 opacity-90"></canvas>
+    <p class="text-[10px] text-steel/40"><a href="index.html" class="hover:text-steel">privacidad.me</a> · <a href="panel.html" class="hover:text-steel">editar</a></p>
+  </div>
 </div>
 <script src="js/store.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <script>
 (function () {
   let u = new URLSearchParams(location.search).get('u') || '';
+  if (!u && location.hash) u = location.hash.replace(/^#\/?@?/, '');
   u = PrivStore.sanitizeUsername(u || 'stark');
   let data = PrivStore.load(u);
-  if (!data) data = (u === 'stark') ? PrivStore.starkDemo() : PrivStore.defaultPage(u);
+  if (!data) {
+    if (u === 'stark') data = PrivStore.starkDemo();
+    else data = PrivStore.defaultPage(u);
+  }
   document.title = (data.name || data.username) + ' — privtr.ee';
   PrivStore.renderProfile(data, document.getElementById('page'), { compact: false });
+  try {
+    const qr = qrcode(0, 'M');
+    const url = location.origin + location.pathname + '?u=' + encodeURIComponent(data.username);
+    qr.addData(url);
+    qr.make();
+    const canvas = document.getElementById('qr');
+    const ctx = canvas.getContext('2d');
+    const n = qr.getModuleCount();
+    const cell = canvas.width / n;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#000';
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+      if (qr.isDark(r, c)) ctx.fillRect(c * cell, r * cell, cell, cell);
+    }
+  } catch (e) {
+    document.getElementById('qr').style.display = 'none';
+  }
   window.sharePage = function () {
     const url = location.href;
     if (navigator.share) navigator.share({ title: data.name, url }).catch(function () {});
