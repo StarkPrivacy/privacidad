@@ -156,7 +156,7 @@ const PrivStore = (() => {
     if (d.btnStyle === 'ghost') fill = 'background:transparent;color:#c5d0e0;border:1px solid rgba(255,255,255,0.2);';
     return { className: 'link-btn flex items-center justify-center gap-2 w-full ' + sz + ' ' + sc + ' font-medium mb-3', style: fill + glow };
   }
-  function esc(s) { return String(s || '').replace(/&/g, '&'+'amp;').replace(/</g, '&'+'lt;').replace(/"/g, '&'+'quot;'); }
+  function esc(s) { return String(s || '').replace(/&/g, '&'+'amp;').replace(/</g, '&'+'lt;').replace(/\"/g, '&'+'quot;'); }
   function faviconUrl(pageUrl) {
     try { const u = new URL(pageUrl.indexOf('http') === 0 ? pageUrl : 'https://' + pageUrl);
       return 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(u.hostname) + '&sz=32';
@@ -207,23 +207,55 @@ const PrivStore = (() => {
     mode = mode || 'both';
     const isBoth = mode === 'both';
     const rows = [];
-    if (c.email) rows.push('<a href="mailto:' + esc(c.email) + '" class="flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 transition"><i class="fa-solid fa-envelope text-neon/80 w-4 text-center text-xs"></i><span class="text-xs text-mist truncate">' + esc(c.email) + '</span></a>');
+    if (c.email) {
+      rows.push(
+        '<button type="button" onclick="event.preventDefault();event.stopPropagation();window.__privCopyEmail&&window.__privCopyEmail(\'' + String(c.email).replace(/'/g, "\\'") + '\')" class="w-full flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 transition cursor-pointer">' +
+        '<i class="fa-solid fa-envelope text-neon/80 w-4 text-center text-xs"></i>' +
+        '<span class="text-xs text-mist truncate">' + esc(c.email) + '</span></button>'
+      );
+    }
     if (c.phone) rows.push('<a href="tel:' + esc(c.phone) + '" class="flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 transition"><i class="fa-solid fa-phone text-neon/80 w-4 text-center text-xs"></i><span class="text-xs text-mist">' + esc(c.phone) + '</span></a>');
     if (c.web) rows.push('<a href="' + esc(c.web) + '" target="_blank" rel="noopener" class="flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 transition"><i class="fa-solid fa-globe text-neon/80 w-4 text-center text-xs"></i><span class="text-xs text-mist truncate">' + esc(c.web.replace(/^https?:\/\//, '')) + '</span></a>');
     const hasMeta = c.title || c.org || c.note;
     const uid = 'card-' + esc(d.username || 'u');
-    const qrBtn = '<button type="button" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-9 h-9 rounded-xl border border-neon/35 text-neon hover:bg-neon/10 transition flex items-center justify-center shrink-0" title="Código QR"><i class="fa-solid fa-fingerprint"></i></button>';
+    const btnQr = '<button type="button" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-9 h-9 rounded-xl border border-neon/35 text-neon hover:bg-neon/10 transition flex items-center justify-center shrink-0" title="Código QR"><i class="fa-solid fa-qrcode"></i></button>';
+    const btnFp = '<button type="button" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-9 h-9 rounded-xl border border-neon/35 text-neon hover:bg-neon/10 transition flex items-center justify-center shrink-0" title="Volver"><i class="fa-solid fa-fingerprint"></i></button>';
     const saveBtnFull = '<a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-neon text-void font-semibold text-xs" style="box-shadow:0 0 16px rgba(10,132,255,0.2)"><i class="fa-solid fa-address-card"></i> Guardar contacto</a>';
-    const actions = '<div class="mt-3 flex items-center gap-2 justify-end">' + (compact ? '' : saveBtnFull) + qrBtn + '</div>';
-    const actionsCompact = '<div class="mt-2 flex items-center gap-1.5 justify-end"><a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="px-2.5 py-1.5 rounded-lg bg-neon text-void text-[10px] font-semibold">Guardar</a><button type="button" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-8 h-8 rounded-lg border border-neon/35 text-neon flex items-center justify-center" title="QR"><i class="fa-solid fa-fingerprint text-xs"></i></button></div>';
+    const actionsFront = '<div class="mt-3 flex items-center gap-2 justify-end">' + (compact ? '' : saveBtnFull) + btnQr + '</div>';
+    const actionsFrontCompact = '<div class="mt-2 flex items-center gap-1.5 justify-end"><a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="px-2.5 py-1.5 rounded-lg bg-neon text-void text-[10px] font-semibold">Guardar</a><button type="button" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-8 h-8 rounded-lg border border-neon/35 text-neon flex items-center justify-center" title="QR"><i class="fa-solid fa-qrcode text-xs"></i></button></div>';
+    const actionsBack = '<div class="mt-3 flex justify-end">' + btnFp + '</div>';
+    const actionsBackCompact = '<div class="mt-2 flex justify-end"><button type="button" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-8 h-8 rounded-lg border border-neon/35 text-neon flex items-center justify-center" title="Volver"><i class="fa-solid fa-fingerprint text-xs"></i></button></div>';
     const metaBlock = hasMeta ? '<div class="mb-2.5">' + (c.title ? '<p class="text-sm text-white font-semibold">' + esc(c.title) + '</p>' : '') + (c.org ? '<p class="text-[11px] text-neon/70 mt-0.5">' + esc(c.org) + '</p>' : '') + (c.note ? '<p class="text-[11px] text-steel/75 mt-2 border-l-2 border-neon/30 pl-2.5">' + esc(c.note) + '</p>' : '') + '</div>' : '';
-    const faceFront = '<div class="card-face card-front" data-face="front"><div class="flex items-center gap-2 mb-2.5"><span class="w-1.5 h-1.5 rounded-full bg-neon animate-pulse"></span><div class="text-[10px] uppercase tracking-[0.14em] text-neon/80 font-medium">Tarjeta de identidad</div></div>' + metaBlock + (rows.length ? '<div class="space-y-1.5">' + rows.join('') + '</div>' : '') + (compact ? actionsCompact : actions) + '</div>';
-    const faceBack = '<div class="card-face card-back hidden" data-face="back"><div class="text-[10px] uppercase tracking-[0.14em] text-neon/80 font-medium mb-3">Código QR</div><div class="flex flex-col items-center gap-2 py-1"><div class="rounded-2xl bg-white p-2"><canvas class="priv-qr rounded-lg" width="' + (compact ? '108' : '144') + '" height="' + (compact ? '108' : '144') + '" data-qr="' + esc(profileUrl(d)) + '"></canvas></div>' + (compact ? '' : '<p class="text-[11px] text-steel text-center">Escanea para abrir el perfil</p>') + '<p class="text-[11px] text-mist font-mono">@' + esc(d.username) + '</p></div><div class="mt-3 flex justify-end"><button type="button" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-9 h-9 rounded-xl border border-neon/35 text-neon hover:bg-neon/10 transition flex items-center justify-center" title="Volver"><i class="fa-solid fa-fingerprint"></i></button></div></div>';
+    const faceFront =
+      '<div class="card-face card-front" data-face="front">' +
+        '<div class="flex items-center gap-2 mb-2.5"><span class="w-1.5 h-1.5 rounded-full bg-neon animate-pulse"></span><div class="text-[10px] uppercase tracking-[0.14em] text-neon/80 font-medium">Tarjeta de identidad</div></div>' +
+        metaBlock +
+        (rows.length ? '<div class="space-y-1.5">' + rows.join('') + '</div>' : '') +
+        (compact ? actionsFrontCompact : actionsFront) +
+      '</div>';
+    const faceBack =
+      '<div class="card-face card-back is-hidden" data-face="back">' +
+        '<div class="text-[10px] uppercase tracking-[0.14em] text-neon/80 font-medium mb-3">Código QR</div>' +
+        '<div class="flex flex-col items-center justify-center gap-2 flex-1 py-1">' +
+          '<div class="rounded-2xl bg-white p-2"><canvas class="priv-qr rounded-lg" width="' + (compact ? '108' : '144') + '" height="' + (compact ? '108' : '144') + '" data-qr="' + esc(profileUrl(d)) + '"></canvas></div>' +
+          (compact ? '' : '<p class="text-[11px] text-steel text-center">Escanea para abrir el perfil</p>') +
+          '<p class="text-[11px] text-mist font-mono">@' + esc(d.username) + '</p>' +
+        '</div>' +
+        (compact ? actionsBackCompact : actionsBack) +
+      '</div>';
+    const faces = '<div class="card-faces">' + faceFront + faceBack + '</div>';
     if (isBoth && !compact) {
-      const summary = '<div class="card-summary"><div class="flex items-center justify-between gap-2"><div class="min-w-0 text-left"><div class="text-[10px] uppercase tracking-[0.14em] text-neon/70 font-medium mb-1">Identidad</div><p class="text-sm text-white font-medium truncate">' + esc(c.title || d.name || 'Contacto') + '</p>' + (c.org ? '<p class="text-[11px] text-steel truncate mt-0.5">' + esc(c.org) + '</p>' : '') + '</div><i class="fa-solid fa-chevron-down text-neon/50 text-xs card-chevron transition-transform duration-300"></i></div></div>';
-      return '<div id="' + uid + '" class="vcard-shell mt-5 mb-3 rounded-2xl text-left relative overflow-hidden group/vcard" data-card-flip data-mode="both"><div class="vcard-border absolute inset-0 rounded-2xl pointer-events-none"></div><div class="relative p-3.5 bg-gradient-to-b from-[#0e1520] to-[#0a0e14] rounded-2xl border border-neon/20 group-hover/vcard:border-neon/45 transition-colors duration-300">' + summary + '<div class="card-details mt-0 max-h-0 opacity-0 overflow-hidden transition-all duration-350 ease-out group-hover/vcard:max-h-[480px] group-hover/vcard:opacity-100 group-hover/vcard:mt-3">' + faceFront + faceBack + '</div></div></div>';
+      const summary = '<div class="card-summary"><div class="flex items-center justify-between gap-2"><div class="min-w-0 text-left"><div class="text-[10px] uppercase tracking-[0.14em] text-neon/70 font-medium mb-1">Identidad</div><p class="text-sm text-white font-medium truncate">' + esc(c.title || d.name || 'Contacto') + '</p>' + (c.org ? '<p class="text-[11px] text-steel truncate mt-0.5">' + esc(c.org) + '</p>' : '') + '</div><i class="fa-solid fa-chevron-down text-neon/50 text-xs card-chevron"></i></div></div>';
+      return '<div id="' + uid + '" class="vcard-shell mt-5 mb-3 rounded-2xl text-left relative overflow-hidden group/vcard" data-card-flip data-mode="both">' +
+        '<div class="vcard-border absolute inset-0 rounded-2xl pointer-events-none"></div>' +
+        '<div class="relative p-3.5 bg-gradient-to-b from-[#0e1520] to-[#0a0e14] rounded-2xl border border-neon/20 group-hover/vcard:border-neon/45 transition-colors duration-500">' +
+          summary +
+          '<div class="card-details"><div class="card-details-inner">' + faces + '</div></div>' +
+        '</div></div>';
     }
-    return '<div id="' + uid + '" class="mt-5 mb-3 rounded-2xl border border-neon/25 bg-gradient-to-b from-[#0e1520] to-[#0a0e14] p-4 text-left relative overflow-hidden ' + (compact ? 'text-xs' : '') + '" data-card-flip><div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neon/45 to-transparent"></div>' + faceFront + faceBack + '</div>';
+    return '<div id="' + uid + '" class="mt-5 mb-3 rounded-2xl border border-neon/25 bg-gradient-to-b from-[#0e1520] to-[#0a0e14] p-4 text-left relative overflow-hidden ' + (compact ? 'text-xs' : '') + '" data-card-flip>' +
+      '<div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neon/45 to-transparent"></div>' +
+      faces + '</div>';
   }
   function renderProfile(page, container, opts) {
     opts = opts || {};
@@ -291,9 +323,46 @@ const PrivStore = (() => {
       const front = el.querySelector('[data-face="front"]');
       const back = el.querySelector('[data-face="back"]');
       if (!front || !back) return;
-      const showingBack = !back.classList.contains('hidden');
-      if (showingBack) { back.classList.add('hidden'); front.classList.remove('hidden'); }
-      else { front.classList.add('hidden'); back.classList.remove('hidden'); }
+      const showingBack = !back.classList.contains('is-hidden');
+      if (showingBack) {
+        back.classList.add('is-hidden');
+        front.classList.remove('is-hidden');
+      } else {
+        front.classList.add('is-hidden');
+        back.classList.remove('is-hidden');
+      }
+    };
+    window.__privCopyEmail = function (email) {
+      if (!email) return;
+      function done() {
+        if (typeof window.__privToast === 'function') window.__privToast('Correo copiado correctamente');
+        else {
+          var t = document.getElementById('toast');
+          if (t) {
+            t.textContent = 'Correo copiado correctamente';
+            t.classList.remove('opacity-0', 'translate-y-2');
+            clearTimeout(window.__toastT);
+            window.__toastT = setTimeout(function () { t.classList.add('opacity-0', 'translate-y-2'); }, 1800);
+          }
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(email).then(done).catch(function () {
+          try {
+            var ta = document.createElement('textarea');
+            ta.value = email; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+          } catch (e) {}
+          done();
+        });
+      } else {
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = email; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+        } catch (e) {}
+        done();
+      }
     };
   }
   return {
