@@ -33,6 +33,17 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
 @keyframes listSettle{0%{transform:translateY(-3px);opacity:.9}100%{transform:translateY(0);opacity:1}}
 .list-settle{animation:listSettle .25s ease}
 [data-reorder-id]{will-change:transform}
+.vcard-shell .vcard-border{background:linear-gradient(120deg,rgba(10,132,255,.15),rgba(56,189,248,.12),rgba(124,58,237,.12),rgba(10,132,255,.15));background-size:200% 200%;opacity:0;transition:opacity .45s ease}
+.vcard-shell:hover .vcard-border{opacity:1;animation:vcardShine 3.5s ease infinite}
+.vcard-shell .card-chevron{transition:transform .45s cubic-bezier(.22,1,.36,1)}
+.vcard-shell:hover .card-chevron{transform:rotate(180deg)}
+@keyframes vcardShine{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.card-details{display:grid;grid-template-rows:0fr;transition:grid-template-rows .55s cubic-bezier(.22,1,.36,1),margin .45s ease;margin-top:0}
+.card-details-inner{overflow:hidden;min-height:0}
+.vcard-shell:hover .card-details{grid-template-rows:1fr;margin-top:.75rem}
+.card-faces{display:grid}
+.card-faces > .card-face{grid-area:1/1;transition:opacity .28s ease,visibility .28s ease}
+.card-faces > .card-face.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
 </style>
 </head>
 <body class="text-mist antialiased min-h-screen">
