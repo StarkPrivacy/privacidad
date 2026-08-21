@@ -105,6 +105,7 @@ function fillForm() {
     document.getElementById('c-email').value = c.email || '';
     document.getElementById('c-phone').value = c.phone || '';
     document.getElementById('c-web').value = c.web || '';
+    updateVcardChrome();
   }
   updateImageHints(); updateModeChips(); updateIdentityLock();
 }
@@ -488,7 +489,7 @@ function tab(btn) {
   document.querySelectorAll('[id^=t-]').forEach(function (e) { e.classList.add('hidden'); });
   document.getElementById('t-' + btn.dataset.tab).classList.remove('hidden');
   if (btn.dataset.tab === 'redes') renderSocialForm();
-  if (btn.dataset.tab === 'identidad') updateIdentityLock();
+  if (btn.dataset.tab === 'identidad') { updateIdentityLock(); updateVcardChrome(); }
 }
 function scheduleSave() {
   clearTimeout(saveTimer);
@@ -496,18 +497,14 @@ function scheduleSave() {
 }
 function showToast(msg) {
   const t = document.getElementById('toast');
+  if (!t) return;
   t.textContent = msg; t.classList.remove('opacity-0');
   setTimeout(function () { t.classList.add('opacity-0'); }, 1800);
 }
+window.__privToast = showToast;
 function doSave(manual) {
   try { state = PrivStore.save(state); if (manual) showToast('Guardado ✓'); }
   catch (e) { showToast('Almacenamiento lleno'); return; }
-  if (manual) {
-    const b = document.getElementById('btn-save');
-    if (b) { b.textContent = 'Guardado ✓'; setTimeout(function () { b.textContent = 'Guardar ahora'; }, 1200); }
-  }
-  const st = document.getElementById('save-status');
-  if (st) st.textContent = 'Auto-guardado';
 }
 function exportJSON() {
   const a = document.createElement('a');
@@ -536,5 +533,33 @@ function deleteAccount() {
   } catch (e) {}
   showToast('Cuenta eliminada');
   setTimeout(function () { location.href = 'index.html'; }, 800);
+}
+function updateVcardChrome() {
+  if (!state.contact) state.contact = PrivStore.emptyContact();
+  const border = state.contact.borderColor || state.accentColor || '#0a84ff';
+  const bc = document.getElementById('c-border');
+  if (bc) bc.value = border;
+  document.querySelectorAll('.vcard-border-swatch').forEach(function (b) {
+    b.classList.toggle('on', (b.dataset.c || '').toLowerCase() === border.toLowerCase());
+  });
+  const qs = state.contact.qrStyle === 'themed' ? 'themed' : 'classic';
+  const qc = document.getElementById('qr-classic');
+  const qt = document.getElementById('qr-themed');
+  if (qc) qc.classList.toggle('on', qs === 'classic');
+  if (qt) qt.classList.toggle('on', qs === 'themed');
+}
+function setVcardBorder(hex) {
+  if (!state.contact) state.contact = PrivStore.emptyContact();
+  state.contact.enabled = true;
+  state.contact.borderColor = hex;
+  updateVcardChrome();
+  refresh(); scheduleSave();
+}
+function setQrStyle(style) {
+  if (!state.contact) state.contact = PrivStore.emptyContact();
+  state.contact.enabled = true;
+  state.contact.qrStyle = style === 'themed' ? 'themed' : 'classic';
+  updateVcardChrome();
+  refresh(); scheduleSave();
 }
 init();
