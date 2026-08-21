@@ -22,6 +22,7 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
 .chip.on{border-color:#0a84ff;color:#0a84ff;background:rgba(10,132,255,.1)}
 .mode-seg button.on{background:rgba(10,132,255,.15);color:#0a84ff;border-color:rgba(10,132,255,.4)}
 .accent-swatch.on{outline:2px solid #0a84ff;outline-offset:2px}
+.vcard-border-swatch.on{outline:2px solid #0a84ff;outline-offset:2px}
 .preview-toggle.on{color:#0a84ff;border-color:#0a84ff;background:rgba(10,132,255,.1)}
 .preview-col{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%}
 .preview-inner{width:100%;display:flex;flex-direction:column;align-items:center}
@@ -33,17 +34,11 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
 @keyframes listSettle{0%{transform:translateY(-3px);opacity:.9}100%{transform:translateY(0);opacity:1}}
 .list-settle{animation:listSettle .25s ease}
 [data-reorder-id]{will-change:transform}
-.vcard-shell .vcard-border{background:linear-gradient(120deg,rgba(10,132,255,.15),rgba(56,189,248,.12),rgba(124,58,237,.12),rgba(10,132,255,.15));background-size:200% 200%;opacity:0;transition:opacity .45s ease}
-.vcard-shell:hover .vcard-border{opacity:1;animation:vcardShine 3.5s ease infinite}
-.vcard-shell .card-chevron{transition:transform .45s cubic-bezier(.22,1,.36,1)}
-.vcard-shell:hover .card-chevron{transform:rotate(180deg)}
-@keyframes vcardShine{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-.card-details{display:grid;grid-template-rows:0fr;transition:grid-template-rows .55s cubic-bezier(.22,1,.36,1),margin .45s ease;margin-top:0}
-.card-details-inner{overflow:hidden;min-height:0}
-.vcard-shell:hover .card-details{grid-template-rows:1fr;margin-top:.75rem}
 .card-faces{display:grid}
-.card-faces > .card-face{grid-area:1/1;transition:opacity .28s ease,visibility .28s ease}
-.card-faces > .card-face.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.card-faces > .card-face{grid-area:1/1;transition:opacity .42s cubic-bezier(.22,1,.36,1),transform .42s cubic-bezier(.22,1,.36,1)}
+.card-faces > .card-face.is-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.97) translateY(6px)}
+.card-faces > .card-face:not(.is-hidden){opacity:1;transform:scale(1) translateY(0)}
+#qr-classic.on,#qr-themed.on{border-color:rgba(10,132,255,.45);color:#0a84ff;background:rgba(10,132,255,.12)}
 </style>
 </head>
 <body class="text-mist antialiased min-h-screen">
@@ -51,8 +46,10 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
   <a href="index.html" class="font-semibold text-white text-sm">privacidad<span class="text-neon">.me</span></a>
   <div class="flex items-center gap-3">
     <a id="public-link" href="u.html" target="_blank" class="text-xs text-steel hover:text-white">Ver página →</a>
-    <span id="save-status" class="text-[10px] text-steel hidden sm:inline">Cambios en vivo</span>
-    <button id="btn-save" onclick="doSave(true)" class="px-3 py-1.5 rounded-lg border border-neon/40 text-neon text-xs font-medium hover:bg-neon/10">Guardar ahora</button>
+    <span id="save-status" class="inline-flex items-center gap-1.5 text-[11px] text-mist">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.7)]"></span>
+      Auto-guardo activo
+    </span>
     <a href="index.html" class="text-xs text-steel hover:text-white">Salir</a>
   </div>
 </header>
@@ -115,7 +112,7 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
       </div>
     </div>
     <div id="t-identidad" class="hidden space-y-4">
-      <div class="p-3.5 rounded-xl border border-neon/25 bg-neon/5 text-xs text-mist"><strong class="text-neon">Tarjeta de identidad.</strong> Datos de contacto y QR.</div>
+      <div class="p-3.5 rounded-xl border border-neon/25 bg-neon/5 text-xs text-mist"><strong class="text-neon">vCard.</strong> Datos de contacto y QR.</div>
       <div id="contact-fields" class="space-y-3">
         <div><label class="text-xs text-steel">Cargo / título</label><input id="c-title" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" oninput="onContactField()"></div>
         <div><label class="text-xs text-steel">Organización</label><input id="c-org" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" oninput="onContactField()"></div>
@@ -125,6 +122,26 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
           <div><label class="text-xs text-steel">Teléfono</label><input id="c-phone" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" oninput="onContactField()"></div>
         </div>
         <div><label class="text-xs text-steel">Web</label><input id="c-web" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" oninput="onContactField()"></div>
+        <div class="pt-2 border-t border-white/5 space-y-3">
+          <div>
+            <label class="text-xs text-steel mb-2 block">Color del borde (vCard)</label>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button type="button" class="vcard-border-swatch w-7 h-7 rounded-full border border-white/20" style="background:#0a84ff" data-c="#0a84ff" onclick="setVcardBorder('#0a84ff')"></button>
+              <button type="button" class="vcard-border-swatch w-7 h-7 rounded-full border border-white/20" style="background:#7c3aed" data-c="#7c3aed" onclick="setVcardBorder('#7c3aed')"></button>
+              <button type="button" class="vcard-border-swatch w-7 h-7 rounded-full border border-white/20" style="background:#16a34a" data-c="#16a34a" onclick="setVcardBorder('#16a34a')"></button>
+              <button type="button" class="vcard-border-swatch w-7 h-7 rounded-full border border-white/20" style="background:#dc2626" data-c="#dc2626" onclick="setVcardBorder('#dc2626')"></button>
+              <button type="button" class="vcard-border-swatch w-7 h-7 rounded-full border border-white/20" style="background:#38bdf8" data-c="#38bdf8" onclick="setVcardBorder('#38bdf8')"></button>
+              <input type="color" id="c-border" value="#0a84ff" class="w-8 h-8 rounded-lg border border-white/10 bg-void cursor-pointer" oninput="setVcardBorder(this.value)">
+            </div>
+          </div>
+          <div>
+            <label class="text-xs text-steel mb-2 block">Estilo del QR</label>
+            <div class="flex gap-2 text-xs">
+              <button type="button" id="qr-classic" onclick="setQrStyle('classic')" class="px-3 py-2 rounded-lg border border-white/10 bg-panel text-steel">Clásico B/N</button>
+              <button type="button" id="qr-themed" onclick="setQrStyle('themed')" class="px-3 py-2 rounded-lg border border-white/10 bg-panel text-steel">Color de la vCard</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div id="t-redes" class="hidden space-y-3">
