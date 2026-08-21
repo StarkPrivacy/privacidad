@@ -205,6 +205,7 @@ const PrivStore = (() => {
     const c = d.contact || emptyContact();
     if (!c.enabled) return '';
     mode = mode || 'both';
+    const isCollapsible = (mode === 'both' || mode === 'card') && !compact;
     const borderCol = (c.borderColor && /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(c.borderColor))
       ? c.borderColor
       : (d.accentColor || '#0a84ff');
@@ -219,39 +220,43 @@ const PrivStore = (() => {
     if (c.email) rows.push(copyBtn('email', c.email, 'fa-envelope', c.email));
     if (c.phone) rows.push(copyBtn('phone', c.phone, 'fa-phone', c.phone));
     if (c.web) rows.push('<a href="' + esc(c.web) + '" target="_blank" rel="noopener" class="flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 transition"><i class="fa-solid fa-globe text-neon/80 w-4 text-center text-xs"></i><span class="text-xs text-mist truncate">' + esc(c.web.replace(/^https?:\/\//, '')) + '</span></a>');
-    const hasMeta = c.title || c.org || c.note;
     const uid = 'card-' + esc(d.username || 'u');
-    const btnQr = '<button type="button" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-9 h-9 rounded-xl border border-neon/35 text-neon hover:bg-neon/10 transition flex items-center justify-center shrink-0" title="Código QR"><i class="fa-solid fa-qrcode"></i></button>';
-    const btnFp = '<button type="button" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-9 h-9 rounded-xl border border-neon/35 text-neon hover:bg-neon/10 transition flex items-center justify-center shrink-0" title="Volver"><i class="fa-solid fa-fingerprint"></i></button>';
-    const saveBtnFull = '<a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-neon text-void font-semibold text-xs" style="box-shadow:0 0 16px rgba(10,132,255,0.2)"><i class="fa-solid fa-address-card"></i> Guardar contacto</a>';
-    const actionsFront = '<div class="mt-3 flex items-center gap-2 justify-end">' + (compact ? '' : saveBtnFull) + btnQr + '</div>';
-    const actionsFrontCompact = '<div class="mt-2 flex items-center gap-1.5 justify-end"><a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="px-2.5 py-1.5 rounded-lg bg-neon text-void text-[10px] font-semibold">Guardar</a><button type="button" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-8 h-8 rounded-lg border border-neon/35 text-neon flex items-center justify-center" title="QR"><i class="fa-solid fa-qrcode text-xs"></i></button></div>';
-    const actionsBack = '<div class="mt-3 flex justify-end">' + btnFp + '</div>';
-    const actionsBackCompact = '<div class="mt-2 flex justify-end"><button type="button" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-8 h-8 rounded-lg border border-neon/35 text-neon flex items-center justify-center" title="Volver"><i class="fa-solid fa-fingerprint text-xs"></i></button></div>';
-    const metaBlock = hasMeta ? '<div class="mb-2.5">' + (c.title ? '<p class="text-sm text-white font-semibold">' + esc(c.title) + '</p>' : '') + (c.org ? '<p class="text-[11px] mt-0.5" style="color:' + borderCol + '">' + esc(c.org) + '</p>' : '') + (c.note ? '<p class="text-[11px] text-steel/75 mt-2 border-l-2 pl-2.5" style="border-color:' + borderCol + '99">' + esc(c.note) + '</p>' : '') + '</div>' : '';
-    const faceFront =
-      '<div class="card-face card-front" data-face="front">' +
-        '<div class="flex items-center gap-2 mb-2.5"><span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:' + borderCol + '"></span><div class="text-[10px] uppercase tracking-[0.14em] font-medium" style="color:' + borderCol + '">vCard</div></div>' +
-        metaBlock +
-        (rows.length ? '<div class="space-y-1.5">' + rows.join('') + '</div>' : '') +
-        (compact ? actionsFrontCompact : actionsFront) +
-      '</div>';
+    const qrSize = compact ? 108 : 144;
+    const saveFull = '<a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-neon text-void font-semibold text-xs" style="box-shadow:0 0 16px rgba(10,132,255,0.2)"><i class="fa-solid fa-address-card"></i> Guardar contacto</a>';
+    const saveCompact = '<a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="flex-1 flex items-center justify-center px-2.5 py-1.5 rounded-lg bg-neon text-void text-[10px] font-semibold">Guardar</a>';
+    const flipBtn = '<button type="button" id="' + uid + '-flip" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-9 h-9 rounded-xl border border-neon/35 text-neon hover:bg-neon/10 transition flex items-center justify-center shrink-0" title="Código QR"><i class="fa-solid fa-qrcode" data-flip-icon></i></button>';
+    const flipBtnCompact = '<button type="button" id="' + uid + '-flip" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-8 h-8 rounded-lg border border-neon/35 text-neon flex items-center justify-center shrink-0" title="QR"><i class="fa-solid fa-qrcode text-xs" data-flip-icon></i></button>';
+    const footer = '<div class="card-footer mt-3 flex items-center gap-2">' + (compact ? saveCompact : saveFull) + (compact ? flipBtnCompact : flipBtn) + '</div>';
+    const metaExpanded = (c.note ? '<p class="text-[11px] text-steel/75 mb-2.5 border-l-2 pl-2.5" style="border-color:' + borderCol + '99">' + esc(c.note) + '</p>' : '') +
+      (rows.length ? '<div class="space-y-1.5">' + rows.join('') + '</div>' : '');
+    const faceFront = '<div class="card-face card-front" data-face="front">' + metaExpanded + '</div>';
     const faceBack =
       '<div class="card-face card-back is-hidden" data-face="back">' +
-        '<div class="text-[10px] uppercase tracking-[0.14em] font-medium mb-3" style="color:' + borderCol + '">Código QR</div>' +
-        '<div class="flex flex-col items-center justify-center gap-2 flex-1 py-1">' +
-          '<div class="rounded-2xl p-2" style="background:' + (qrStyle === 'themed' ? borderCol + '22' : '#fff') + '"><canvas class="priv-qr rounded-lg" width="' + (compact ? '108' : '144') + '" height="' + (compact ? '108' : '144') + '" data-qr="' + esc(profileUrl(d)) + '" data-qr-style="' + qrStyle + '" data-qr-color="' + esc(borderCol) + '"></canvas></div>' +
+        '<div class="flex flex-col items-center justify-center gap-2 py-1">' +
+          '<div class="rounded-2xl p-2" style="background:' + (qrStyle === 'themed' ? borderCol + '22' : '#fff') + '"><canvas class="priv-qr rounded-lg" width="' + qrSize + '" height="' + qrSize + '" data-qr="' + esc(profileUrl(d)) + '" data-qr-style="' + qrStyle + '" data-qr-color="' + esc(borderCol) + '"></canvas></div>' +
           (compact ? '' : '<p class="text-[11px] text-steel text-center">Escanea para abrir el perfil</p>') +
           '<p class="text-[11px] text-mist font-mono">@' + esc(d.username) + '</p>' +
         '</div>' +
-        (compact ? actionsBackCompact : actionsBack) +
       '</div>';
-    const faces = '<div class="card-faces">' + faceFront + faceBack + '</div>';
+    const stage = '<div class="card-stage relative">' + faceFront + faceBack + '</div>';
+    const headerAlways = '<div class="flex items-center gap-2 mb-1.5"><span class="w-1.5 h-1.5 rounded-full animate-pulse shrink-0" style="background:' + borderCol + '"></span><div class="text-[10px] uppercase tracking-[0.14em] font-medium" style="color:' + borderCol + '">vCard</div></div>' +
+      (c.title ? '<p class="text-sm text-white font-semibold">' + esc(c.title) + '</p>' : '') +
+      (c.org ? '<p class="text-[11px] mt-0.5" style="color:' + borderCol + '">' + esc(c.org) + '</p>' : '');
     const borderStyle = 'border:1px solid ' + borderCol + '40;';
     const glowLine = 'background:linear-gradient(90deg,transparent,' + borderCol + '80,transparent)';
-    return '<div id="' + uid + '" class="mt-5 mb-3 rounded-2xl bg-gradient-to-b from-[#0e1520] to-[#0a0e14] p-4 text-left relative overflow-hidden ' + (compact ? 'text-xs' : '') + '" data-card-flip style="' + borderStyle + '">' +
+    if (isCollapsible) {
+      const summary = '<div class="card-summary">' + headerAlways +
+        '<div class="flex items-center justify-end mt-1"><i class="fa-solid fa-chevron-down text-neon/40 text-[10px] card-chevron"></i></div></div>';
+      return '<div id="' + uid + '" class="vcard-shell mt-5 mb-3 rounded-2xl text-left relative overflow-hidden group/vcard" data-card-flip style="' + borderStyle + '">' +
+        '<div class="absolute top-0 left-0 right-0 h-px" style="' + glowLine + '"></div>' +
+        '<div class="relative p-3.5 bg-gradient-to-b from-[#0e1520] to-[#0a0e14] rounded-2xl">' +
+          summary +
+          '<div class="card-details"><div class="card-details-inner pt-2">' + stage + footer + '</div></div>' +
+        '</div></div>';
+    }
+    return '<div id="' + uid + '" class="mt-5 mb-3 rounded-2xl bg-gradient-to-b from-[#0e1520] to-[#0a0e14] p-3.5 text-left relative overflow-hidden ' + (compact ? 'text-xs' : '') + '" data-card-flip style="' + borderStyle + '">' +
       '<div class="absolute top-0 left-0 right-0 h-px" style="' + glowLine + '"></div>' +
-      faces + '</div>';
+      headerAlways + '<div class="mt-2">' + stage + '</div>' + footer + '</div>';
   }
   function renderProfile(page, container, opts) {
     opts = opts || {};
@@ -330,12 +335,20 @@ const PrivStore = (() => {
       const back = el.querySelector('[data-face="back"]');
       if (!front || !back) return;
       const showingBack = !back.classList.contains('is-hidden');
+      const icon = el.querySelector('[data-flip-icon]');
+      const btn = document.getElementById(id + '-flip');
       if (showingBack) {
         back.classList.add('is-hidden');
         front.classList.remove('is-hidden');
+        el.classList.remove('is-qr');
+        if (icon) { icon.classList.remove('fa-fingerprint'); icon.classList.add('fa-qrcode'); }
+        if (btn) btn.title = 'Código QR';
       } else {
         front.classList.add('is-hidden');
         back.classList.remove('is-hidden');
+        el.classList.add('is-qr');
+        if (icon) { icon.classList.remove('fa-qrcode'); icon.classList.add('fa-fingerprint'); }
+        if (btn) btn.title = 'Volver';
       }
     };
     window.__privCopyText = function (text, kind) {
