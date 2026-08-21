@@ -40,7 +40,7 @@ const PrivStore = (() => {
     { id: 'envelope', icon: 'fa-solid fa-envelope' }, { id: 'phone', icon: 'fa-solid fa-phone' },
   ];
   function emptySocial() { const o = {}; SOCIAL_DEFS.forEach(s => { o[s.id] = ''; }); return o; }
-  function emptyContact() { return { enabled: false, title: '', note: '', email: '', phone: '', web: '', org: '', showQr: true }; }
+  function emptyContact() { return { enabled: false, title: '', note: '', email: '', phone: '', web: '', org: '', showQr: true, borderColor: '', qrStyle: 'classic' }; }
   function defaultPage(username) {
     return {
       name: username || 'Usuario', username: (username || 'user').toLowerCase().replace(/[^a-z0-9_-]/g, ''),
@@ -58,7 +58,7 @@ const PrivStore = (() => {
     p.social.x = 'https://x.com/StarkPrivacy'; p.social.instagram = 'https://instagram.com/StarkPrivacy';
     p.socialOrder = ['youtube', 'telegram', 'x', 'instagram', 'discord', 'github', 'linkedin', 'mastodon', 'email'];
     p.contact = { enabled: true, title: 'Fundador · Boring Privacy', note: 'Privacidad, seguridad y soberanía digital',
-      email: 'stark@boringprivacy.io', phone: '', web: 'https://boringprivacy.io', org: 'Boring Privacy', showQr: true };
+      email: 'stark@boringprivacy.io', phone: '', web: 'https://boringprivacy.io', org: 'Boring Privacy', showQr: true, borderColor: '#0a84ff', qrStyle: 'classic' };
     p.links = [
       { id: 1, type: 'link', title: 'Academia Boring Privacy', url: 'https://boringprivacy.io', color: 'blue', icon: 'fa-solid fa-globe', brand: 'website', iconMode: 'preset' },
       { id: 2, type: 'link', title: 'Suscríbete al Newsletter', url: 'https://boringprivacy.io/#newsletter', color: 'red', icon: 'fa-solid fa-newspaper', brand: 'newsletter', iconMode: 'preset' },
@@ -205,16 +205,19 @@ const PrivStore = (() => {
     const c = d.contact || emptyContact();
     if (!c.enabled) return '';
     mode = mode || 'both';
-    const isBoth = mode === 'both';
+    const borderCol = (c.borderColor && /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(c.borderColor))
+      ? c.borderColor
+      : (d.accentColor || '#0a84ff');
+    const qrStyle = c.qrStyle === 'themed' ? 'themed' : 'classic';
     const rows = [];
-    if (c.email) {
-      rows.push(
-        '<button type="button" onclick="event.preventDefault();event.stopPropagation();window.__privCopyEmail&&window.__privCopyEmail(\'' + String(c.email).replace(/'/g, "\\'") + '\')" class="w-full flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 transition cursor-pointer">' +
-        '<i class="fa-solid fa-envelope text-neon/80 w-4 text-center text-xs"></i>' +
-        '<span class="text-xs text-mist truncate">' + esc(c.email) + '</span></button>'
-      );
+    function copyBtn(kind, value, icon, label) {
+      const safe = String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      return '<button type="button" onclick="event.preventDefault();event.stopPropagation();window.__privCopyText&&window.__privCopyText(\'' + safe + '\',\'' + kind + '\')" class="w-full flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 transition cursor-pointer">' +
+        '<i class="fa-solid ' + icon + ' text-neon/80 w-4 text-center text-xs"></i>' +
+        '<span class="text-xs text-mist truncate">' + esc(label) + '</span></button>';
     }
-    if (c.phone) rows.push('<a href="tel:' + esc(c.phone) + '" class="flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 transition"><i class="fa-solid fa-phone text-neon/80 w-4 text-center text-xs"></i><span class="text-xs text-mist">' + esc(c.phone) + '</span></a>');
+    if (c.email) rows.push(copyBtn('email', c.email, 'fa-envelope', c.email));
+    if (c.phone) rows.push(copyBtn('phone', c.phone, 'fa-phone', c.phone));
     if (c.web) rows.push('<a href="' + esc(c.web) + '" target="_blank" rel="noopener" class="flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 transition"><i class="fa-solid fa-globe text-neon/80 w-4 text-center text-xs"></i><span class="text-xs text-mist truncate">' + esc(c.web.replace(/^https?:\/\//, '')) + '</span></a>');
     const hasMeta = c.title || c.org || c.note;
     const uid = 'card-' + esc(d.username || 'u');
@@ -225,36 +228,29 @@ const PrivStore = (() => {
     const actionsFrontCompact = '<div class="mt-2 flex items-center gap-1.5 justify-end"><a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="px-2.5 py-1.5 rounded-lg bg-neon text-void text-[10px] font-semibold">Guardar</a><button type="button" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-8 h-8 rounded-lg border border-neon/35 text-neon flex items-center justify-center" title="QR"><i class="fa-solid fa-qrcode text-xs"></i></button></div>';
     const actionsBack = '<div class="mt-3 flex justify-end">' + btnFp + '</div>';
     const actionsBackCompact = '<div class="mt-2 flex justify-end"><button type="button" onclick="event.stopPropagation();window.__privFlipCard&&window.__privFlipCard(\'' + uid + '\')" class="w-8 h-8 rounded-lg border border-neon/35 text-neon flex items-center justify-center" title="Volver"><i class="fa-solid fa-fingerprint text-xs"></i></button></div>';
-    const metaBlock = hasMeta ? '<div class="mb-2.5">' + (c.title ? '<p class="text-sm text-white font-semibold">' + esc(c.title) + '</p>' : '') + (c.org ? '<p class="text-[11px] text-neon/70 mt-0.5">' + esc(c.org) + '</p>' : '') + (c.note ? '<p class="text-[11px] text-steel/75 mt-2 border-l-2 border-neon/30 pl-2.5">' + esc(c.note) + '</p>' : '') + '</div>' : '';
+    const metaBlock = hasMeta ? '<div class="mb-2.5">' + (c.title ? '<p class="text-sm text-white font-semibold">' + esc(c.title) + '</p>' : '') + (c.org ? '<p class="text-[11px] mt-0.5" style="color:' + borderCol + '">' + esc(c.org) + '</p>' : '') + (c.note ? '<p class="text-[11px] text-steel/75 mt-2 border-l-2 pl-2.5" style="border-color:' + borderCol + '99">' + esc(c.note) + '</p>' : '') + '</div>' : '';
     const faceFront =
       '<div class="card-face card-front" data-face="front">' +
-        '<div class="flex items-center gap-2 mb-2.5"><span class="w-1.5 h-1.5 rounded-full bg-neon animate-pulse"></span><div class="text-[10px] uppercase tracking-[0.14em] text-neon/80 font-medium">Tarjeta de identidad</div></div>' +
+        '<div class="flex items-center gap-2 mb-2.5"><span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:' + borderCol + '"></span><div class="text-[10px] uppercase tracking-[0.14em] font-medium" style="color:' + borderCol + '">vCard</div></div>' +
         metaBlock +
         (rows.length ? '<div class="space-y-1.5">' + rows.join('') + '</div>' : '') +
         (compact ? actionsFrontCompact : actionsFront) +
       '</div>';
     const faceBack =
       '<div class="card-face card-back is-hidden" data-face="back">' +
-        '<div class="text-[10px] uppercase tracking-[0.14em] text-neon/80 font-medium mb-3">Código QR</div>' +
+        '<div class="text-[10px] uppercase tracking-[0.14em] font-medium mb-3" style="color:' + borderCol + '">Código QR</div>' +
         '<div class="flex flex-col items-center justify-center gap-2 flex-1 py-1">' +
-          '<div class="rounded-2xl bg-white p-2"><canvas class="priv-qr rounded-lg" width="' + (compact ? '108' : '144') + '" height="' + (compact ? '108' : '144') + '" data-qr="' + esc(profileUrl(d)) + '"></canvas></div>' +
+          '<div class="rounded-2xl p-2" style="background:' + (qrStyle === 'themed' ? borderCol + '22' : '#fff') + '"><canvas class="priv-qr rounded-lg" width="' + (compact ? '108' : '144') + '" height="' + (compact ? '108' : '144') + '" data-qr="' + esc(profileUrl(d)) + '" data-qr-style="' + qrStyle + '" data-qr-color="' + esc(borderCol) + '"></canvas></div>' +
           (compact ? '' : '<p class="text-[11px] text-steel text-center">Escanea para abrir el perfil</p>') +
           '<p class="text-[11px] text-mist font-mono">@' + esc(d.username) + '</p>' +
         '</div>' +
         (compact ? actionsBackCompact : actionsBack) +
       '</div>';
     const faces = '<div class="card-faces">' + faceFront + faceBack + '</div>';
-    if (isBoth && !compact) {
-      const summary = '<div class="card-summary"><div class="flex items-center justify-between gap-2"><div class="min-w-0 text-left"><div class="text-[10px] uppercase tracking-[0.14em] text-neon/70 font-medium mb-1">Identidad</div><p class="text-sm text-white font-medium truncate">' + esc(c.title || d.name || 'Contacto') + '</p>' + (c.org ? '<p class="text-[11px] text-steel truncate mt-0.5">' + esc(c.org) + '</p>' : '') + '</div><i class="fa-solid fa-chevron-down text-neon/50 text-xs card-chevron"></i></div></div>';
-      return '<div id="' + uid + '" class="vcard-shell mt-5 mb-3 rounded-2xl text-left relative overflow-hidden group/vcard" data-card-flip data-mode="both">' +
-        '<div class="vcard-border absolute inset-0 rounded-2xl pointer-events-none"></div>' +
-        '<div class="relative p-3.5 bg-gradient-to-b from-[#0e1520] to-[#0a0e14] rounded-2xl border border-neon/20 group-hover/vcard:border-neon/45 transition-colors duration-500">' +
-          summary +
-          '<div class="card-details"><div class="card-details-inner">' + faces + '</div></div>' +
-        '</div></div>';
-    }
-    return '<div id="' + uid + '" class="mt-5 mb-3 rounded-2xl border border-neon/25 bg-gradient-to-b from-[#0e1520] to-[#0a0e14] p-4 text-left relative overflow-hidden ' + (compact ? 'text-xs' : '') + '" data-card-flip>' +
-      '<div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neon/45 to-transparent"></div>' +
+    const borderStyle = 'border:1px solid ' + borderCol + '40;';
+    const glowLine = 'background:linear-gradient(90deg,transparent,' + borderCol + '80,transparent)';
+    return '<div id="' + uid + '" class="mt-5 mb-3 rounded-2xl bg-gradient-to-b from-[#0e1520] to-[#0a0e14] p-4 text-left relative overflow-hidden ' + (compact ? 'text-xs' : '') + '" data-card-flip style="' + borderStyle + '">' +
+      '<div class="absolute top-0 left-0 right-0 h-px" style="' + glowLine + '"></div>' +
       faces + '</div>';
   }
   function renderProfile(page, container, opts) {
@@ -309,9 +305,19 @@ const PrivStore = (() => {
       container.querySelectorAll('canvas.priv-qr').forEach(function (canvas) {
         try {
           const url = canvas.getAttribute('data-qr') || '';
+          const style = canvas.getAttribute('data-qr-style') || 'classic';
+          const accent = canvas.getAttribute('data-qr-color') || '#0a84ff';
           const qr = qrcode(0, 'M'); qr.addData(url); qr.make();
           const ctx = canvas.getContext('2d'); const n = qr.getModuleCount(); const cell = canvas.width / n;
-          ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = '#05070a';
+          if (style === 'themed') {
+            ctx.fillStyle = '#0a0e14';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = accent;
+          } else {
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#05070a';
+          }
           for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) ctx.fillRect(c * cell, r * cell, cell, cell);
         } catch (e) {}
       });
@@ -332,14 +338,15 @@ const PrivStore = (() => {
         back.classList.remove('is-hidden');
       }
     };
-    window.__privCopyEmail = function (email) {
-      if (!email) return;
+    window.__privCopyText = function (text, kind) {
+      if (!text) return;
+      var msg = kind === 'phone' ? 'Teléfono copiado correctamente' : (kind === 'email' ? 'Correo copiado correctamente' : 'Copiado');
       function done() {
-        if (typeof window.__privToast === 'function') window.__privToast('Correo copiado correctamente');
+        if (typeof window.__privToast === 'function') window.__privToast(msg);
         else {
           var t = document.getElementById('toast');
           if (t) {
-            t.textContent = 'Correo copiado correctamente';
+            t.textContent = msg;
             t.classList.remove('opacity-0', 'translate-y-2');
             clearTimeout(window.__toastT);
             window.__toastT = setTimeout(function () { t.classList.add('opacity-0', 'translate-y-2'); }, 1800);
@@ -347,10 +354,10 @@ const PrivStore = (() => {
         }
       }
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(email).then(done).catch(function () {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
           try {
             var ta = document.createElement('textarea');
-            ta.value = email; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
             document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
           } catch (e) {}
           done();
@@ -358,12 +365,13 @@ const PrivStore = (() => {
       } else {
         try {
           var ta = document.createElement('textarea');
-          ta.value = email; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
           document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
         } catch (e) {}
         done();
       }
     };
+    window.__privCopyEmail = function (email) { window.__privCopyText(email, 'email'); };
   }
   return {
     SOCIAL_DEFS, DOMAINS, PRESET_COLORS, BRANDS, ICON_PRESETS,
