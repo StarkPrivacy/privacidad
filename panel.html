@@ -34,10 +34,17 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
 @keyframes listSettle{0%{transform:translateY(-3px);opacity:.9}100%{transform:translateY(0);opacity:1}}
 .list-settle{animation:listSettle .25s ease}
 [data-reorder-id]{will-change:transform}
-.card-faces{display:grid}
-.card-faces > .card-face{grid-area:1/1;transition:opacity .42s cubic-bezier(.22,1,.36,1),transform .42s cubic-bezier(.22,1,.36,1)}
-.card-faces > .card-face.is-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.97) translateY(6px)}
-.card-faces > .card-face:not(.is-hidden){opacity:1;transform:scale(1) translateY(0)}
+.vcard-shell .card-chevron{transition:transform .45s cubic-bezier(.22,1,.36,1)}
+.vcard-shell:hover .card-chevron,.vcard-shell.is-qr .card-chevron{transform:rotate(180deg)}
+.card-details{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s cubic-bezier(.22,1,.36,1);margin-top:0}
+.card-details-inner{overflow:hidden;min-height:0}
+.vcard-shell:hover .card-details,.vcard-shell.is-qr .card-details{grid-template-rows:1fr}
+.card-stage{position:relative}
+.card-face{transition:opacity .38s cubic-bezier(.22,1,.36,1),transform .38s cubic-bezier(.22,1,.36,1)}
+.card-face.card-back{position:absolute;left:0;right:0;top:0}
+.card-face.is-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.98) translateY(4px)}
+.card-face:not(.is-hidden){opacity:1;transform:none}
+.card-footer{position:relative;z-index:2}
 #qr-classic.on,#qr-themed.on{border-color:rgba(10,132,255,.45);color:#0a84ff;background:rgba(10,132,255,.12)}
 </style>
 </head>
