@@ -20,19 +20,23 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif;min-height:100vh}
 #toast{transition:opacity .25s,transform .25s}
 .cta-pill{transition:border-color .2s,background .2s,color .2s}
 .cta-pill:hover{border-color:rgba(10,132,255,.45);background:rgba(10,132,255,.08);color:#c5d0e0}
-.vcard-shell .card-chevron{transition:transform .45s cubic-bezier(.22,1,.36,1)}
-.vcard-shell:hover .card-chevron,.vcard-shell.is-qr .card-chevron{transform:rotate(180deg)}
-.card-details{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s cubic-bezier(.22,1,.36,1);margin-top:0}
-.card-details-inner{overflow:hidden;min-height:0}
-.vcard-shell:hover .card-details,.vcard-shell.is-qr .card-details{grid-template-rows:1fr}
+.vcard-shell .card-chevron{transition:transform .4s cubic-bezier(.22,1,.36,1)}
+.vcard-shell:hover .card-chevron{transform:rotate(180deg)}
+.card-details{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s cubic-bezier(.22,1,.36,1)}
+.card-details-inner{overflow:hidden;min-height:0;padding-top:0;transition:padding-top .35s ease}
+.vcard-shell:hover .card-details{grid-template-rows:1fr}
+.vcard-shell:hover .card-details-inner{padding-top:.65rem}
 .card-stage{position:relative}
-.card-face{transition:opacity .38s cubic-bezier(.22,1,.36,1),transform .38s cubic-bezier(.22,1,.36,1)}
-.card-face.card-back{position:absolute;left:0;right:0;top:0}
-.card-face.is-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.98) translateY(4px)}
+.card-face{transition:opacity .35s cubic-bezier(.22,1,.36,1),transform .35s cubic-bezier(.22,1,.36,1)}
+.card-face.card-back{position:absolute;left:0;right:0;top:0;width:100%}
+.card-face.is-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.98) translateY(3px)}
 .card-face:not(.is-hidden){opacity:1;transform:none}
+.vcard-shell.is-qr .card-face.card-front{position:absolute;left:0;right:0;top:0;height:0;overflow:hidden;opacity:0;visibility:hidden;pointer-events:none}
+.vcard-shell.is-qr .card-face.card-back{position:relative;opacity:1;visibility:visible;transform:none}
 .card-footer{position:relative;z-index:2}
 @media (hover:none){
-  .vcard-shell .card-details{grid-template-rows:1fr!important}
+  .vcard-shell .card-details{grid-template-rows:1fr}
+  .vcard-shell .card-details-inner{padding-top:.65rem}
   .vcard-shell .card-chevron{display:none}
 }
 </style>
