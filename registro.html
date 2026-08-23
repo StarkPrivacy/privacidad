@@ -3,84 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Crear cuenta — Privacidad.me</title>
-<meta name="description" content="Crea tu página de identidad digital sin rastreo.">
+<title>Crear cuenta — privtr.ee</title>
+<meta name="description" content="Regístrate en privtr.ee">
 <script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff','neon-glow':'#3b9eff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body{background:#05070a}
-.cyber-grid{background-image:linear-gradient(rgba(10,132,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(10,132,255,.03) 1px,transparent 1px);background-size:40px 40px}
-.glow-blue{box-shadow:0 0 20px rgba(10,132,255,.2)}
-</style>
+<script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-<body class="font-sans text-mist antialiased min-h-screen flex flex-col">
-<nav class="border-b border-white/5 h-14 flex items-center px-6 justify-between bg-void/80 backdrop-blur sticky top-0 z-20">
-  <a href="index.html" class="font-semibold text-white text-sm">privacidad<span class="text-neon">.me</span></a>
-  <a href="acceso.html" class="text-sm text-steel hover:text-white transition">Iniciar sesión</a>
+<body class="bg-void text-mist font-sans antialiased min-h-screen flex flex-col">
+<nav class="border-b border-white/5 px-5 h-14 flex items-center justify-between">
+  <a href="index.html" class="font-semibold text-white text-sm">privtr<span class="text-neon">.ee</span></a>
+  <a href="acceso.html" class="text-sm text-steel hover:text-white">Ya tengo cuenta</a>
 </nav>
-<main class="flex-1 relative flex items-center justify-center px-6 py-16">
-  <div class="absolute inset-0 cyber-grid opacity-30 pointer-events-none"></div>
-  <div class="relative w-full max-w-md">
-    <div class="text-center mb-8">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neon/20 bg-neon/5 text-[11px] text-neon mb-4">
-        <span class="w-1.5 h-1.5 rounded-full bg-neon"></span> Open source · Sin rastreo
-      </div>
-      <h1 class="text-2xl font-bold text-white mb-2">Crear cuenta</h1>
-      <p class="text-steel text-sm">Un perfil. Tres dominios. Tú eliges cómo se muestra.</p>
-    </div>
-    <form class="p-6 rounded-2xl bg-panel border border-white/10 glow-blue space-y-4" onsubmit="doReg(event)">
+<main class="flex-1 flex items-center justify-center px-5 py-12">
+  <div class="w-full max-w-md">
+    <h1 class="text-2xl font-semibold text-white mb-2">Crear tu página</h1>
+    <p class="text-sm text-steel mb-8">Elige un nombre. Luego personalizas enlaces y perfil.</p>
+    <form id="f" class="space-y-4" onsubmit="return go(event)">
       <div>
-        <label class="text-xs text-steel mb-1.5 block">Tu enlace</label>
-        <div class="flex items-center bg-void rounded-xl border border-white/10 overflow-hidden">
-          <select id="domain" class="bg-transparent text-steel text-sm px-3 py-3 border-r border-white/10 focus:outline-none cursor-pointer shrink-0">
-            <option value="privtr.ee">privtr.ee/</option>
-            <option value="privacidad.me">privacidad.me/</option>
-            <option value="privtree.com">privtree.com/</option>
-          </select>
-          <input id="user" required class="flex-1 bg-transparent px-3 py-3 text-sm text-white focus:outline-none min-w-0" placeholder="tu-nombre" autocomplete="username">
+        <label class="text-xs text-steel">Tu enlace</label>
+        <div class="mt-1 flex items-center rounded-xl border border-white/10 bg-panel overflow-hidden">
+          <span class="text-steel text-sm font-mono px-3 shrink-0">privtr.ee/</span>
+          <input type="hidden" id="domain" value="privtr.ee">
+          <input id="username" type="text" required pattern="[a-zA-Z0-9_-]{2,32}" placeholder="tu-nombre"
+            class="flex-1 bg-transparent text-white px-2 py-3 text-sm focus:outline-none min-w-0">
         </div>
-        <p class="text-[10px] text-steel/60 mt-1.5">Podrás cambiar el dominio preferido más adelante. Los tres apuntan al mismo perfil.</p>
+        <p class="text-[11px] text-steel/60 mt-1.5">Solo letras, números, guiones. Luego puedes cambiar detalles del perfil.</p>
       </div>
       <div>
-        <label class="text-xs text-steel mb-1.5 block">Correo</label>
-        <input type="email" id="email" required class="w-full bg-void border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neon/40" placeholder="tu@email.privado" autocomplete="email">
+        <label class="text-xs text-steel">Nombre visible</label>
+        <input id="name" type="text" class="mt-1 w-full rounded-xl border border-white/10 bg-panel px-3 py-3 text-sm text-white" placeholder="Cómo quieres que te vean">
       </div>
-      <div>
-        <label class="text-xs text-steel mb-1.5 block">Contraseña</label>
-        <input type="password" id="password" required minlength="8" class="w-full bg-void border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neon/40" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
-      </div>
-      <label class="flex items-start gap-2 text-[11px] text-steel cursor-pointer">
-        <input type="checkbox" required class="mt-0.5 accent-[#0a84ff]">
-        <span>Acepto los <a href="terminos.html" class="text-neon hover:underline">términos</a> y la <a href="privacidad.html" class="text-neon hover:underline">política de privacidad</a>.</span>
-      </label>
-      <button type="submit" class="w-full py-3 rounded-xl bg-neon text-void font-semibold text-sm hover:bg-neon-glow transition">Crear cuenta</button>
-      <p class="text-center text-[11px] text-steel">Demo local: el perfil se guarda en tu navegador.</p>
+      <button type="submit" class="w-full py-3 rounded-xl bg-neon text-void font-semibold text-sm hover:opacity-90 transition">Continuar al panel</button>
     </form>
-    <p class="text-center text-sm text-steel mt-6">¿Ya tienes cuenta? <a href="acceso.html" class="text-neon hover:underline">Iniciar sesión</a></p>
+    <p class="mt-6 text-xs text-steel/50 text-center">Demo local: los datos se guardan en este navegador hasta conectar el servidor real.</p>
   </div>
 </main>
-<footer class="border-t border-white/5 py-6 text-center text-xs text-steel">
-  <a href="index.html" class="hover:text-white">← Volver al inicio</a>
-</footer>
 <script src="js/store.js"></script>
 <script>
-function doReg(e) {
+function go(e) {
   e.preventDefault();
-  const u = PrivStore.sanitizeUsername(document.getElementById('user').value);
-  if (!u) { alert('Usuario inválido'); return; }
-  const page = PrivStore.defaultPage(u);
-  page.name = u;
-  page.preferredDomain = document.getElementById('domain').value;
+  const username = PrivStore.sanitizeUsername(document.getElementById('username').value);
+  if (!username) return false;
+  let page = PrivStore.load(username) || PrivStore.defaultPage(username);
+  page.username = username;
+  const n = document.getElementById('name').value.trim();
+  if (n) page.name = n;
+  page.preferredDomain = 'privtr.ee';
   PrivStore.save(page);
-  location.href = 'panel.html';
+  location.href = 'panel.html?u=' + encodeURIComponent(username);
+  return false;
 }
 const q = new URLSearchParams(location.search);
-if (q.get('username')) document.getElementById('user').value = q.get('username');
-if (q.get('domain')) {
-  const d = document.getElementById('domain');
-  for (const o of d.options) if (o.value === q.get('domain')) o.selected = true;
-}
+if (q.get('username')) document.getElementById('username').value = q.get('username');
 </script>
 </body>
 </html>
