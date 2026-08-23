@@ -1,4 +1,4 @@
-/** Privacidad.me store */
+/** privtr.ee store */
 const PrivStore = (() => {
   const SOCIAL_DEFS = [
     { id: 'youtube', label: 'YouTube', icon: 'fa-brands fa-youtube', placeholder: 'https://youtube.com/...' },
@@ -11,7 +11,7 @@ const PrivStore = (() => {
     { id: 'mastodon', label: 'Mastodon', icon: 'fa-brands fa-mastodon', placeholder: 'https://mastodon.social/...' },
     { id: 'email', label: 'Email', icon: 'fa-solid fa-envelope', placeholder: 'mailto:...' },
   ];
-  const DOMAINS = ['privacidad.me', 'privtr.ee', 'privtree.com'];
+  const DOMAINS = ['privtr.ee'];
   const PRESET_COLORS = [
     { id: 'blue', label: 'Azul', bg: '#2563eb', fg: '#fff' },
     { id: 'red', label: 'Rojo', bg: '#dc2626', fg: '#fff' },
@@ -168,7 +168,7 @@ const PrivStore = (() => {
     if (c.org) lines.push('ORG:' + c.org); if (c.title) lines.push('TITLE:' + c.title);
     if (c.email) lines.push('EMAIL;TYPE=INTERNET:' + c.email); if (c.phone) lines.push('TEL;TYPE=CELL:' + c.phone);
     if (c.web) lines.push('URL:' + c.web); if (c.note) lines.push('NOTE:' + c.note);
-    if (page.username) lines.push('UID:privacidad.me:' + page.username);
+    if (page.username) lines.push('UID:privtr.ee:' + page.username);
     lines.push('END:VCARD'); return lines.join('\r\n');
   }
   function vcardHref(page) { return 'data:text/vcard;charset=utf-8,' + encodeURIComponent(contactToVcard(page)); }
