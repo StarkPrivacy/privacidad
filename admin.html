@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Privacidad.me</title>
+<title>Admin — privtr.ee</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
 <body class="text-mist antialiased min-h-screen flex">
 <aside class="fixed inset-y-0 left-0 w-56 bg-panel border-r border-white/5 hidden lg:flex flex-col z-20">
   <div class="h-14 flex items-center px-4 border-b border-white/5">
-    <span class="font-semibold text-white text-sm">Admin <span class="text-neon text-[10px]">privacidad.me</span></span>
+    <span class="font-semibold text-white text-sm">Admin <span class="text-neon text-[10px]">privtr.ee</span></span>
   </div>
   <nav class="p-2 space-y-0.5 text-sm flex-1">
     <button onclick="go('dash')" class="nav-btn active w-full text-left px-3 py-2 rounded-lg" data-s="dash"><i class="fa-solid fa-chart-line w-5 text-center opacity-70"></i> Dashboard</button>
@@ -113,8 +113,8 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
 </section>
 <section id="s-config" class="hidden space-y-4">
   <div class="p-4 rounded-xl bg-panel border border-white/10 space-y-2 text-sm text-steel">
-    <p>Dominios: <span class="text-mist">privacidad.me · privtr.ee · privtree.com</span></p>
-    <p>Backend previsto: fork LinkStack (Laravel). Esta UI es la capa estática de renovación.</p>
+    <p>Dominio: <span class="text-mist">privtr.ee</span> (privtree.com redirige)</p>
+    <p>Backend previsto: skin sobre LinkStack. Esta UI es la capa de renovación.</p>
   </div>
   <div class="p-4 rounded-xl bg-panel border border-white/10 space-y-3">
     <h3 class="text-sm text-white font-medium">Datos de prueba</h3>
@@ -230,7 +230,7 @@ function deleteUser(username) {
 function seedDemoUser() {
   const p = PrivStore.defaultPage('demo' + Math.floor(Math.random() * 900 + 100));
   p.name = 'Usuario demo'; p.bio = 'Perfil de prueba';
-  p.links = [{ id: 1, type: 'link', title: 'Web', url: 'https://privacidad.me', color: 'blue', icon: 'fa-solid fa-globe', brand: 'website', iconMode: 'preset' }];
+  p.links = [{ id: 1, type: 'link', title: 'Web', url: 'https://privtr.ee', color: 'blue', icon: 'fa-solid fa-globe', brand: 'website', iconMode: 'preset' }];
   PrivStore.save(p); refreshUsers(); refreshDash();
 }
 function refreshContent() {
