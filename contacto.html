@@ -3,70 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contacto — Privacidad.me</title>
-<meta name="description" content="Contacto y enlaces de la comunidad privacidad.me">
+<title>Contacto — privtr.ee</title>
+<meta name="description" content="Contacto de privtr.ee">
 <script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff','neon-glow':'#3b9eff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
+<script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body{background:#05070a}
-.cyber-grid{background-image:linear-gradient(rgba(10,132,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(10,132,255,.03) 1px,transparent 1px);background-size:40px 40px}
-</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
 </head>
-<body class="font-sans text-mist antialiased min-h-screen flex flex-col">
-<nav class="border-b border-white/5 h-14 flex items-center px-6 justify-between bg-void/80 backdrop-blur sticky top-0 z-20">
-  <a href="index.html" class="font-semibold text-white text-sm">privacidad<span class="text-neon">.me</span></a>
-  <div class="flex gap-4 text-sm text-steel">
-    <a href="terminos.html" class="hover:text-white">Términos</a>
+<body class="bg-void text-mist font-sans antialiased min-h-screen">
+<nav class="border-b border-white/5 px-5 h-14 flex items-center justify-between max-w-4xl mx-auto">
+  <a href="index.html" class="font-semibold text-white text-sm">privtr<span class="text-neon">.ee</span></a>
+  <div class="flex gap-5 text-sm text-steel">
     <a href="privacidad.html" class="hover:text-white">Privacidad</a>
+    <a href="faq.html" class="hover:text-white">FAQ</a>
   </div>
 </nav>
-<main class="flex-1 relative">
-  <div class="absolute inset-0 cyber-grid opacity-25 pointer-events-none"></div>
-  <div class="relative max-w-3xl mx-auto px-6 py-12 sm:py-16">
-    <p class="text-[11px] text-neon mb-2 uppercase tracking-wider">Contacto</p>
-    <h1 class="text-3xl font-bold text-white mb-3">Habla con nosotros</h1>
-    <p class="text-steel text-sm mb-10 max-w-xl">Soporte del producto, privacidad y comunidad. Preferimos canales que no dependan de vigilancia publicitaria.</p>
-
-    <div class="grid sm:grid-cols-2 gap-4 mb-10">
-      <a href="https://boringprivacy.io" target="_blank" rel="noopener" class="p-5 rounded-2xl bg-panel border border-white/10 hover:border-neon/30 transition group">
-        <div class="text-neon text-xs mb-2">Academia</div>
-        <div class="text-white font-semibold group-hover:text-neon transition">Boring Privacy</div>
-        <p class="text-[11px] text-steel mt-1">Formación en privacidad y soberanía digital</p>
-      </a>
-      <a href="https://t.me/StarkPrivacy" target="_blank" rel="noopener" class="p-5 rounded-2xl bg-panel border border-white/10 hover:border-neon/30 transition group">
-        <div class="text-neon text-xs mb-2">Telegram</div>
-        <div class="text-white font-semibold group-hover:text-neon transition">@StarkPrivacy</div>
-        <p class="text-[11px] text-steel mt-1">Canal y comunidad</p>
-      </a>
-      <a href="https://x.com/StarkPrivacy" target="_blank" rel="noopener" class="p-5 rounded-2xl bg-panel border border-white/10 hover:border-neon/30 transition group">
-        <div class="text-neon text-xs mb-2">X / Twitter</div>
-        <div class="text-white font-semibold group-hover:text-neon transition">@StarkPrivacy</div>
-        <p class="text-[11px] text-steel mt-1">Actualizaciones del proyecto</p>
-      </a>
-      <a href="https://github.com/StarkPrivacy/privacidad" target="_blank" rel="noopener" class="p-5 rounded-2xl bg-panel border border-white/10 hover:border-neon/30 transition group">
-        <div class="text-neon text-xs mb-2">Código</div>
-        <div class="text-white font-semibold group-hover:text-neon transition">GitHub</div>
-        <p class="text-[11px] text-steel mt-1">Repositorio open source</p>
-      </a>
-    </div>
-
-    <div class="p-6 rounded-2xl bg-panel border border-white/10">
-      <h2 class="text-white font-semibold mb-2 text-sm">Mensaje (demo)</h2>
-      <p class="text-[11px] text-steel mb-4">En producción este formulario enviará al servidor. Aquí es solo visual.</p>
-      <form class="space-y-3" onsubmit="event.preventDefault(); alert('Demo: en producción se enviaría el mensaje.');">
-        <input type="email" required placeholder="Tu correo" class="w-full bg-void border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neon/40">
-        <textarea required rows="4" placeholder="Tu mensaje" class="w-full bg-void border border-white/10 rounded-xl px-4 py-3 text-sm text-white resize-none focus:outline-none focus:border-neon/40"></textarea>
-        <button type="submit" class="px-6 py-2.5 rounded-xl bg-neon text-void font-semibold text-sm hover:bg-neon-glow transition">Enviar</button>
-      </form>
-    </div>
+<main class="max-w-4xl mx-auto px-5 py-12">
+  <h1 class="text-2xl font-semibold text-white mb-2">Contacto</h1>
+  <p class="text-steel text-sm mb-10 max-w-xl">Soporte del producto y comunidad. Preferimos canales que no dependan de vigilancia publicitaria.</p>
+  <div class="grid sm:grid-cols-2 gap-4">
+    <a href="https://boringprivacy.io" target="_blank" rel="noopener" class="p-5 rounded-2xl bg-panel border border-white/10 hover:border-neon/30 transition">
+      <div class="text-white font-medium mb-1">Academia Boring Privacy</div>
+      <p class="text-[11px] text-steel">Formación en privacidad y soberanía digital</p>
+    </a>
+    <a href="https://x.com/StarkPrivacy" target="_blank" rel="noopener" class="p-5 rounded-2xl bg-panel border border-white/10 hover:border-neon/30 transition">
+      <div class="text-white font-medium mb-1"><i class="fa-brands fa-x-twitter mr-2"></i>X</div>
+      <p class="text-[11px] text-steel">@StarkPrivacy</p>
+    </a>
+    <a href="https://t.me/StarkPrivacy" target="_blank" rel="noopener" class="p-5 rounded-2xl bg-panel border border-white/10 hover:border-neon/30 transition">
+      <div class="text-white font-medium mb-1"><i class="fa-brands fa-telegram mr-2"></i>Telegram</div>
+      <p class="text-[11px] text-steel">Canal de actualizaciones</p>
+    </a>
+    <a href="https://starkprivacy.com" target="_blank" rel="noopener" class="p-5 rounded-2xl bg-panel border border-white/10 hover:border-neon/30 transition">
+      <div class="text-white font-medium mb-1">Stark Privacy</div>
+      <p class="text-[11px] text-steel">starkprivacy.com</p>
+    </a>
   </div>
 </main>
-<footer class="border-t border-white/5 py-8">
-  <div class="max-w-3xl mx-auto px-6 flex flex-col sm:flex-row justify-between gap-4 text-xs text-steel">
-    <span>privacidad.me · privtr.ee · privtree.com</span>
-    <a href="index.html" class="hover:text-white">← Inicio</a>
-  </div>
-</footer>
+<footer class="border-t border-white/5 py-8 text-center text-xs text-steel/50">privtr.ee</footer>
 </body>
 </html>
