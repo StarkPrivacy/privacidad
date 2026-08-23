@@ -3,252 +3,205 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacidad.me — Identidad digital sin rastreo</title>
-  <meta name="description" content="Hub de identidad digital con enlaces y tarjeta de contacto. Open source, sin rastreo.">
+  <title>privtr.ee — Tu página de enlaces, con privacidad</title>
+  <meta name="description" content="Una página para tus enlaces y tu identidad digital, sin rastreo ni venta de datos. privtr.ee">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: { void:'#05070a', panel:'#0b0f14', neon:'#0a84ff', 'neon-glow':'#3b9eff', steel:'#8b9bb4', mist:'#c5d0e0' },
-          fontFamily: { sans: ['Inter','system-ui','sans-serif'] },
-          animation: { 'fade-in':'fadeIn .7s ease-out forwards', 'slide-up':'slideUp .6s ease-out forwards', 'float':'float 6s ease-in-out infinite' },
-          keyframes: {
-            fadeIn:{'0%':{opacity:'0'},'100%':{opacity:'1'}},
-            slideUp:{'0%':{opacity:'0',transform:'translateY(20px)'},'100%':{opacity:'1',transform:'translateY(0)'}},
-            float:{'0%,100%':{transform:'translateY(0)'},'50%':{transform:'translateY(-6px)'}}
-          }
+          fontFamily: { sans: ['Inter','system-ui','sans-serif'] }
         }
       }
     }
   </script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body{background:#05070a}
-    .cyber-grid{background-image:linear-gradient(rgba(10,132,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(10,132,255,.03) 1px,transparent 1px);background-size:40px 40px}
-    .glow-blue{box-shadow:0 0 20px rgba(10,132,255,.25),0 0 40px rgba(10,132,255,.1)}
-    .text-glow{text-shadow:0 0 20px rgba(10,132,255,.4)}
-    .phone-shell{background:linear-gradient(160deg,#1c2333 0%,#0c1018 40%,#080b10 100%);box-shadow:0 0 0 1.5px #3a4558,0 0 0 4px #151a24,0 30px 60px -15px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.08)}
-    .opacity-0-init{opacity:0}
-    .animate-delay-100{animation-delay:.1s}.animate-delay-200{animation-delay:.2s}.animate-delay-300{animation-delay:.3s}
+    .phone-shell{background:linear-gradient(160deg,#1c2333 0%,#0c1018 40%,#080b10 100%);box-shadow:0 0 0 1.5px #3a4558,0 0 0 4px #151a24,0 24px 48px -12px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.06)}
+    .banner-mig{background:linear-gradient(90deg,rgba(10,132,255,.12),rgba(10,132,255,.04));border-bottom:1px solid rgba(10,132,255,.25)}
   </style>
 </head>
-<body class="font-sans text-mist antialiased selection:bg-neon/30 selection:text-white">
-<nav class="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-void/80 backdrop-blur-xl">
-  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-    <a href="index.html" class="flex items-center gap-3">
-      <div class="w-8 h-8 rounded-lg bg-neon/10 border border-neon/30 flex items-center justify-center">
-        <svg class="w-4 h-4 text-neon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      </div>
-      <span class="font-semibold text-white">privacidad<span class="text-neon">.me</span></span>
-    </a>
-    <div class="hidden md:flex items-center gap-6 text-sm text-steel">
-      <a href="#features" class="hover:text-white transition">Características</a>
-      <a href="#dominios" class="hover:text-white transition">Dominios</a>
+<body class="font-sans text-mist antialiased">
+
+<div class="banner-mig relative z-[60]">
+  <div class="max-w-5xl mx-auto px-4 py-2.5 text-center text-[12px] sm:text-[13px] text-mist/95 leading-snug">
+    <strong class="text-white font-medium">Importante:</strong>
+    a partir del día <span class="text-neon font-semibold">X</span>, las direcciones
+    <span class="font-mono text-white/90">privacidad.me/@usuario</span> dejarán de estar disponibles.
+    Usa <span class="font-mono text-neon">privtr.ee/@tu-nombre</span> — mismos datos, mismo perfil.
+    <span class="text-steel/80">(Te avisaremos con la fecha concreta cuando cierren las pruebas.)</span>
+  </div>
+</div>
+
+<nav class="sticky top-0 z-50 border-b border-white/5 bg-void/90 backdrop-blur-md">
+  <div class="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
+    <a href="index.html" class="font-semibold text-white tracking-tight">privtr<span class="text-neon">.ee</span></a>
+    <div class="hidden sm:flex items-center gap-6 text-sm text-steel">
+      <a href="#para-que" class="hover:text-white transition">Para qué sirve</a>
       <a href="#comparativa" class="hover:text-white transition">Comparativa</a>
       <a href="#precios" class="hover:text-white transition">Precios</a>
-      <a href="panel.html" class="hover:text-neon transition">Demo panel</a>
     </div>
-    <div class="flex items-center gap-5">
-      <a href="acceso.html" class="text-sm text-steel hover:text-white transition">Iniciar sesión</a>
-      <a href="registro.html" class="text-sm text-steel hover:text-neon transition">Crear cuenta</a>
+    <div class="flex items-center gap-4 text-sm">
+      <a href="acceso.html" class="text-steel hover:text-white transition">Entrar</a>
+      <a href="registro.html" class="px-3.5 py-1.5 rounded-lg bg-neon/15 text-neon border border-neon/30 hover:bg-neon/25 transition">Crear cuenta</a>
     </div>
   </div>
 </nav>
-<section class="relative min-h-screen flex items-center pt-20 pb-16 overflow-hidden">
-  <div class="absolute inset-0 cyber-grid opacity-40"></div>
-  <div class="absolute inset-0 bg-gradient-to-b from-void via-transparent to-void"></div>
-  <div class="relative max-w-6xl mx-auto px-6 w-full">
-    <div class="grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-10 items-center">
-      <div class="text-center lg:text-left">
-        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-neon/20 bg-neon/5 text-xs font-medium text-neon mb-5 opacity-0-init animate-fade-in">
-          <span class="w-1.5 h-1.5 rounded-full bg-neon animate-pulse"></span>
-          Open source · Sin rastreo · Identidad digital
-        </div>
-        <h1 class="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight text-white leading-[1.1] mb-4 opacity-0-init animate-slide-up">
-          Tu identidad digital.<br><span class="text-neon text-glow">Sin ser el producto.</span>
+
+<section class="relative pt-14 pb-20 sm:pt-20 sm:pb-28">
+  <div class="max-w-5xl mx-auto px-5">
+    <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-16 items-center">
+      <div>
+        <p class="text-sm text-neon/90 mb-4 font-medium">Tu enlace en bio · sin vender tus datos</p>
+        <h1 class="text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold text-white leading-tight tracking-tight mb-5">
+          Tus enlaces.<br>
+          <span class="text-mist">Con privacidad de verdad.</span>
         </h1>
-        <p class="text-base sm:text-lg text-steel mb-6 leading-relaxed max-w-xl mx-auto lg:mx-0 opacity-0-init animate-slide-up animate-delay-100">
-          Enlaces públicos, tarjeta de contacto opcional y control real de tus datos.
-          <span class="text-mist">privtr.ee</span> para el enlace corto; <span class="text-mist">privacidad.me</span> para el hub de identidad.
+        <p class="text-steel text-[15px] sm:text-base leading-relaxed mb-8 max-w-md">
+          Una página sencilla para compartir lo que importa: redes, proyectos, contacto.
+          Sin cookies de publicidad ni perfiles construidos a costa tuya.
         </p>
-        <div class="w-full opacity-0-init animate-slide-up animate-delay-200">
-          <div class="p-1.5 rounded-2xl bg-panel border border-white/10 glow-blue">
-            <form action="registro.html" method="get" class="flex flex-col sm:flex-row gap-2">
-              <div class="flex flex-1 items-center bg-void rounded-xl border border-white/5 overflow-hidden min-w-0">
-                <select name="domain" class="bg-transparent text-steel text-sm px-3 py-3.5 border-r border-white/5 focus:outline-none cursor-pointer shrink-0">
-                  <option value="privtr.ee">privtr.ee/</option>
-                  <option value="privacidad.me">privacidad.me/</option>
-                  <option value="privtree.com">privtree.com/</option>
-                </select>
-                <input type="text" name="username" placeholder="tu-nombre" required class="flex-1 bg-transparent text-white placeholder-steel/50 px-3 py-3.5 text-sm focus:outline-none min-w-0">
-              </div>
-              <button type="submit" class="px-6 py-3.5 rounded-xl bg-neon text-void font-semibold text-sm hover:bg-neon-glow transition shrink-0">Registrarse</button>
-            </form>
+        <form action="registro.html" method="get" class="flex flex-col sm:flex-row gap-2 max-w-md">
+          <div class="flex flex-1 items-center rounded-xl border border-white/10 bg-panel overflow-hidden">
+            <span class="pl-3.5 text-sm text-steel/80 font-mono shrink-0">privtr.ee/</span>
+            <input type="text" name="username" placeholder="tu-nombre" required
+              class="flex-1 bg-transparent text-white placeholder-steel/40 px-2 py-3 text-sm focus:outline-none min-w-0">
           </div>
-          <p class="mt-3 text-xs text-steel/70">Un perfil. Tres dominios. Tú eliges cómo se muestra.</p>
-        </div>
+          <button type="submit" class="px-5 py-3 rounded-xl bg-neon text-void font-semibold text-sm hover:bg-neon-glow transition shrink-0">
+            Registrarse
+          </button>
+        </form>
+        <p class="mt-3 text-xs text-steel/60">Gratis. Sin tarjeta. Elige solo tu nombre.</p>
       </div>
-      <div class="flex justify-center lg:justify-end opacity-0-init animate-slide-up animate-delay-300">
-        <div class="phone-shell relative rounded-[2.75rem] p-[10px] w-[290px] sm:w-[310px] animate-float">
-          <div class="absolute top-[14px] left-1/2 -translate-x-1/2 w-[90px] h-[26px] bg-black rounded-full z-20"></div>
-          <div class="relative bg-[#05070a] rounded-[2.2rem] overflow-hidden">
-            <div class="flex items-center justify-between px-5 pt-3.5 pb-1 text-[11px] text-steel/90 font-medium">
-              <span id="phone-time">--:--</span>
-              <div class="flex items-center gap-1.5">
-                <div class="flex items-center gap-0.5">
-                  <div class="w-[22px] h-[11px] rounded-[3px] border border-steel/80 relative p-[1.5px]">
-                    <div class="h-full w-[70%] rounded-[1.5px] bg-green-400"></div>
-                  </div>
-                  <div class="w-[2px] h-[5px] bg-steel/80 rounded-r-sm"></div>
-                </div>
-              </div>
+      <div class="flex justify-center lg:justify-end">
+        <div class="phone-shell rounded-[2.5rem] p-[9px] w-[270px] sm:w-[290px]">
+          <div class="mx-auto mt-2 mb-1 w-[80px] h-[22px] bg-black rounded-full"></div>
+          <div class="bg-[#05070a] rounded-[2rem] overflow-hidden px-4 pt-2 pb-5 text-center">
+            <img src="https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg" alt=""
+              class="w-16 h-16 rounded-full object-cover border border-white/15 mx-auto mb-3 mt-2">
+            <h3 class="text-[15px] font-semibold text-white">Stark Privacy</h3>
+            <p class="text-[11px] text-steel mt-1 mb-4 px-1 leading-snug">Sin privacidad tu libertad es solo una ilusión</p>
+            <div class="space-y-2 text-left">
+              <div class="py-2.5 px-3 rounded-xl bg-white/[0.04] border border-white/10 text-[12px] text-mist">Academia Boring Privacy</div>
+              <div class="py-2.5 px-3 rounded-xl bg-white/[0.04] border border-white/10 text-[12px] text-mist">Telegram</div>
+              <div class="py-2.5 px-3 rounded-xl bg-white/[0.04] border border-white/10 text-[12px] text-mist">Canal en X</div>
             </div>
-            <div class="px-5 pb-7 pt-4 text-center">
-              <img src="https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg" alt="" class="w-[72px] h-[72px] rounded-full object-cover border-2 border-neon/50 mx-auto mb-3">
-              <h3 class="text-[17px] font-semibold text-white mb-0.5">Stark Privacy <span class="text-neon text-xs">✓</span></h3>
-              <p class="text-[11px] text-steel mb-3">Sin privacidad tu libertad es solo una ilusión</p>
-              <div class="rounded-xl border border-neon/25 bg-panel/90 p-3 text-left mb-3">
-                <div class="text-[9px] uppercase tracking-wider text-neon/70 mb-1">Identidad</div>
-                <div class="text-[11px] text-white font-medium">Fundador · Boring Privacy</div>
-                <div class="text-[10px] text-steel mt-1.5">stark@boringprivacy.io</div>
-              </div>
-              <div class="space-y-2">
-                <div class="py-2.5 px-3 rounded-xl bg-panel border border-white/10 text-[11px] text-mist">Academia Boring Privacy</div>
-                <div class="py-2.5 px-3 rounded-xl bg-panel border border-white/10 text-[11px] text-mist">Canal de Telegram</div>
-              </div>
-              <p class="mt-3 text-[10px] text-steel/50">privtr.ee/@stark</p>
-            </div>
-            <div class="pb-2.5 flex justify-center"><div class="w-32 h-1 rounded-full bg-white/25"></div></div>
+            <p class="mt-4 text-[10px] text-steel/40 font-mono">privtr.ee/@stark</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 </section>
-<section id="dominios" class="py-20 border-t border-white/5">
-  <div class="max-w-5xl mx-auto px-6">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl font-bold text-white mb-3">Un producto. Dos caras. Mismos datos.</h2>
-      <p class="text-steel max-w-2xl mx-auto text-sm">El mismo perfil con énfasis distinto según el dominio.</p>
-    </div>
-    <div class="grid md:grid-cols-3 gap-5">
-      <div class="p-6 rounded-2xl bg-panel border border-neon/30"><div class="text-neon font-mono text-sm mb-2">privacidad.me</div><h3 class="text-white font-semibold mb-2">Hub de identidad</h3><p class="text-steel text-sm">Enlaces + tarjeta de identidad opcional (vCard).</p></div>
-      <div class="p-6 rounded-2xl bg-panel border border-white/10"><div class="text-mist font-mono text-sm mb-2">privtr.ee</div><h3 class="text-white font-semibold mb-2">Enlace corto</h3><p class="text-steel text-sm">Link-in-bio. Puedes ocultar la tarjeta y quedar solo con enlaces.</p></div>
-      <div class="p-6 rounded-2xl bg-panel border border-white/10"><div class="text-mist font-mono text-sm mb-2">privtree.com</div><h3 class="text-white font-semibold mb-2">Alias</h3><p class="text-steel text-sm">Mismos datos, misma cuenta.</p></div>
-    </div>
-  </div>
-</section>
-<section id="features" class="py-24 border-t border-white/5">
-  <div class="max-w-6xl mx-auto px-6">
-    <div class="text-center mb-16"><h2 class="text-3xl font-bold text-white mb-4">Más que una lista de enlaces</h2></div>
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div class="p-6 rounded-2xl bg-panel border border-white/5"><h3 class="text-lg font-semibold text-white mb-2">Enlaces</h3><p class="text-steel text-sm">Botones, colores, marcas, orden.</p></div>
-      <div class="p-6 rounded-2xl bg-panel border border-white/5"><h3 class="text-lg font-semibold text-white mb-2">Tarjeta de identidad</h3><p class="text-steel text-sm">Módulo opcional. Nota, email, tel, web y .vcf.</p></div>
-      <div class="p-6 rounded-2xl bg-panel border border-white/5"><h3 class="text-lg font-semibold text-white mb-2">Sin rastreo</h3><p class="text-steel text-sm">Sin cookies de tracking ni venta de grafo social.</p></div>
-      <div class="p-6 rounded-2xl bg-panel border border-white/5"><h3 class="text-lg font-semibold text-white mb-2">Open source</h3><p class="text-steel text-sm">Auditable.</p></div>
-      <div class="p-6 rounded-2xl bg-panel border border-white/5"><h3 class="text-lg font-semibold text-white mb-2">Tus usuarios</h3><p class="text-steel text-sm">No se pierden cuentas al renovar la interfaz.</p></div>
-      <div class="p-6 rounded-2xl bg-panel border border-dashed border-white/10 opacity-80"><h3 class="text-lg font-semibold text-white mb-2">Herramientas <span class="text-[10px] text-neon">próximamente</span></h3><p class="text-steel text-sm">Utilidades de privacidad.</p></div>
+
+<section id="para-que" class="py-16 border-t border-white/5">
+  <div class="max-w-5xl mx-auto px-5">
+    <h2 class="text-2xl font-semibold text-white mb-3">Para qué es privtr.ee</h2>
+    <p class="text-steel text-sm max-w-2xl mb-10 leading-relaxed">
+      Muchas páginas de enlaces viven de medir quién eres y a quién sigues.
+      Aquí la prioridad es otra: que puedas publicar lo necesario y punto.
+    </p>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="p-5 rounded-xl bg-panel border border-white/8">
+        <h3 class="text-white font-medium mb-1.5 text-[15px]">Lista de enlaces</h3>
+        <p class="text-steel text-sm leading-relaxed">Ordena botones, colores e iconos. Lo esencial, sin ruido.</p>
+      </div>
+      <div class="p-5 rounded-xl bg-panel border border-white/8">
+        <h3 class="text-white font-medium mb-1.5 text-[15px]">Tarjeta de contacto</h3>
+        <p class="text-steel text-sm leading-relaxed">Opcional. Si la activas, puedes guardar un .vcf. Si no, no aparece.</p>
+      </div>
+      <div class="p-5 rounded-xl bg-panel border border-white/8">
+        <h3 class="text-white font-medium mb-1.5 text-[15px]">Sin rastreo comercial</h3>
+        <p class="text-steel text-sm leading-relaxed">No vendemos tu grafo social ni rellenamos perfiles publicitarios.</p>
+      </div>
     </div>
   </div>
 </section>
-<section id="comparativa" class="py-24 border-t border-white/5">
-  <div class="max-w-5xl mx-auto px-6">
-    <div class="text-center mb-12"><h2 class="text-3xl font-bold text-white mb-4">¿Por qué privtr.ee / privacidad.me?</h2></div>
-    <div class="overflow-x-auto rounded-2xl border border-white/10">
-      <table class="w-full text-left text-sm">
-        <thead><tr class="bg-panel border-b border-white/10"><th class="px-6 py-4 text-steel">Característica</th><th class="px-6 py-4 text-neon text-center">Nosotros</th><th class="px-6 py-4 text-steel text-center">Otras</th></tr></thead>
-        <tbody class="divide-y divide-white/5">
-          <tr class="bg-void/50"><td class="px-6 py-4">Rastreo / venta de datos</td><td class="px-6 py-4 text-center text-green-400">No</td><td class="px-6 py-4 text-center text-red-400/80">Habitual</td></tr>
-          <tr><td class="px-6 py-4">Open source</td><td class="px-6 py-4 text-center text-green-400">Sí</td><td class="px-6 py-4 text-center text-red-400/80">No</td></tr>
-          <tr class="bg-void/50"><td class="px-6 py-4">Tarjeta de identidad (.vcf)</td><td class="px-6 py-4 text-center text-green-400">Opcional</td><td class="px-6 py-4 text-center text-steel">Raro</td></tr>
-          <tr><td class="px-6 py-4">Precio</td><td class="px-6 py-4 text-center text-green-400">Gratuito</td><td class="px-6 py-4 text-center text-steel">Freemium</td></tr>
+
+<section id="comparativa" class="py-16 border-t border-white/5">
+  <div class="max-w-3xl mx-auto px-5">
+    <h2 class="text-2xl font-semibold text-white mb-8">privtr.ee frente a lo habitual</h2>
+    <div class="rounded-xl border border-white/10 overflow-hidden text-sm">
+      <table class="w-full">
+        <thead class="bg-panel text-steel text-left">
+          <tr>
+            <th class="px-4 py-3 font-medium"></th>
+            <th class="px-4 py-3 font-medium text-neon">privtr.ee</th>
+            <th class="px-4 py-3 font-medium">Otras típicas</th>
+          </tr>
+        </thead>
+        <tbody class="text-mist divide-y divide-white/5">
+          <tr><td class="px-4 py-3 text-steel">Modelo de negocio</td><td class="px-4 py-3">Gratis, sin vender tu actividad</td><td class="px-4 py-3 text-steel/80">Publicidad / planes / datos</td></tr>
+          <tr><td class="px-4 py-3 text-steel">Rastreo</td><td class="px-4 py-3">No orientado a anunciantes</td><td class="px-4 py-3 text-steel/80">Frecuente</td></tr>
+          <tr><td class="px-4 py-3 text-steel">Contacto (vCard)</td><td class="px-4 py-3">Opcional, tú decides</td><td class="px-4 py-3 text-steel/80">Poco habitual</td></tr>
+          <tr><td class="px-4 py-3 text-steel">Enfoque</td><td class="px-4 py-3">Privacidad práctica</td><td class="px-4 py-3 text-steel/80">Crecimiento y métricas</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
+
 <section id="precios" class="py-16 border-t border-white/5">
-  <div class="max-w-3xl mx-auto px-6">
-    <div class="text-center mb-8">
-      <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">Precios</h2>
-      <p class="text-steel text-sm">Gratis · Sostenido con donaciones</p>
-    </div>
-    <div class="p-6 rounded-2xl bg-panel border border-white/5 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="text-center sm:text-left">
-        <div class="text-neon font-mono text-xs mb-1">PLAN ÚNICO</div>
-        <div class="text-xl font-bold text-white">0 € · Sin límites artificiales</div>
-      </div>
-      <p class="text-xs text-steel max-w-xs text-center sm:text-right">Se mantiene gracias al apoyo de la comunidad.</p>
-    </div>
-    <div class="grid grid-cols-3 gap-3">
-      <div class="p-3 rounded-xl bg-void border border-white/10 text-center"><div class="text-orange-400 font-bold text-sm">₿ BTC</div></div>
-      <div class="p-3 rounded-xl bg-void border border-white/10 text-center"><div class="text-orange-500 font-bold text-sm">XMR</div></div>
-      <div class="p-3 rounded-xl bg-void border border-white/10 text-center"><div class="text-green-400 font-bold text-sm">₮ USDT</div><p class="text-[10px] text-steel">TRC-20</p></div>
+  <div class="max-w-lg mx-auto px-5 text-center">
+    <h2 class="text-2xl font-semibold text-white mb-3">Precio</h2>
+    <p class="text-steel text-sm mb-6 leading-relaxed">
+      El servicio es gratuito. Se mantiene con el apoyo de quien puede y quiere.
+      No hay planes ocultos ni “prueba de 14 días”.
+    </p>
+    <div class="inline-block px-8 py-6 rounded-2xl bg-panel border border-white/10">
+      <div class="text-3xl font-semibold text-white">0 €</div>
+      <div class="text-sm text-steel mt-1">para usar privtr.ee</div>
+      <a href="donar.html" class="inline-block mt-4 text-sm text-neon hover:underline">Si quieres apoyar →</a>
     </div>
   </div>
 </section>
-<section class="py-24 border-t border-white/5">
-  <div class="max-w-3xl mx-auto px-6 text-center">
-    <div class="p-10 rounded-3xl bg-gradient-to-b from-panel to-void border border-neon/20">
-      <h2 class="text-3xl font-bold text-white mb-4">Tu página. Tus reglas.</h2>
-      <p class="text-steel mb-8">Sin tarjeta. Sin rastreo. Open source.</p>
-      <a href="registro.html" class="inline-flex px-8 py-3.5 rounded-xl bg-neon text-void font-semibold hover:bg-neon-glow transition glow-blue">Crear mi cuenta</a>
-    </div>
+
+<section class="py-14 border-t border-white/5">
+  <div class="max-w-xl mx-auto px-5 text-center">
+    <h2 class="text-xl font-semibold text-white mb-3">Empieza cuando quieras</h2>
+    <p class="text-steel text-sm mb-6">Elige un nombre y monta tu página en un rato.</p>
+    <a href="registro.html" class="inline-flex px-6 py-3 rounded-xl bg-neon text-void font-semibold text-sm hover:bg-neon-glow transition">Crear mi privtr.ee</a>
   </div>
 </section>
-<footer class="border-t border-white/5 pt-14 pb-10">
-  <div class="max-w-6xl mx-auto px-6">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-      <div class="col-span-2 md:col-span-1">
-        <a href="index.html" class="font-semibold text-white text-sm">privacidad<span class="text-neon">.me</span></a>
-        <p class="mt-3 text-xs text-steel leading-relaxed max-w-[200px]">Identidad digital y enlaces sin rastreo. Open source.</p>
-      </div>
-      <div>
-        <h4 class="text-[11px] uppercase tracking-wider text-steel mb-3">Explora</h4>
-        <ul class="space-y-2 text-sm text-mist">
-          <li><a href="https://boringprivacy.io" target="_blank" rel="noopener" class="hover:text-neon transition">Academia Boring Privacy</a></li>
-          <li><a href="faq.html" class="hover:text-neon transition">Preguntas frecuentes</a></li>
-          <li><a href="panel.html" class="hover:text-neon transition">Demo del panel</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="text-[11px] uppercase tracking-wider text-steel mb-3">Proyecto</h4>
-        <ul class="space-y-2 text-sm text-mist">
-          <li><a href="sobre.html" class="hover:text-neon transition">Sobre mí</a></li>
-          <li><a href="donar.html" class="hover:text-neon transition">Donar</a></li>
-          <li><a href="open-source.html" class="hover:text-neon transition">Open source</a></li>
-          <li><a href="privacidad.html" class="hover:text-neon transition">Privacidad</a></li>
-          <li><a href="terminos.html" class="hover:text-neon transition">Términos</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="text-[11px] uppercase tracking-wider text-steel mb-3">Conecta</h4>
-        <ul class="space-y-2 text-sm text-mist">
-          <li><a href="https://x.com/StarkPrivacy" target="_blank" rel="noopener" class="hover:text-neon transition">X</a></li>
-          <li><a href="https://youtube.com/@StarkPrivacy" target="_blank" rel="noopener" class="hover:text-neon transition">YouTube</a></li>
-          <li><a href="https://instagram.com/StarkPrivacy" target="_blank" rel="noopener" class="hover:text-neon transition">Instagram</a></li>
-          <li><a href="https://t.me/StarkPrivacy" target="_blank" rel="noopener" class="hover:text-neon transition">Telegram</a></li>
-          <li><a href="https://github.com/StarkPrivacy/privacidad" target="_blank" rel="noopener" class="hover:text-neon transition">GitHub</a></li>
-        </ul>
-      </div>
+
+<footer class="border-t border-white/5 pt-12 pb-10">
+  <div class="max-w-5xl mx-auto px-5 grid sm:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
+    <div>
+      <a href="index.html" class="font-semibold text-white">privtr<span class="text-neon">.ee</span></a>
+      <p class="mt-2 text-xs text-steel leading-relaxed max-w-[220px]">Página de enlaces pensada para quien valora la privacidad.</p>
+      <p class="mt-3 text-xs text-steel/70">Con ❤️ de <a href="https://starkprivacy.com" class="text-mist hover:text-neon">Stark</a></p>
     </div>
-    <div class="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-steel">
-      <span>privacidad.me · privtr.ee · privtree.com</span>
-      <p>Con <span class="text-red-400">❤</span> de <a href="https://starkprivacy.com" target="_blank" rel="noopener" class="text-mist hover:text-neon transition">Stark</a></p>
+    <div>
+      <div class="text-[11px] uppercase tracking-wider text-steel/60 mb-3">Explora</div>
+      <ul class="space-y-2 text-steel">
+        <li><a href="https://boringprivacy.io" class="hover:text-white transition">Academia Boring Privacy</a></li>
+        <li><a href="faq.html" class="hover:text-white transition">Preguntas frecuentes</a></li>
+      </ul>
     </div>
+    <div>
+      <div class="text-[11px] uppercase tracking-wider text-steel/60 mb-3">Proyecto</div>
+      <ul class="space-y-2 text-steel">
+        <li><a href="sobre.html" class="hover:text-white transition">Sobre esto</a></li>
+        <li><a href="donar.html" class="hover:text-white transition">Donar</a></li>
+        <li><a href="privacidad.html" class="hover:text-white transition">Privacidad</a></li>
+        <li><a href="terminos.html" class="hover:text-white transition">Términos</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="text-[11px] uppercase tracking-wider text-steel/60 mb-3">Conecta</div>
+      <ul class="space-y-2 text-steel">
+        <li><a href="https://x.com/StarkPrivacy" target="_blank" rel="noopener" class="hover:text-white transition">X</a></li>
+        <li><a href="https://t.me/StarkPrivacy" target="_blank" rel="noopener" class="hover:text-white transition">Telegram</a></li>
+        <li><a href="contacto.html" class="hover:text-white transition">Contacto</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="max-w-5xl mx-auto px-5 mt-10 pt-6 border-t border-white/5 text-[11px] text-steel/50 flex flex-col sm:flex-row justify-between gap-2">
+    <span>privtr.ee</span>
+    <span>privtree.com redirige aquí · privacidad.me será otro proyecto</span>
   </div>
 </footer>
-<script>
-(function(){
-  function tick(){
-    var el=document.getElementById('phone-time');
-    if(!el)return;
-    var now=new Date();
-    el.textContent=now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
-  }
-  tick(); setInterval(tick,30000);
-})();
-</script>
 </body>
 </html>
