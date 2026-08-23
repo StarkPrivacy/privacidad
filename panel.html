@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel — Privacidad.me</title>
+<title>Panel — privtr.ee</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -53,7 +53,7 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
 </head>
 <body class="text-mist antialiased min-h-screen">
 <header class="h-14 border-b border-white/5 bg-void/90 backdrop-blur flex items-center justify-between px-4 sticky top-0 z-30">
-  <a href="index.html" class="font-semibold text-white text-sm">privacidad<span class="text-neon">.me</span></a>
+  <a href="index.html" class="font-semibold text-white text-sm">privtr<span class="text-neon">.ee</span></a>
   <div class="flex items-center gap-3">
     <a id="public-link" href="u.html" target="_blank" class="text-xs text-steel hover:text-white">Ver página →</a>
     <span id="save-status" class="inline-flex items-center gap-1.5 text-[11px] text-mist">
@@ -117,12 +117,12 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif}
         <textarea id="bio" rows="2" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white resize-none" oninput="onField()"></textarea>
       </div>
       <div class="p-3 rounded-xl bg-panel border border-white/5 space-y-2">
-        <h3 class="text-xs text-white font-medium">Enlaces públicos</h3>
+        <h3 class="text-xs text-white font-medium">Enlace público</h3>
         <div id="domain-list" class="space-y-1.5"></div>
       </div>
     </div>
     <div id="t-identidad" class="hidden space-y-4">
-      <div class="p-3.5 rounded-xl border border-neon/25 bg-neon/5 text-xs text-mist"><strong class="text-neon">vCard.</strong> Datos de contacto y QR.</div>
+      <div class="p-3.5 rounded-xl border border-neon/25 bg-neon/5 text-xs text-mist"><strong class="text-neon">vCard.</strong> Datos de contacto y QR. Desactivada por defecto hasta que la actives.</div>
       <div id="contact-fields" class="space-y-3">
         <div><label class="text-xs text-steel">Cargo / título</label><input id="c-title" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" oninput="onContactField()"></div>
         <div><label class="text-xs text-steel">Organización</label><input id="c-org" class="mt-1 w-full bg-panel border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" oninput="onContactField()"></div>
