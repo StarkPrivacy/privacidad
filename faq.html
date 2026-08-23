@@ -3,49 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Preguntas frecuentes — Privacidad.me</title>
-<meta name="description" content="FAQ de privacidad.me y privtr.ee">
+<title>Preguntas frecuentes — privtr.ee</title>
+<meta name="description" content="FAQ de privtr.ee">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>body{background:#05070a}</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-<body class="font-sans text-mist antialiased min-h-screen flex flex-col">
-<nav class="border-b border-white/5 h-14 flex items-center px-6 justify-between bg-void/80 backdrop-blur sticky top-0 z-20">
-  <a href="index.html" class="font-semibold text-white text-sm">privacidad<span class="text-neon">.me</span></a>
-  <div class="flex gap-4 text-sm text-steel"><a href="index.html" class="hover:text-white">Inicio</a><a href="contacto.html" class="hover:text-white">Contacto</a></div>
+<body class="bg-void text-mist font-sans antialiased min-h-screen">
+<nav class="border-b border-white/5 px-5 h-14 flex items-center justify-between max-w-3xl mx-auto">
+  <a href="index.html" class="font-semibold text-white">privtr<span class="text-neon">.ee</span></a>
+  <a href="index.html" class="text-sm text-steel hover:text-white">Inicio</a>
 </nav>
-<main class="flex-1 max-w-3xl mx-auto px-6 py-12 sm:py-16">
-  <p class="text-[11px] text-neon mb-2 uppercase tracking-wider">Ayuda</p>
-  <h1 class="text-3xl font-bold text-white mb-8">Preguntas frecuentes</h1>
+<main class="max-w-3xl mx-auto px-5 py-12 space-y-8">
+  <h1 class="text-2xl font-semibold text-white">Preguntas frecuentes</h1>
   <div class="space-y-6 text-sm text-steel leading-relaxed">
-    <div class="p-4 rounded-xl bg-panel border border-white/5">
-      <h2 class="text-white font-medium mb-2">¿Es gratis?</h2>
-      <p>Sí. Se mantiene con <a href="donar.html" class="text-neon hover:underline">donaciones</a> voluntarias (BTC, XMR, USDT).</p>
+    <div>
+      <h2 class="text-white font-medium mb-2">¿Qué es privtr.ee?</h2>
+      <p>Una página pública de enlaces (y, si quieres, datos de contacto) pensada para no vivir de rastrearte ni de vender tu actividad.</p>
     </div>
-    <div class="p-4 rounded-xl bg-panel border border-white/5">
-      <h2 class="text-white font-medium mb-2">¿Qué diferencia hay entre privacidad.me y privtr.ee?</h2>
-      <p>Mismos datos. privacidad.me enfatiza el hub de identidad. privtr.ee es el enlace corto tipo link-in-bio.</p>
+    <div>
+      <h2 class="text-white font-medium mb-2">¿Qué pasa con privacidad.me?</h2>
+      <p>El servicio de enlaces queda en <strong class="text-mist">privtr.ee</strong>. Las URLs antiguas del tipo privacidad.me/@usuario dejarán de estar disponibles en una fecha que anunciaremos. privtree.com redirige a privtr.ee. privacidad.me será otro proyecto distinto.</p>
     </div>
-    <div class="p-4 rounded-xl bg-panel border border-white/5">
-      <h2 class="text-white font-medium mb-2">¿Rastreáis a los visitantes?</h2>
-      <p>No usamos cookies de tracking ni píxeles publicitarios. El perfil es público por diseño.</p>
+    <div>
+      <h2 class="text-white font-medium mb-2">¿Es de pago?</h2>
+      <p>No. El uso es gratuito. Se mantiene con el apoyo de quien puede aportar. Puedes ver <a href="donar.html" class="text-neon hover:underline">cómo apoyar</a>.</p>
     </div>
-    <div class="p-4 rounded-xl bg-panel border border-white/5">
-      <h2 class="text-white font-medium mb-2">¿Puedo borrar mi cuenta?</h2>
-      <p>Sí, desde el panel (Seguridad). En producción pedirá contraseña y 2FA si está activo.</p>
+    <div>
+      <h2 class="text-white font-medium mb-2">¿La tarjeta de contacto (vCard) es obligatoria?</h2>
+      <p>No. Va desactivada por defecto. Solo aparece si la activas tú en el panel.</p>
     </div>
-    <div class="p-4 rounded-xl bg-panel border border-white/5">
-      <h2 class="text-white font-medium mb-2">¿Es open source?</h2>
-      <p>Sí. Código en <a href="https://github.com/StarkPrivacy/privacidad" class="text-neon hover:underline">GitHub</a>.</p>
+    <div>
+      <h2 class="text-white font-medium mb-2">¿Mis enlaces antiguos seguirán funcionando?</h2>
+      <p>En privtr.ee/@tu-nombre, sí: mismos datos de cuenta. Cuando cerremos privacidad.me/@usuario, conviene usar solo el enlace de privtr.ee.</p>
     </div>
   </div>
 </main>
-<footer class="border-t border-white/5 pt-10 pb-8 mt-auto">
-  <div class="max-w-3xl mx-auto px-6 flex flex-col sm:flex-row justify-between gap-3 text-xs text-steel">
-    <span>privacidad.me · privtr.ee · privtree.com</span>
-    <p>Con <span class="text-red-400">❤</span> de <a href="https://starkprivacy.com" target="_blank" rel="noopener" class="text-mist hover:text-neon">Stark</a></p>
-  </div>
-</footer>
+<footer class="border-t border-white/5 py-8 text-center text-xs text-steel/50">privtr.ee</footer>
 </body>
 </html>
