@@ -12,6 +12,8 @@ const PrivStore = (() => {
     { id: 'email', label: 'Email', icon: 'fa-solid fa-envelope', placeholder: 'mailto:...' },
   ];
   const DOMAINS = ['privtr.ee'];
+  // Versión del esquema de datos del perfil. Súbela al añadir migraciones en migratePage().
+  const SCHEMA_VERSION = 1;
   const PRESET_COLORS = [
     { id: 'blue', label: 'Azul', bg: '#2563eb', fg: '#fff' },
     { id: 'red', label: 'Rojo', bg: '#dc2626', fg: '#fff' },
@@ -46,13 +48,21 @@ const PrivStore = (() => {
       name: username || 'Usuario', username: (username || 'user').toLowerCase().replace(/[^a-z0-9_-]/g, ''),
       bio: '', avatar: '', bgImage: '', shape: 'rounded', btnStyle: 'outline', btnSize: 'md', btnGlow: false,
       accentColor: '#0a84ff', profileMode: 'both', verified: false, sameTab: false,
-      social: emptySocial(), socialOrder: SOCIAL_DEFS.map(function(x){return x.id;}), links: [], contact: emptyContact(), ogTitle: '', ogDesc: '', updatedAt: Date.now(),
+      social: emptySocial(), socialOrder: SOCIAL_DEFS.map(function(x){return x.id;}), links: [], contact: emptyContact(), ogTitle: '', ogDesc: '',
+      schemaVersion: SCHEMA_VERSION, updatedAt: Date.now(),
     };
+  }
+  // Punto único de migración entre versiones de esquema. Hoy v1: nada que migrar.
+  function migratePage(d) {
+    var v = Number(d && d.schemaVersion) || 0;
+    // if (v < 2) { ...transformar...; v = 2; }
+    d.schemaVersion = SCHEMA_VERSION;
+    return d;
   }
   function starkDemo() {
     const p = defaultPage('stark');
     p.name = 'Stark Privacy'; p.bio = 'Sin privacidad tu libertad es solo una ilusión';
-    p.avatar = 'https://pbs.twimg.com/profile_images/1691362458655440896/jaacLom0.jpg';
+    p.avatar = 'assets/img/stark-avatar.jpg';
     p.verified = true; p.shape = 'rounded'; p.btnStyle = 'solid'; p.profileMode = 'both';
     p.social.youtube = 'https://youtube.com/@StarkPrivacy'; p.social.telegram = 'https://t.me/StarkPrivacy';
     p.social.x = 'https://x.com/StarkPrivacy'; p.social.instagram = 'https://instagram.com/StarkPrivacy';
@@ -75,21 +85,36 @@ const PrivStore = (() => {
     try { const raw = localStorage.getItem('priv_page'); if (raw) { const d = normalize(JSON.parse(raw)); if (!u || d.username === u) return d; } } catch (e) {}
     return null;
   }
+  const SHAPES = ['rounded', 'pill', 'square'];
+  const BTN_STYLES = ['outline', 'solid', 'soft', 'ghost'];
+  const BTN_SIZES = ['sm', 'md', 'lg'];
+  const LINK_TYPES = ['link', 'heading', 'text', 'spacer'];
+  const ICON_MODES = ['none', 'preset', 'favicon'];
   function normalize(d) {
+    d = d && typeof d === 'object' ? d : {};
+    d = migratePage(d);
     const base = defaultPage(d.username || 'user');
     const mode = d.profileMode === 'card' || d.profileMode === 'links' ? d.profileMode : 'both';
+    const contact = { ...emptyContact(), ...(d.contact || {}) };
+    contact.enabled = !!contact.enabled;
+    contact.showQr = contact.showQr !== false;
+    contact.borderColor = safeHex(contact.borderColor, '');
+    contact.qrStyle = contact.qrStyle === 'themed' ? 'themed' : 'classic';
     return {
       ...base, ...d, username: sanitizeUsername(d.username || base.username), profileMode: mode,
-      accentColor: d.accentColor || '#0a84ff',
+      accentColor: safeHex(d.accentColor, '#0a84ff'),
       social: { ...emptySocial(), ...(d.social || {}) },
       socialOrder: Array.isArray(d.socialOrder) && d.socialOrder.length ? d.socialOrder : SOCIAL_DEFS.map(function(x){return x.id;}),
-      contact: { ...emptyContact(), ...(d.contact || {}) },
+      contact: contact,
       links: Array.isArray(d.links) ? d.links.map((l, i) => ({
-        id: l.id != null ? l.id : i + 1, title: l.title || '', url: l.url || '', type: l.type || 'link',
-        color: l.color || '', customColor: l.customColor || '', icon: l.icon || '', brand: l.brand || '',
-        iconMode: l.iconMode || (l.icon ? 'preset' : 'none'),
+        id: l.id != null ? l.id : i + 1, title: l.title || '', url: l.url || '',
+        type: LINK_TYPES.indexOf(l.type) >= 0 ? l.type : 'link',
+        color: l.color || '', customColor: safeHex(l.customColor, ''), icon: l.icon || '', brand: l.brand || '',
+        iconMode: ICON_MODES.indexOf(l.iconMode) >= 0 ? l.iconMode : (l.icon ? 'preset' : 'none'),
       })) : [],
-      btnStyle: d.btnStyle || 'outline', btnSize: d.btnSize || 'md',
+      shape: SHAPES.indexOf(d.shape) >= 0 ? d.shape : 'rounded',
+      btnStyle: BTN_STYLES.indexOf(d.btnStyle) >= 0 ? d.btnStyle : 'outline',
+      btnSize: BTN_SIZES.indexOf(d.btnSize) >= 0 ? d.btnSize : 'md',
       btnGlow: !!d.btnGlow, verified: !!d.verified, sameTab: !!d.sameTab, bgImage: d.bgImage || '',
     };
   }
@@ -107,7 +132,120 @@ const PrivStore = (() => {
     }
     return users;
   }
-  function exportAll() { return listUsers(); }
+  // Formato de exportación versionado y estable (para respaldo y para llevar
+  // la gestión + los usuarios de privacidad.me a privtr.ee más adelante).
+  function exportAll() {
+    return {
+      generator: 'privtr.ee',
+      schemaVersion: SCHEMA_VERSION,
+      exportedAt: new Date().toISOString(),
+      pages: listUsers(),
+    };
+  }
+  // Acepta: {pages:[...]}, un array de páginas, o una página suelta. Devuelve
+  // páginas normalizadas (NO guarda). Ignora entradas no válidas.
+  function importPages(payload) {
+    let arr = [];
+    if (Array.isArray(payload)) arr = payload;
+    else if (payload && Array.isArray(payload.pages)) arr = payload.pages;
+    else if (payload && typeof payload === 'object') arr = [payload];
+    const out = [];
+    arr.forEach(function (p) {
+      try { const n = normalize(p); if (n.username) out.push(n); } catch (e) {}
+    });
+    return out;
+  }
+  function saveImported(pages) {
+    let n = 0;
+    (pages || []).forEach(function (p) { try { saveByUser(p); n++; } catch (e) {} });
+    return n;
+  }
+  // Guarda una página en su clave por-usuario sin tocar la "actual" (priv_page).
+  function saveByUser(page) {
+    const d = normalize({ ...page, updatedAt: page && page.updatedAt || Date.now() });
+    d.username = sanitizeUsername(d.username);
+    if (!d.username) throw new Error('sin usuario');
+    localStorage.setItem('priv_page_' + d.username, JSON.stringify(d));
+    return d;
+  }
+
+  // ---- Adaptador LinkStack / privacidad.me ------------------------------------
+  // privacidad.me está basado en LinkStack. Su exportación suele ser relacional
+  // ({users:[...], links:[...]}) o anidada ([{...user, links:[...]}]). Este
+  // adaptador es "best-effort": lo que no se pueda mapear queda anotado en
+  // page._migrationNotes para revisión manual. Ver MIGRATION.md.
+  const LS_SOCIAL = {
+    youtube: 'youtube', telegram: 'telegram', twitter: 'x', x: 'x', 'x-twitter': 'x',
+    instagram: 'instagram', discord: 'discord', github: 'github',
+    linkedin: 'linkedin', mastodon: 'mastodon', email: 'email', mail: 'email',
+  };
+  const LS_ICON = {
+    youtube: 'fa-brands fa-youtube', telegram: 'fa-brands fa-telegram', 'x-twitter': 'fa-brands fa-x-twitter',
+    twitter: 'fa-brands fa-x-twitter', instagram: 'fa-brands fa-instagram', discord: 'fa-brands fa-discord',
+    github: 'fa-brands fa-github', linkedin: 'fa-brands fa-linkedin', mastodon: 'fa-brands fa-mastodon',
+    website: 'fa-solid fa-globe', link: 'fa-solid fa-link', 'link-classic': 'fa-solid fa-link',
+    newsletter: 'fa-solid fa-newspaper', podcast: 'fa-solid fa-podcast', shop: 'fa-solid fa-cart-shopping',
+    email: 'fa-solid fa-envelope', phone: 'fa-solid fa-phone',
+  };
+  function lsPickHandle(u) {
+    return sanitizeUsername(u.littlelink_name || u.littlelink_username || u.username || u.handle || u.name || '');
+  }
+  function lsLinkType(t) {
+    t = String(t || '').toLowerCase();
+    if (t === 'heading' || t === 'header' || t === 'group') return 'heading';
+    if (t === 'divider' || t === 'spacer' || t === 'break') return 'spacer';
+    if (t === 'text' || t === 'paragraph') return 'text';
+    return 'link';
+  }
+  function fromLinkStack(input) {
+    let users = [];
+    if (Array.isArray(input)) users = input;
+    else if (input && Array.isArray(input.users)) {
+      const byUser = {};
+      (input.links || []).forEach(function (l) {
+        (byUser[l.user_id] = byUser[l.user_id] || []).push(l);
+      });
+      users = input.users.map(function (u) { return { ...u, links: (u.links || byUser[u.id] || []) }; });
+    } else if (input && typeof input === 'object') users = [input];
+
+    return users.map(function (u) {
+      const notes = [];
+      const p = defaultPage(lsPickHandle(u) || 'usuario');
+      p.name = u.name || u.display_name || p.username;
+      p.bio = u.littlelink_description || u.description || u.bio || '';
+      const av = u.image || u.img || u.avatar || u.picture || '';
+      if (av) {
+        if (/^https?:\/\//i.test(av)) p.avatar = av;
+        else { notes.push('Avatar "' + av + '": súbelo o pon URL absoluta.'); }
+      }
+      p.verified = !!(u.verified || u.is_verified);
+
+      const rawLinks = Array.isArray(u.links) ? u.links.slice() : [];
+      rawLinks.sort(function (a, b) { return (a.order || a.position || 0) - (b.order || b.position || 0); });
+      let nid = 1;
+      rawLinks.forEach(function (l) {
+        const type = lsLinkType(l.type);
+        const btn = String(l.button || l.button_id || l.brand || '').toLowerCase();
+        const url = l.link || l.url || '';
+        if (type === 'link' && LS_SOCIAL[btn] && url) {
+          p.social[LS_SOCIAL[btn]] = url;               // va a la fila de redes
+          return;
+        }
+        const icon = LS_ICON[btn] || '';
+        p.links.push({
+          id: nid++, type: type, title: l.title || l.name || '', url: type === 'spacer' ? '' : url,
+          color: '', customColor: '', icon: icon, brand: icon ? (LS_SOCIAL[btn] ? 'custom' : (btn || 'custom')) : '',
+          iconMode: icon ? 'preset' : 'none',
+        });
+        if (btn && !LS_ICON[btn] && !LS_SOCIAL[btn]) notes.push('Botón LinkStack "' + btn + '" sin equivalencia: revisa icono/color.');
+      });
+
+      if (u.custom_css || u.custom_js) notes.push('Tenía CSS/JS personalizado en LinkStack: no se importa (revisar).');
+      const out = normalize(p);
+      if (notes.length) out._migrationNotes = notes;
+      return out;
+    });
+  }
   function setVerified(username, verified) {
     const d = load(username); if (!d) return null; d.verified = !!verified; return save(d);
   }
@@ -142,7 +280,7 @@ const PrivStore = (() => {
   function colorStyle(colorId, d, compact, customColor) {
     const sc = shapeClass(d.shape);
     const sz = sizeClass(d.btnSize, compact);
-    const glowColor = d.accentColor || '#0a84ff';
+    const glowColor = safeHex(d.accentColor, '#0a84ff') || '#0a84ff';
     const glow = d.btnGlow ? 'box-shadow:0 0 16px ' + glowColor + '40;' : '';
     const resolved = resolveColor(colorId, customColor);
     if (resolved) {
@@ -156,20 +294,72 @@ const PrivStore = (() => {
     if (d.btnStyle === 'ghost') fill = 'background:transparent;color:#c5d0e0;border:1px solid rgba(255,255,255,0.2);';
     return { className: 'link-btn flex items-center justify-center gap-2 w-full ' + sz + ' ' + sc + ' font-medium mb-3', style: fill + glow };
   }
-  function esc(s) { return String(s || '').replace(/&/g, '&'+'amp;').replace(/</g, '&'+'lt;').replace(/\"/g, '&'+'quot;'); }
-  function faviconUrl(pageUrl) {
-    try { const u = new URL(pageUrl.indexOf('http') === 0 ? pageUrl : 'https://' + pageUrl);
-      return 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(u.hostname) + '&sz=32';
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  // Solo permite href navegables y seguros. Bloquea javascript:, data:, vbscript:, file:...
+  function safeUrl(u) {
+    const s = String(u == null ? '' : u).trim();
+    if (!s) return '';
+    if (/^(https?:|mailto:|tel:)/i.test(s)) return s;
+    if (/^[\/#?]/.test(s)) return s;                              // ruta o ancla relativa
+    if (/^[a-z][a-z0-9+.-]*:/i.test(s)) return '';                // cualquier otro esquema: fuera
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)) return 'mailto:' + s;
+    if (/^[^\s.]+\.[^\s]{2,}/.test(s)) return 'https://' + s;     // dominio sin esquema
+    return '';
+  }
+  // Imágenes seguras para src: http(s), data:image rasterizada (sin SVG) o ruta
+  // same-origin. Bloquea javascript:, data:svg, protocol-relative y metacaracteres.
+  function safeImg(u) {
+    const s = String(u == null ? '' : u).trim();
+    if (!s) return '';
+    if (/^https?:\/\//i.test(s)) return s;
+    if (/^data:image\/(png|jpe?g|gif|webp|avif|bmp);base64,[a-z0-9+/=\s]+$/i.test(s)) return s;
+    if (/^[a-z][a-z0-9+.-]*:/i.test(s)) return '';   // otro esquema
+    if (/^\/\//.test(s)) return '';                  // protocol-relative
+    if (/[<>"'\\\s]/.test(s)) return '';             // sin metacaracteres de atributo
+    return s;                                        // ruta relativa / absoluta same-origin
+  }
+  function safeHex(v, fallback) {
+    return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(String(v == null ? '' : v)) ? String(v) : (fallback || '');
+  }
+  // Antes pedía el favicon a Google (fuga de IP + de qué enlaces ve el visitante,
+  // en cada carga de perfil). Ahora se genera 100% en cliente: monograma de la
+  // inicial del dominio. Cero peticiones a terceros.
+  function siteHostname(pageUrl) {
+    try {
+      const raw = String(pageUrl || '');
+      const u = new URL(/^https?:\/\//i.test(raw) ? raw : 'https://' + raw);
+      return u.hostname.replace(/^www\./, '');
     } catch (e) { return ''; }
+  }
+  function faviconMarkup(pageUrl) {
+    const host = siteHostname(pageUrl);
+    if (!host) return '';
+    const ch = esc(host.charAt(0).toUpperCase());
+    return '<span aria-hidden="true" class="inline-flex items-center justify-center w-4 h-4 rounded-[3px] bg-white/10 text-current text-[9px] font-bold leading-none">' + ch + '</span>';
+  }
+  // compat: se mantiene el nombre exportado; ya no devuelve URL remota
+  function faviconUrl() { return ''; }
+  function vcardEsc(s) {
+    return String(s == null ? '' : s)
+      .replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
   }
   function contactToVcard(page) {
     const c = page.contact || emptyContact();
-    const lines = ['BEGIN:VCARD', 'VERSION:3.0', 'FN:' + (page.name || ''), 'N:;' + (page.name || '') + ';;;'];
-    if (c.org) lines.push('ORG:' + c.org); if (c.title) lines.push('TITLE:' + c.title);
-    if (c.email) lines.push('EMAIL;TYPE=INTERNET:' + c.email); if (c.phone) lines.push('TEL;TYPE=CELL:' + c.phone);
-    if (c.web) lines.push('URL:' + c.web); if (c.note) lines.push('NOTE:' + c.note);
-    if (page.username) lines.push('UID:privtr.ee:' + page.username);
-    lines.push('END:VCARD'); return lines.join('\r\n');
+    const name = vcardEsc(page.name);
+    const lines = ['BEGIN:VCARD', 'VERSION:3.0', 'FN:' + name, 'N:;' + name + ';;;'];
+    if (c.org) lines.push('ORG:' + vcardEsc(c.org));
+    if (c.title) lines.push('TITLE:' + vcardEsc(c.title));
+    if (c.email) lines.push('EMAIL;TYPE=INTERNET:' + vcardEsc(c.email));
+    if (c.phone) lines.push('TEL;TYPE=CELL:' + vcardEsc(c.phone));
+    if (safeUrl(c.web)) lines.push('URL:' + vcardEsc(safeUrl(c.web)));
+    if (c.note) lines.push('NOTE:' + vcardEsc(c.note));
+    if (page.username) lines.push('UID:privtr.ee:' + sanitizeUsername(page.username));
+    lines.push('END:VCARD');
+    return lines.join('\r\n');
   }
   function vcardHref(page) { return 'data:text/vcard;charset=utf-8,' + encodeURIComponent(contactToVcard(page)); }
   function profileUrl(d) { return 'https://privtr.ee/@' + (d.username || ''); }
@@ -206,20 +396,17 @@ const PrivStore = (() => {
     if (!c.enabled) return '';
     mode = mode || 'both';
     const isCollapsible = (mode === 'both' || mode === 'card') && !compact;
-    const borderCol = (c.borderColor && /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(c.borderColor))
-      ? c.borderColor
-      : (d.accentColor || '#0a84ff');
+    const borderCol = safeHex(c.borderColor, '') || safeHex(d.accentColor, '#0a84ff') || '#0a84ff';
     const qrStyle = c.qrStyle === 'themed' ? 'themed' : 'classic';
     const rows = [];
     function copyBtn(kind, value, icon, label) {
-      const safe = String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-      return '<button type="button" onclick="event.preventDefault();event.stopPropagation();window.__privCopyText&&window.__privCopyText(\'' + safe + '\',\'' + kind + '\')" class="w-full flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 transition cursor-pointer">' +
-        '<i class="fa-solid ' + icon + ' text-neon/80 w-4 text-center text-xs"></i>' +
+      return '<button type="button" data-priv-copy="' + esc(value) + '" data-priv-copy-kind="' + esc(kind) + '" class="w-full flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 transition cursor-pointer">' +
+        '<i class="fa-solid ' + esc(icon) + ' text-neon/80 w-4 text-center text-xs"></i>' +
         '<span class="text-xs text-mist truncate">' + esc(label) + '</span></button>';
     }
     if (c.email) rows.push(copyBtn('email', c.email, 'fa-envelope', c.email));
     if (c.phone) rows.push(copyBtn('phone', c.phone, 'fa-phone', c.phone));
-    if (c.web) rows.push('<a href="' + esc(c.web) + '" target="_blank" rel="noopener" class="flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 transition"><i class="fa-solid fa-globe text-neon/80 w-4 text-center text-xs"></i><span class="text-xs text-mist truncate">' + esc(c.web.replace(/^https?:\/\//, '')) + '</span></a>');
+    if (safeUrl(c.web)) rows.push('<a href="' + esc(safeUrl(c.web)) + '" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-left hover:border-neon/40 transition"><i class="fa-solid fa-globe text-neon/80 w-4 text-center text-xs"></i><span class="text-xs text-mist truncate">' + esc(String(c.web).replace(/^https?:\/\//, '')) + '</span></a>');
     const uid = 'card-' + esc(d.username || 'u');
     const qrSize = compact ? 100 : 132;
     const saveFull = '<a href="' + vcardHref(d) + '" download="' + esc(d.username || 'contacto') + '.vcf" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-neon text-void font-semibold text-xs" style="box-shadow:0 0 16px rgba(10,132,255,0.2)"><i class="fa-solid fa-address-card"></i> Guardar contacto</a>';
@@ -273,36 +460,38 @@ const PrivStore = (() => {
     const nameClass = compact ? 'text-base' : 'text-2xl';
     const socialSize = compact ? 'w-9 h-9 text-sm' : 'w-10 h-10 text-base';
     const target = d.sameTab ? '_self' : '_blank';
-    const active = SOCIAL_DEFS.filter(s => d.social[s.id] && String(d.social[s.id]).trim());
+    const active = SOCIAL_DEFS.filter(s => safeUrl(d.social[s.id]));
     const order = Array.isArray(d.socialOrder) && d.socialOrder.length ? d.socialOrder : ['youtube', 'telegram', 'x', 'instagram', 'discord'];
     active.sort(function (a, b) { const ia = order.indexOf(a.id), ib = order.indexOf(b.id); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib); });
     const socialHtml = active.length
       ? '<div class="flex flex-wrap justify-center gap-2.5 ' + (compact ? 'mb-4' : 'mb-5') + '">' +
         active.map(function (s) {
-          return '<a href="' + esc(d.social[s.id]) + '" target="' + target + '" rel="noopener" title="' + esc(s.label) +
+          return '<a href="' + esc(safeUrl(d.social[s.id])) + '" target="' + target + '" rel="noopener noreferrer" title="' + esc(s.label) +
             '" data-reorder-id="s-' + s.id + '" class="social-btn ' + socialSize + ' rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white"><i class="' + s.icon + '"></i></a>';
         }).join('') + '</div>' : '';
     const linksHtml = showLinks ? (d.links || []).filter(function (l) { return l.title || l.url || l.type === 'spacer'; }).map(function (l) {
       if (l.type === 'heading') return '<h2 class="text-center text-sm font-medium text-steel/80 mt-5 mb-3">' + esc(l.title) + '</h2>';
       if (l.type === 'spacer') return '<div class="h-3"></div>';
       if (l.type === 'text') {
-        const inner = l.url ? '<a href="' + esc(l.url) + '" target="' + target + '" class="text-neon hover:underline">' + esc(l.title) + '</a>' : esc(l.title);
+        var tu = safeUrl(l.url);
+        const inner = tu ? '<a href="' + esc(tu) + '" target="' + target + '" rel="noopener noreferrer" class="text-neon hover:underline">' + esc(l.title) + '</a>' : esc(l.title);
         return '<p class="text-center text-xs text-steel mb-3">' + inner + '</p>';
       }
-      var href = l.url || '#';
+      var href = safeUrl(l.url) || '#';
       var cs = colorStyle(l.color, d, compact, l.customColor);
       var iconHtml = '';
       if (l.iconMode === 'favicon' && l.url) {
-        var fu = faviconUrl(l.url);
-        if (fu) iconHtml = '<img src="' + esc(fu) + '" alt="" class="w-4 h-4 rounded-sm" loading="lazy" onerror="this.style.display=\'none\'">';
+        iconHtml = faviconMarkup(l.url);
       } else if (l.iconMode !== 'none' && l.icon) iconHtml = '<i class="' + esc(l.icon) + '"></i>';
-      return '<a href="' + esc(href) + '" target="' + target + '" rel="noopener" data-reorder-id="l-' + l.id + '" class="' + cs.className + '" style="' + cs.style + '">' + iconHtml + '<span>' + (esc(l.title) || 'Enlace') + '</span></a>';
+      return '<a href="' + esc(href) + '" target="' + target + '" rel="noopener noreferrer" data-reorder-id="l-' + l.id + '" class="' + cs.className + '" style="' + cs.style + '">' + iconHtml + '<span>' + (esc(l.title) || 'Enlace') + '</span></a>';
     }).join('') : '';
     const badge = d.verified ? '<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#0a84ff] text-white text-[10px] ml-1.5 align-middle"><i class="fa-solid fa-check"></i></span>' : '';
-    const avatar = d.avatar
-      ? '<img src="' + esc(d.avatar) + '" alt="" class="' + avSize + ' rounded-full mx-auto mb-4 object-cover border-2 border-white/20 shadow-lg">'
-      : '<div class="' + avSize + ' rounded-full mx-auto mb-4 bg-panel border-2 border-white/10 flex items-center justify-center text-steel text-lg">' + esc((d.name || '?')[0].toUpperCase()) + '</div>';
-    const bgStyle = d.bgImage ? "background-image:linear-gradient(rgba(5,7,10,0.72),rgba(5,7,10,0.88)),url('" + esc(d.bgImage) + "');background-size:cover;background-position:center;" : '';
+    const avSrc = safeImg(d.avatar);
+    const avatar = avSrc
+      ? '<img src="' + esc(avSrc) + '" alt="" referrerpolicy="no-referrer" class="' + avSize + ' rounded-full mx-auto mb-4 object-cover border-2 border-white/20 shadow-lg">'
+      : '<div class="' + avSize + ' rounded-full mx-auto mb-4 bg-panel border-2 border-white/10 flex items-center justify-center text-steel text-lg">' + esc((String(d.name || '?').trim() || '?').charAt(0).toUpperCase()) + '</div>';
+    const bgSrc = safeImg(d.bgImage).replace(/['"()\\\s]/g, '');
+    const bgStyle = bgSrc ? "background-image:linear-gradient(rgba(5,7,10,0.72),rgba(5,7,10,0.88)),url('" + esc(bgSrc) + "');background-size:cover;background-position:center;" : '';
     container.innerHTML =
       '<div class="' + (d.bgImage && !compact ? 'rounded-2xl p-4 -mx-2' : '') + '" style="' + bgStyle + '">' +
       avatar + '<h1 class="' + nameClass + ' font-semibold text-white mb-2">' + (esc(d.name) || 'Nombre') + badge + '</h1>' +
@@ -310,6 +499,13 @@ const PrivStore = (() => {
       socialHtml + (showCard ? renderContactCard(d, compact, mode) : '') +
       (showLinks ? '<div class="space-y-0 max-w-sm mx-auto mt-4">' + (linksHtml || '') + '</div>' : '') +
       '<p class="mt-6 text-[10px] text-white/30">privtr.ee/@' + esc(d.username) + '</p></div>';
+    container.querySelectorAll('[data-priv-copy]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        if (window.__privCopyText) window.__privCopyText(btn.getAttribute('data-priv-copy'), btn.getAttribute('data-priv-copy-kind'));
+      });
+    });
+    if (window.PrivIcons) window.PrivIcons.hydrate(container);
     if (typeof qrcode !== 'undefined') {
       container.querySelectorAll('canvas.priv-qr').forEach(function (canvas) {
         try {
@@ -333,17 +529,33 @@ const PrivStore = (() => {
     }
   }
   if (typeof window !== 'undefined') {
+    // Cambia el glifo del botón de giro (qrcode <-> fingerprint) sea <i> de FA o <svg> ya hidratado.
+    function setFlipGlyph(el, toFingerprint) {
+      const holder = el && el.querySelector('[data-flip-icon]');
+      if (!holder) return;
+      const fa = 'fa-solid ' + (toFingerprint ? 'fa-fingerprint' : 'fa-qrcode');
+      if (window.PrivIcons) {
+        const keep = (holder.getAttribute('class') || '').replace(/fa-[a-z0-9-]+/g, '').replace(/\s+/g, ' ').trim();
+        const tmp = document.createElement('span');
+        tmp.innerHTML = window.PrivIcons.svg(fa, keep);
+        const node = tmp.firstChild;
+        node.setAttribute('data-flip-icon', '');
+        holder.replaceWith(node);
+      } else {
+        holder.classList.remove('fa-fingerprint', 'fa-qrcode');
+        holder.classList.add(toFingerprint ? 'fa-fingerprint' : 'fa-qrcode');
+      }
+    }
     window.__privResetCardFace = function (el) {
       if (!el) return;
       const front = el.querySelector('[data-face="front"]');
       const back = el.querySelector('[data-face="back"]');
-      const icon = el.querySelector('[data-flip-icon]');
       const id = el.id;
       const btn = id ? document.getElementById(id + '-flip') : null;
       if (front) front.classList.remove('is-hidden');
       if (back) back.classList.add('is-hidden');
       el.classList.remove('is-qr');
-      if (icon) { icon.classList.remove('fa-fingerprint'); icon.classList.add('fa-qrcode'); }
+      setFlipGlyph(el, false);
       if (btn) btn.title = 'Código QR';
     };
     window.__privCollapseCard = function (id) {
@@ -356,19 +568,18 @@ const PrivStore = (() => {
       const back = el.querySelector('[data-face="back"]');
       if (!front || !back) return;
       const showingBack = !back.classList.contains('is-hidden');
-      const icon = el.querySelector('[data-flip-icon]');
       const btn = document.getElementById(id + '-flip');
       if (showingBack) {
         back.classList.add('is-hidden');
         front.classList.remove('is-hidden');
         el.classList.remove('is-qr');
-        if (icon) { icon.classList.remove('fa-fingerprint'); icon.classList.add('fa-qrcode'); }
+        setFlipGlyph(el, false);
         if (btn) btn.title = 'Código QR';
       } else {
         front.classList.add('is-hidden');
         back.classList.remove('is-hidden');
         el.classList.add('is-qr');
-        if (icon) { icon.classList.remove('fa-qrcode'); icon.classList.add('fa-fingerprint'); }
+        setFlipGlyph(el, true);
         if (btn) btn.title = 'Volver';
       }
     };
@@ -408,10 +619,11 @@ const PrivStore = (() => {
     window.__privCopyEmail = function (email) { window.__privCopyText(email, 'email'); };
   }
   return {
+    SCHEMA_VERSION,
     SOCIAL_DEFS, DOMAINS, PRESET_COLORS, BRANDS, ICON_PRESETS,
-    defaultPage, starkDemo, sanitizeUsername, load, save, normalize,
-    shapeClass, sizeClass, colorStyle, esc, renderProfile,
+    defaultPage, starkDemo, sanitizeUsername, load, save, normalize, migratePage,
+    shapeClass, sizeClass, colorStyle, esc, safeUrl, safeImg, safeHex, renderProfile,
     emptyContact, contactToVcard, vcardHref, readImageFile, faviconUrl, profileUrl,
-    listUsers, exportAll, setVerified,
+    listUsers, exportAll, importPages, saveImported, saveByUser, fromLinkStack, setVerified,
   };
 })();

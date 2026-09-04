@@ -1,0 +1,4 @@
+# Binario del CLI de Tailwind (lo descarga build.sh; ~48 MB, no versionar)
+/tools/
+# Artefactos del sistema
+.DS_Store

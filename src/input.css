@@ -1,0 +1,144 @@
+/* privtr.ee — hoja de estilo única (compilada a assets/app.css).
+   Sin CDNs, sin Google: tipografía e iconos autoalojados.
+   Genera el CSS con ./build.sh */
+
+/* ------------------------------------------------------------------ *
+ *  Inter autoalojada (fontsource, SIL OFL 1.1) — assets/fonts/*.woff2
+ * ------------------------------------------------------------------ */
+@font-face {
+  font-family: 'Inter'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url('fonts/inter-latin-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Inter'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url('fonts/inter-latin-ext-400.woff2') format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url('fonts/inter-latin-500.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Inter'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url('fonts/inter-latin-ext-500.woff2') format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter'; font-style: normal; font-weight: 600; font-display: swap;
+  src: url('fonts/inter-latin-600.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Inter'; font-style: normal; font-weight: 600; font-display: swap;
+  src: url('fonts/inter-latin-ext-600.woff2') format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter'; font-style: normal; font-weight: 700; font-display: swap;
+  src: url('fonts/inter-latin-700.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Inter'; font-style: normal; font-weight: 700; font-display: swap;
+  src: url('fonts/inter-latin-ext-700.woff2') format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body { font-family: 'Inter', system-ui, sans-serif; }
+}
+
+/* ------------------------------------------------------------------ *
+ *  Iconos SVG autoalojados (js/icons.js) — hereda tamaño/color del texto
+ * ------------------------------------------------------------------ */
+.fa-i { display: inline-block; width: 1em; height: 1em; vertical-align: -0.125em; flex-shrink: 0; }
+i[class*="fa-"]:empty { display: inline-block; width: 1em; height: 1em; }
+
+/* ------------------------------------------------------------------ *
+ *  Componentes de sitio (antes en los <style> de cada página)
+ * ------------------------------------------------------------------ */
+.cyber-grid {
+  background-image:
+    linear-gradient(rgba(10, 132, 255, .04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 132, 255, .04) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+.glow-blue { box-shadow: 0 0 24px rgba(10, 132, 255, .22), 0 0 48px rgba(10, 132, 255, .08); }
+.phone-shell {
+  background: linear-gradient(160deg, #1c2333 0%, #0c1018 42%, #080b10 100%);
+  box-shadow: 0 0 0 1.5px #3a4558, 0 0 0 4px #151a24, 0 32px 64px -16px rgba(0, 0, 0, .85), inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+.banner-mig { background: linear-gradient(90deg, rgba(10, 132, 255, .14), rgba(10, 132, 255, .05)); border-bottom: 1px solid rgba(10, 132, 255, .28); }
+.opacity-0-init { opacity: 0; }
+.animate-delay-100 { animation-delay: .08s; }
+.animate-delay-200 { animation-delay: .16s; }
+.animate-delay-300 { animation-delay: .24s; }
+.card-hover { transition: border-color .2s, transform .2s, box-shadow .2s; }
+.card-hover:hover { border-color: rgba(10, 132, 255, .35); transform: translateY(-2px); box-shadow: 0 12px 28px -12px rgba(0, 0, 0, .5); }
+@media (min-width: 640px) { .hero-line { white-space: nowrap; } }
+
+/* perfil público (u.html) + previsualización del panel */
+.social-btn { transition: transform .15s, background .15s; }
+.social-btn:hover { transform: scale(1.08); background: rgba(255, 255, 255, .2); }
+.link-btn { transition: transform .18s ease, opacity .18s ease, box-shadow .25s ease; }
+.link-btn:hover { transform: scale(1.02); opacity: .95; }
+#toast { transition: opacity .3s, transform .25s; }
+.cta-pill { transition: border-color .2s, background .2s, color .2s; }
+.cta-pill:hover { border-color: rgba(10, 132, 255, .45); background: rgba(10, 132, 255, .08); color: #c5d0e0; }
+
+/* vCard con giro/plegado */
+.vcard-shell .card-chevron { transition: transform .4s cubic-bezier(.22, 1, .36, 1); }
+.vcard-shell:hover .card-chevron { transform: rotate(180deg); }
+.card-details { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s cubic-bezier(.22, 1, .36, 1); }
+.card-details-inner { overflow: hidden; min-height: 0; padding-top: 0; transition: padding-top .35s ease; }
+.vcard-shell:hover .card-details { grid-template-rows: 1fr; }
+.vcard-shell:hover .card-details-inner { padding-top: .65rem; }
+.card-stage { position: relative; }
+.card-face { transition: opacity .35s cubic-bezier(.22, 1, .36, 1), transform .35s cubic-bezier(.22, 1, .36, 1); }
+.card-face.card-back { position: absolute; left: 0; right: 0; top: 0; width: 100%; }
+.card-face.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: scale(.98) translateY(3px); }
+.card-face:not(.is-hidden) { opacity: 1; transform: none; }
+.vcard-shell.is-qr .card-face.card-front { position: absolute; left: 0; right: 0; top: 0; height: 0; overflow: hidden; opacity: 0; visibility: hidden; pointer-events: none; }
+.vcard-shell.is-qr .card-face.card-back { position: relative; opacity: 1; visibility: visible; transform: none; }
+.card-footer { position: relative; z-index: 2; }
+@media (hover: none) {
+  .vcard-shell .card-details { grid-template-rows: 1fr; }
+  .vcard-shell .card-details-inner { padding-top: .65rem; }
+  .vcard-shell .card-chevron { display: none; }
+}
+
+/* panel de edición */
+.tab.active { color: #0a84ff; border-bottom: 2px solid #0a84ff; }
+.tab.locked { opacity: .45; cursor: not-allowed; }
+.phone { background: linear-gradient(160deg, #1c2333, #080b10); box-shadow: 0 0 0 1.5px #3a4558, 0 20px 40px -10px rgba(0, 0, 0, .7); }
+.desktop-frame { background: #0b0f14; border: 1px solid rgba(255, 255, 255, .12); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, .75); }
+.drag-over { border-color: rgba(10, 132, 255, .5) !important; background: rgba(10, 132, 255, .08); }
+.chip.on { border-color: #0a84ff; color: #0a84ff; background: rgba(10, 132, 255, .1); }
+.mode-seg button.on { background: rgba(10, 132, 255, .15); color: #0a84ff; border-color: rgba(10, 132, 255, .4); }
+.accent-swatch.on { outline: 2px solid #0a84ff; outline-offset: 2px; }
+.vcard-border-swatch.on { outline: 2px solid #0a84ff; outline-offset: 2px; }
+.preview-toggle.on { color: #0a84ff; border-color: #0a84ff; background: rgba(10, 132, 255, .1); }
+.preview-col { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+.preview-inner { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.preview-stage { position: relative; width: 100%; display: flex; justify-content: center; align-items: flex-start; min-height: 560px; }
+.preview-frame { transition: opacity .18s ease; }
+.preview-frame.is-hidden { opacity: 0; pointer-events: none; position: absolute; visibility: hidden; }
+.preview-frame.is-visible { opacity: 1; position: relative; visibility: visible; }
+#preview, #preview-desktop { background: #05070a !important; }
+@keyframes listSettle { 0% { transform: translateY(-3px); opacity: .9; } 100% { transform: translateY(0); opacity: 1; } }
+.list-settle { animation: listSettle .25s ease; }
+[data-reorder-id] { will-change: transform; }
+#qr-classic.on, #qr-themed.on { border-color: rgba(10, 132, 255, .45); color: #0a84ff; background: rgba(10, 132, 255, .12); }
+
+/* login (acceso.html) */
+.cyber-grid.cyber-grid--login { background-size: 40px 40px; }
+
+/* admin */
+.nav-btn.active { background: rgba(10, 132, 255, .12); color: #0a84ff; }

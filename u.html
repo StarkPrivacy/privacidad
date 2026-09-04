@@ -3,44 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2305070a'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%230a84ff' stroke-width='3'/%3E%3C/svg%3E">
 <title>Perfil — privtr.ee</title>
 <meta name="description" id="meta-desc" content="Perfil en privtr.ee">
 <meta name="theme-color" content="#05070a">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
-<style>
-body{background:#05070a;font-family:Inter,system-ui,sans-serif;min-height:100vh}
-.social-btn{transition:transform .15s,background .15s}
-.social-btn:hover{transform:scale(1.08);background:rgba(255,255,255,.2)}
-.link-btn{transition:transform .15s,opacity .15s}
-.link-btn:hover{transform:scale(1.02);opacity:.95}
-#toast{transition:opacity .25s,transform .25s}
-.cta-pill{transition:border-color .2s,background .2s,color .2s}
-.cta-pill:hover{border-color:rgba(10,132,255,.45);background:rgba(10,132,255,.08);color:#c5d0e0}
-.vcard-shell .card-chevron{transition:transform .4s cubic-bezier(.22,1,.36,1)}
-.vcard-shell:hover .card-chevron{transform:rotate(180deg)}
-.card-details{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s cubic-bezier(.22,1,.36,1)}
-.card-details-inner{overflow:hidden;min-height:0;padding-top:0;transition:padding-top .35s ease}
-.vcard-shell:hover .card-details{grid-template-rows:1fr}
-.vcard-shell:hover .card-details-inner{padding-top:.65rem}
-.card-stage{position:relative}
-.card-face{transition:opacity .35s cubic-bezier(.22,1,.36,1),transform .35s cubic-bezier(.22,1,.36,1)}
-.card-face.card-back{position:absolute;left:0;right:0;top:0;width:100%}
-.card-face.is-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.98) translateY(3px)}
-.card-face:not(.is-hidden){opacity:1;transform:none}
-.vcard-shell.is-qr .card-face.card-front{position:absolute;left:0;right:0;top:0;height:0;overflow:hidden;opacity:0;visibility:hidden;pointer-events:none}
-.vcard-shell.is-qr .card-face.card-back{position:relative;opacity:1;visibility:visible;transform:none}
-.card-footer{position:relative;z-index:2}
-@media (hover:none){
-  .vcard-shell .card-details{grid-template-rows:1fr}
-  .vcard-shell .card-details-inner{padding-top:.65rem}
-  .vcard-shell .card-chevron{display:none}
-}
-</style>
+<link rel="stylesheet" href="assets/app.css">
+<script src="js/icons.js"></script>
 </head>
-<body class="text-mist antialiased">
+<body class="bg-void min-h-screen text-mist antialiased">
 <div class="fixed top-4 right-4 z-20 flex gap-2">
   <button type="button" onclick="sharePage()" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs text-white backdrop-blur hover:bg-white/20 transition"><i class="fa-solid fa-share-nodes"></i> Compartir</button>
   <button type="button" onclick="copyLink()" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs text-white backdrop-blur hover:bg-white/20 transition" title="Copiar enlace"><i class="fa-solid fa-link"></i></button>
@@ -55,7 +27,7 @@ body{background:#05070a;font-family:Inter,system-ui,sans-serif;min-height:100vh}
     </a>
   </footer>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script src="js/vendor/qrcode.min.js"></script>
 <script src="js/store.js"></script>
 <script>
 (function () {

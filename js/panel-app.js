@@ -66,8 +66,10 @@ function refreshWithFLIP() {
 }
 
 function init() {
-  const loaded = PrivStore.load();
-  state = loaded || PrivStore.starkDemo();
+  const wanted = PrivStore.sanitizeUsername(new URLSearchParams(location.search).get('u') || '');
+  const loaded = PrivStore.load(wanted || undefined);
+  state = loaded
+    || (!wanted || wanted === 'stark' ? PrivStore.starkDemo() : PrivStore.defaultPage(wanted));
   ensureSocialOrder();
   nid = Math.max(20, ...(state.links.map(l => l.id || 0)), 0) + 1;
   if (state.profileMode === 'both' || state.profileMode === 'card') {
@@ -119,11 +121,15 @@ function updateImageHints() {
 
 function onNameField() {
   state.name = document.getElementById('name').value;
-  const slug = PrivStore.sanitizeUsername(state.name);
-  state.username = slug || state.username || 'user';
-  document.getElementById('username').value = state.username;
-  const up = document.getElementById('username-preview');
-  if (up) up.textContent = state.username || '…';
+  // El usuario solo se autoderiva del nombre mientras siga siendo un marcador
+  // de posición; una vez elegido (registro / import) no se toca al editar el nombre.
+  if (!state.username || state.username === 'user' || state.username === 'usuario') {
+    const slug = PrivStore.sanitizeUsername(state.name);
+    state.username = slug || state.username || 'user';
+    document.getElementById('username').value = state.username;
+    const up = document.getElementById('username-preview');
+    if (up) up.textContent = state.username || '…';
+  }
   state.bio = document.getElementById('bio').value;
   refresh(); scheduleSave();
 }
@@ -160,6 +166,7 @@ function updateIdentityLock() {
     tabBtn.innerHTML = locked
       ? '<i class="fa-solid fa-lock text-[10px] mr-1 opacity-70"></i>Identidad'
       : 'Identidad';
+    if (window.PrivIcons) window.PrivIcons.hydrate(tabBtn);
   }
 }
 
@@ -325,6 +332,7 @@ function renderSocialForm() {
       'class="w-full bg-transparent text-sm text-white focus:outline-none" ' +
       'oninput="onSocialInput(\'' + s.id + '\',this.value)"></div></div>';
   }).join('');
+  if (window.PrivIcons) window.PrivIcons.hydrate(el);
   const btn = document.getElementById('social-more-btn');
   if (!btn) return;
   if (!filled.length) { btn.classList.add('hidden'); socialExpanded = true; }
@@ -374,7 +382,7 @@ function brandOptions(selected) {
   }).join('');
 }
 function iconModeOptions(selected) {
-  return [{ id: 'none', label: 'Sin icono' }, { id: 'favicon', label: 'Favicon web' }, { id: 'preset', label: 'Icono predeterminado' }]
+  return [{ id: 'none', label: 'Sin icono' }, { id: 'favicon', label: 'Inicial del sitio' }, { id: 'preset', label: 'Icono predeterminado' }]
     .map(function (o) { return '<option value="' + o.id + '"' + (selected === o.id ? ' selected' : '') + '>' + o.label + '</option>'; }).join('');
 }
 function presetIconOptions(selected) {
@@ -524,12 +532,14 @@ function importJSON(ev) {
   r.readAsText(f);
 }
 function deleteAccount() {
-  const pw = document.getElementById('del-pw').value;
-  if (!pw) { alert('Introduce tu contraseña'); return; }
-  if (!confirm('¿Eliminar definitivamente tu cuenta?')) return;
+  const pw = (document.getElementById('del-pw').value || '').trim();
+  if (pw.toUpperCase() !== 'ELIMINAR') { alert('Escribe ELIMINAR para confirmar'); return; }
+  if (!confirm('¿Eliminar definitivamente esta página de este navegador?')) return;
   try {
-    localStorage.removeItem('priv_page');
     localStorage.removeItem('priv_page_' + state.username);
+    const cur = localStorage.getItem('priv_page');
+    if (cur) { try { if (JSON.parse(cur).username === state.username) localStorage.removeItem('priv_page'); } catch (e) {} }
+    localStorage.removeItem('priv_session');
   } catch (e) {}
   showToast('Cuenta eliminada');
   setTimeout(function () { location.href = 'index.html'; }, 800);

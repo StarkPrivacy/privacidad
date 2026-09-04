@@ -1,0 +1,3 @@
+# Demo de interfaz en desarrollo — no indexar hasta publicación formal.
+User-agent: *
+Disallow: /

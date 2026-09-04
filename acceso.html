@@ -3,24 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2305070a'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%230a84ff' stroke-width='3'/%3E%3C/svg%3E">
 <title>Iniciar sesión — privtr.ee</title>
 <meta name="description" content="Accede a tu panel de privtr.ee">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={theme:{extend:{colors:{void:'#05070a',panel:'#0b0f14',neon:'#0a84ff','neon-glow':'#3b9eff',steel:'#8b9bb4',mist:'#c5d0e0'}}}}</script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body{background:#05070a}
-.cyber-grid{background-image:linear-gradient(rgba(10,132,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(10,132,255,.03) 1px,transparent 1px);background-size:40px 40px}
-.glow-blue{box-shadow:0 0 20px rgba(10,132,255,.2)}
-</style>
+<link rel="stylesheet" href="assets/app.css">
 </head>
-<body class="font-sans text-mist antialiased min-h-screen flex flex-col">
+<body class="bg-void font-sans text-mist antialiased min-h-screen flex flex-col">
 <nav class="border-b border-white/5 h-14 flex items-center px-6 justify-between bg-void/80 backdrop-blur sticky top-0 z-20">
   <a href="index.html" class="font-semibold text-white text-sm">privtr<span class="text-neon">.ee</span></a>
   <a href="registro.html" class="text-sm text-steel hover:text-white transition">Crear cuenta</a>
 </nav>
 <main class="flex-1 relative flex items-center justify-center px-6 py-16">
-  <div class="absolute inset-0 cyber-grid opacity-30 pointer-events-none"></div>
+  <div class="absolute inset-0 cyber-grid cyber-grid--login opacity-30 pointer-events-none"></div>
   <div class="relative w-full max-w-sm">
     <div class="text-center mb-8">
       <h1 class="text-2xl font-bold text-white mb-2">Iniciar sesión</h1>
@@ -51,17 +47,16 @@ body{background:#05070a}
 function doLogin(e) {
   e.preventDefault();
   var login = document.getElementById('login').value.trim();
-  var pass = document.getElementById('password').value;
   var err = document.getElementById('err');
   err.classList.add('hidden');
+  // Demo local: no hay backend de autenticación todavía (llegará con LinkStack).
+  // Se resuelve el usuario a partir de lo introducido y se abre su panel.
+  var raw = login.replace(/^@+/, '').split('@')[0];
+  var uname = PrivStore.sanitizeUsername(raw);
+  if (!uname) { err.textContent = 'Introduce tu usuario o correo.'; err.classList.remove('hidden'); return; }
   try {
-    if (window.PrivStore && PrivStore.login) {
-      var ok = PrivStore.login(login, pass);
-      if (!ok) { err.textContent = 'Usuario o contraseña incorrectos (demo local).'; err.classList.remove('hidden'); return; }
-    } else {
-      localStorage.setItem('priv_session', JSON.stringify({ username: login.replace(/^@/,''), at: Date.now() }));
-    }
-    location.href = 'panel.html';
+    localStorage.setItem('priv_session', JSON.stringify({ username: uname, at: Date.now() }));
+    location.href = 'panel.html?u=' + encodeURIComponent(uname);
   } catch (ex) {
     err.textContent = 'No se pudo iniciar sesión.';
     err.classList.remove('hidden');
